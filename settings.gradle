@@ -1,0 +1,2 @@
+include ':renetik-android-event'
+project(':renetik-android-event').projectDir = file("library")

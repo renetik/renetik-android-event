@@ -1,0 +1,36 @@
+buildscript {
+    ext {
+        //        renetik_android_version = "1.9.1"
+        renetik_android_version = "master-SNAPSHOT"
+
+        sdk_version = 32
+        min_sdk_version = 24
+        kotlin_version = '1.7.0'
+        appcompat_version = '1.4.2'
+        ktx_version = '1.8.0'
+        junit_version = '4.13.2'
+    }
+    ext {
+        renetik_android_core = "com.github.renetik:renetik-android-core:$renetik_android_version"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
