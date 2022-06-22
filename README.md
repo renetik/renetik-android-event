@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/renetik/renetik-android-core.svg)](https://jitpack.io/#renetik/renetik-android-core)
+[![](https://jitpack.io/v/renetik/renetik-android-event.svg)](https://jitpack.io/#renetik/renetik-android-event)
 # Renetik Android Event Library
 Framework to enjoy, improve and speed up your application development while writing readable code.
 This library although used daily is not polished for other people to dive in easily anymore. 
