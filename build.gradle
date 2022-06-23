@@ -1,15 +1,12 @@
+apply from: 'renetik_android_build_common.gradle'
 buildscript {
     ext {
-        renetik_android_version = "1.9.6" //master-SNAPSHOT
         sdk_version = 32
         min_sdk_version = 24
         kotlin_version = '1.7.0'
         appcompat_version = '1.4.2'
         ktx_version = '1.8.0'
         junit_version = '4.13.2'
-    }
-    ext {
-        renetik_android_core = "com.github.renetik:renetik-android-core:$renetik_android_version"
     }
     repositories {
         google()
