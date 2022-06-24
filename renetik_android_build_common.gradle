@@ -1,6 +1,5 @@
 buildscript {
     ext {
-        renetik_android_version = "1.9.16" //master-SNAPSHOT
         renetik_android_core = "com.renetik.library:renetik-android-core:$renetik_android_version"
         renetik_android_event = "com.renetik.library:renetik-android-event:$renetik_android_version"
         renetik_android_json = "com.renetik.library:renetik-android-json:$renetik_android_version"
@@ -26,6 +25,7 @@ allprojects {
         mavenLocal()
         google()
         jcenter()
+        maven { url 'https://github.com/renetik/maven-snapshot/raw/master/repository' }
         maven { url 'https://github.com/renetik/maven/raw/master/repository' }
     }
 }
