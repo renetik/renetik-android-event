@@ -1,4 +1,4 @@
-![Master](https://github.com/renetik/renetik-android-event/.github/workflows/android.yml/badge.svg)
+[![Android CI](https://github.com/renetik/renetik-android-event/actions/workflows/android.yml/badge.svg)](https://github.com/renetik/renetik-android-event/actions/workflows/android.yml)
 # Renetik Android Event
 Framework to enjoy, improve and speed up your application development while writing readable code.
 Used as library for music production and performance app Renetik Instruments www.renetik.com as well as other projects.
