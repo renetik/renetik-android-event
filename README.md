@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/renetik/renetik-android-event.svg?branch=master)](https://app.travis-ci.com/renetik/renetik-android-event)
+![Master](https://github.com/renetik/renetik-android-event/.github/workflows/android.yml/badge.svg)
 # Renetik Android Event
 Framework to enjoy, improve and speed up your application development while writing readable code.
 Used as library for music production and performance app Renetik Instruments www.renetik.com as well as other projects.
