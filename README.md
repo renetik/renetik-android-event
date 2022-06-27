@@ -1,22 +1,22 @@
-[![](https://jitpack.io/v/renetik/renetik-android-event.svg)](https://jitpack.io/#renetik/renetik-android-event)
-# Renetik Android Event Library
+# Renetik Android Event
 Framework to enjoy, improve and speed up your application development while writing readable code.
-This library although used daily is not polished for other people to dive in easily anymore. 
-It is used as base library for music production and performance app Renetik Instrument.  
-www.renetik.com
+Used as library for music production and performance app Renetik Instruments www.renetik.com as well as other projects.
 
-Step 1. Add it in your root build.gradle at the end of repositories:
 ```gradle
 allprojects {
     repositories {
-        ...
-        maven { url 'https://jitpack.io' }
+        // For master-SNAPSHOT
+        maven { url 'https://github.com/renetik/maven-snapshot/raw/master/repository' }
+        // For release builds
+        maven { url 'https://github.com/renetik/maven/raw/master/repository' }
     }
 }
 ```
 Step 2. Add the dependency
 ```gradle
 dependencies {
-    implementation 'com.github.renetik:renetik-android-event:1.9.2'
+    implementation 'com.renetik.library:renetik-android-event:$latest-renetik-android-release'
 }
 ```
+
+## [Html Documentation](https://renetik.github.io/renetik-android-event/)
