@@ -9,10 +9,10 @@ import renetik.android.event.property.onChange
 class CSEventPropertyTest {
 
 	private var eventCounter = 0
-	private val property: CSEventProperty<String> = property("")
+	private val property: CSEventProperty<String> = property("initial")
 
 	@Test
-	fun fireTwiceAndCancel() {
+	fun onSecondEventCancel() {
 		property.onChange { registration, _ ->
 			eventCounter++
 			if (eventCounter == 2) registration.cancel()

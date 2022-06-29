@@ -8,7 +8,7 @@ import renetik.android.event.owner.destroy
 import renetik.android.event.property.CSEventPropertyFunctions.property
 
 class CSEventPropertyOwnerTest {
-	class TestOwner(parent: TestOwner? = null) : CSEventOwnerHasDestroyBase(parent) {
+	private class TestOwner(parent: TestOwner? = null) : CSEventOwnerHasDestroyBase(parent) {
 		val property = property(0)
 
 		init {

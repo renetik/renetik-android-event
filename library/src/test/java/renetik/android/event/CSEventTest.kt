@@ -11,7 +11,7 @@ class CSEventTest {
 	private val event = event<String>()
 
 	@Test
-	fun fireTwiceAndCancel() {
+	fun onSecondEventCancel() {
 		event.add { registration, value ->
 			eventCounter++
 			eventValue = value
