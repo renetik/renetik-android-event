@@ -23,7 +23,7 @@ Step 2. Add the dependency
 
 ```gradle
 dependencies {
-    implementation 'com.renetik.library:renetik-android-event:$latest-renetik-android-release'
+    implementation 'com.renetik.library:renetik-android-event:$renetik-android-version'
 }
 ```
 ## Examples from included unit tests:
