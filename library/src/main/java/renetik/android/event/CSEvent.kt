@@ -6,30 +6,27 @@ import java.io.Closeable
 
 interface CSEvent<T> {
 
-    companion object {
-        @JvmName("eventWithType")
-        fun <T> event(): CSEvent<T> = CSEventImpl()
+	companion object {
+		@JvmName("eventWithType")
+		fun <T> event(): CSEvent<T> = CSEventImpl()
 
-        fun event(): CSEvent<Unit> = CSEventImpl()
-    }
+		fun event(): CSEvent<Unit> = CSEventImpl()
+	}
 
-    fun pause(): Closeable
+	fun pause(): Closeable
 
-    fun resume()
+	fun resume()
 
-    val isListened: Boolean
+	val isListened: Boolean
 
-    fun add(@UiThread listener: (registration: CSRegistration,
-                                 argument: T) -> Unit): CSRegistration
+	fun listen(@UiThread function: (argument: T) -> Unit): CSRegistration
 
-    fun add(@UiThread listener: CSEventListener<T>): CSRegistration
+	fun cancel(listener: CSEventListener<T>)
 
-    fun cancel(listener: CSEventListener<T>)
+	fun fire(argument: T)
 
-    fun fire(argument: T)
+	fun clear()
 
-    fun clear()
-
-    @Deprecated("Just for debugging")
-    val registrations: List<CSRegistration>
+	@Deprecated("Just for debugging")
+	val registrations: List<CSRegistration>
 }
