@@ -8,6 +8,7 @@ Framework to enjoy, improve and speed up your application development while writ
 Used as library in many projects and improving it while developing new projects.
 I am open for [Hire](https://renetik.github.io) or investment in my mobile app music production & perfromance project Renetik Instruments www.renetik.com.
 
+## Installation
 ```gradle
 allprojects {
     repositories {
@@ -18,104 +19,231 @@ allprojects {
     }
 }
 ```
-
-Step 2. Add the dependency
-
 ```gradle
 dependencies {
     implementation 'com.renetik.library:renetik-android-event:$renetik-android-version'
 }
 ```
-## Examples from included unit tests:
-#### Event Property usage example 
+## Examples
 ```
-	private val property: CSEventProperty<String> = property("initial")
+/**
+ * Simple event use cases
+ */
+class EventTest {
+    @Test
+    fun testListen() {
+        val event = event()
+        var count = 0
+        event.listen { count += 1 }
+        event.fire()
+        event.fire()
+        assertEquals(count, 2)
+    }
 
-	@Test
-	fun onSecondEventCancel() {
-		property.onChange { registration, _ ->
-			eventCounter++
-			if (eventCounter == 2) registration.cancel()
-		}
-		property.value = "testOne"
-		property.value = "testTwo"
-		property.value = "testThree"
-		assertEquals(2, eventCounter)
-		assertEquals("testThree", property.value)
-	}
+    @Test
+    fun testArgListen() {
+        val event = event<Int>()
+        var count = 0
+        event.listen { count += it }
+        event.fire(2)
+        event.fire(3)
+        assertEquals(count, 5)
+    }
+
+    @Test
+    fun testListenOnce() {
+        val event = event()
+        var count = 0
+        event.listenOnce { count += 1 }
+        event.fire()
+        event.fire()
+        assertEquals(count, 1)
+    }
+
+    @Test
+    fun testArgListenOnce() {
+        val event = event()
+        var count = 0
+        event.listenOnce { count += 1 }
+        event.fire()
+        event.fire()
+        assertEquals(count, 1)
+    }
+
+    @Test
+    fun testEventCancel() {
+        val event = event()
+        var count = 0
+        event.listen { registration, _ ->
+            count += 1
+            if (count == 2) registration.cancel()
+        }
+        event.fire()
+        event.fire()
+        event.fire()
+        assertEquals(count, 2)
+    }
+
+    @Test
+    fun testStringEventCancel() {
+        val event = event<String>()
+        var value: String? = null
+        event.listen { registration, newValue ->
+            if (newValue == "second") registration.cancel()
+            value = newValue
+        }
+        event.fire("first")
+        assertEquals("first", value)
+        event.fire("second")
+        assertEquals("second", value)
+        event.fire("third")
+        assertEquals("second", value)
+    }
+
+    @Test
+    fun testEventPause() {
+        val event = event()
+        var count = 0
+        val registration = event.listen { count += 1 }
+        registration.pause { event.fire() }
+        assertEquals(count, 0)
+        event.fire()
+        assertEquals(count, 1)
+    }
+}
+
 ```
-#### Event Property with parent registration 
+
 ```
-	private class TestOwner(parent: TestOwner? = null) : CSEventOwnerHasDestroyBase(parent) {
-		val property = property(0)
+/**
+ * Simple event property use cases
+ */
+class EventPropertyTest {
 
-		init {
-			register(parent?.property?.onChange { property.value = it })
-		}
-	}
+    @Test
+    fun testOnChange() {
+        val property = property("initial")
+        var count = 0
+        property.onChange { count += 1 }
+        property.value = "second"
+        property.value = "third"
+        assertEquals(count, 2)
+        assertEquals("third", property.value)
+    }
 
-	private val parent = TestOwner()
-	private val parentChild = TestOwner(parent)
-	private val parentChildChild = TestOwner(parentChild)
+    @Test
+    fun testOnApply() {
+        var count = 0
+        val property = property("initial") { count += 1 }.apply()
+        property.value = "second"
+        property.value = "third"
+        assertEquals(count, 3)
+        assertEquals("third", property.value)
+    }
 
-	@Test
-	fun parentChildChildDestroy() {
-		parent.property.value = 3
-		assertEquals(3, parentChildChild.property.value)
+    @Test
+    fun testArgListen() {
+        var count = 0
+        val property = property(0) { count += 1 }
+        property.value += 2
+        property.value += 3
+        assertEquals(5, property.value)
+        assertEquals(2, count)
+    }
 
-		parentChildChild.destroy()
-		parent.property.value = 5
-		assertEquals(5, parent.property.value)
-		assertEquals(5, parentChild.property.value)
-		assertEquals(3, parentChildChild.property.value)
-	}
+    @Test
+    fun testEquals() {
+        var count = 0
+        val property = property("") { count += 1 }
+        property.value = "second"
+        property.value = "second"
+        assertEquals(count, 1)
+        assertEquals("second", property.value)
+    }
+
+    @Test
+    fun testOnChangeOnce() {
+        var count = 0
+        val property = property("")
+        property.onChangeOnce { count += 1 }
+        property.value = "second"
+        property.value = "third"
+        assertEquals(count, 1)
+        assertEquals("third", property.value)
+    }
+
+    @Test
+    fun testEventCancel() {
+        var count = 0
+        val property = property(0)
+        property.onChange { registration, value ->
+            count += value
+            if (count > 2) registration.cancel()
+        }
+        property.value = 1
+        property.value = 2
+        property.value = 3
+        assertEquals(count, 3)
+    }
+
+    @Test
+    fun testEventPause() {
+        var count = 0
+        val property = property(0)
+        val registration = property.onChange { count += it }
+        registration.pause { property.value = 1 }
+        assertEquals(count, 0)
+        property.value = 2
+        assertEquals(count, 2)
+    }
+}
+``` 
+
 ```
-#### Event example 
+/**
+ * Event unregister after owner nulled
+ */
+class EventOwnerEventTest {
+    @Test
+    fun testUnregisteredAfterNilled() {
+        val owner = CSEventOwnerHasDestroyBase()
+        val event = event()
+        var count = 0
+        owner.register(event.listen { count += 1 })
+        event.fire()
+        event.fire()
+        assertEquals(count, 2)
+        owner.destroy()
+        event.fire()
+        assertEquals(count, 2)
+    }
+}
+``` 
+
 ```
-	private var eventCounter = 0
-	private var eventValue: String? = ""
-	private val event = event<String>()
+/**
+ * Event property unregister after owner nulled
+ */
+class EventOwnerPropertyTest {
+    class SomeClass(argument: SomeClass? = null) : CSEventOwnerHasDestroyBase(argument) {
+        val string = property("initial value")
 
-	@Test
-	fun onSecondEventCancel() {
-		event.add { registration, value ->
-			eventCounter++
-			eventValue = value
-			if (eventCounter == 2) registration.cancel()
-		}
-		event.fire("testOne")
-		event.fire("testTwo")
-		event.fire("testThree")
-		assertEquals(2, eventCounter)
-		assertEquals("testTwo", eventValue)
-	}
-```
-#### Event with parent registration
-```
-	class TestOwner(parent: TestOwner? = null) : CSEventOwnerHasDestroyBase(parent) {
-		val event = event<Int>()
-		var eventValue: Int? = null
+        init {
+            register(argument?.string?.onChange { string.value = it })
+        }
+    }
 
-		init {
-			register(event.listen { eventValue = it })
-			register(parent?.event?.listen(event::fire))
-		}
-	}
-
-	private val parent = TestOwner()
-	private val parentChild = TestOwner(parent)
-	private val parentChildChild = TestOwner(parentChild)
-
-	@Test
-	fun parentChildChildDestroy() {
-		parent.event.fire(3)
-		assertEquals(3, parentChildChild.eventValue)
-
-		parentChildChild.destroy()
-		parent.event.fire(5)
-		assertEquals(5, parent.eventValue)
-		assertEquals(5, parentChild.eventValue)
-		assertEquals(3, parentChildChild.eventValue)
-	}
-```    
-
+    @Test
+    fun testUnregisteredAfterNilled() {
+        val instance1 = SomeClass()
+        val instance2 = SomeClass(instance1)
+        val instance3 = SomeClass(instance2)
+        assertEquals(instance3.string.value, "initial value")
+        instance1.string.value = "first value"
+        assertEquals(instance3.string.value, "first value")
+        instance2.destroy()
+        instance1.string.value = "second value"
+        assertEquals(instance3.string.value, "first value")
+    }
+}
+``` 
