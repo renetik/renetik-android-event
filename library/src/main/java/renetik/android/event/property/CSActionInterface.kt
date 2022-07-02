@@ -10,5 +10,7 @@ typealias CSActionInterface = CSEventProperty<Boolean>
 fun CSActionInterface.start() = setTrue()
 fun CSActionInterface.stop() = setFalse()
 val CSActionInterface.isRunning get() = isTrue
-fun action(function: ((Boolean) -> Unit)? = null)
-        : CSActionInterface = property(false, function)
+
+object CSAction {
+    fun action(): CSActionInterface = property(false)
+}
