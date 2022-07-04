@@ -8,5 +8,6 @@ abstract class CSEventPropertyWrapper<T> :
     override var value: T
         get() = property.value
         set(value) = property.value(value)
-    override fun apply() = apply { property.apply() }
+
+    override fun invokeChange() = property.invokeChange()
 }

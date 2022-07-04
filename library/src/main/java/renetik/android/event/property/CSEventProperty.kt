@@ -12,5 +12,5 @@ interface CSEventProperty<T> : CSProperty<T> {
     /**
      * Invoke change event with current value
      */
-    fun apply(): CSEventProperty<T>
+    fun invokeChange()
 }
