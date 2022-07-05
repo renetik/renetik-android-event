@@ -17,7 +17,7 @@ abstract class CSEventPropertyBase<T>(
 
     override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
 
-    override fun toString() = value.toString()
+    override fun toString() = super.toString() + "$value"
 
     override fun invokeChange() {
         value?.run {
