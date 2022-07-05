@@ -1,5 +1,5 @@
 <!---Header--->
-[![Android Build](https://github.com/renetik/renetik-android-event/workflows/Android%20CI/badge.svg)
+[![Android Build](https://github.com/renetik/renetik-android-event/workflows/Android%20Build/badge.svg)
 ](https://github.com/renetik/renetik-android-event/actions/workflows/android.yml)
 
 # Renetik Android - Event & Property
