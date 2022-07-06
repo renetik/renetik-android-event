@@ -10,11 +10,11 @@ import renetik.android.event.property.CSEventPropertyFunctions.property
  * Event property unregister after owner nulled
  */
 class EventOwnerPropertyTest {
-    class SomeClass(argument: SomeClass? = null) : CSEventOwnerHasDestroyBase(argument) {
+    class SomeClass(parent: SomeClass? = null) : CSEventOwnerHasDestroyBase(parent) {
         val string = property("initial value")
 
         init {
-            register(argument?.string?.onChange { string.value = it })
+            register(parent?.string?.onChange { string.value = it })
         }
     }
 

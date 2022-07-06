@@ -123,54 +123,54 @@ class EventPropertyTest {
 
     @Test
     fun testOnChange() {
-        val property = property("initial")
         var count = 0
-        property.onChange { count += 1 }
-        property.value = "second"
-        property.value = "third"
+        var value by property("initial") { count += 1 }
+        value = "second"
+        value = "third"
         assertEquals(count, 2)
-        assertEquals("third", property.value)
+        assertEquals("third", value)
     }
 
     @Test
     fun testOnApply() {
         var count = 0
-        val property = property("initial") { count += 1 }.apply()
-        property.value = "second"
-        property.value = "third"
+        var value by property("initial") { count += 1 }.apply()
+        value = "second"
+        value = "third"
         assertEquals(count, 3)
-        assertEquals("third", property.value)
+        assertEquals("third", value)
     }
 
     @Test
     fun testArgListen() {
         var count = 0
-        val property = property(0) { count += 1 }
-        property.value += 2
-        property.value += 3
-        assertEquals(5, property.value)
+        var value by property(0) { count += 1 }
+        value += 2
+        value += 3
+        assertEquals(5, value)
         assertEquals(2, count)
     }
 
     @Test
     fun testEquals() {
         var count = 0
-        val property = property("") { count += 1 }
-        property.value = "second"
-        property.value = "second"
+        var value by property("") { count += 1 }
+        value = "second"
+        value = "second"
         assertEquals(count, 1)
-        assertEquals("second", property.value)
+        assertEquals("second", value)
     }
 
     @Test
-    fun testOnChangeOnce() {
+    fun testNotFireAndOnChangeOnce() {
         var count = 0
         val property = property("")
         property.onChangeOnce { count += 1 }
-        property.value = "second"
-        property.value = "third"
+        property.value("one", fire = false)
+        property.value = "two"
+        property.value = "three"
         assertEquals(count, 1)
-        assertEquals("third", property.value)
+        assertEquals("three", property.value)
     }
 
     @Test
@@ -226,11 +226,11 @@ class EventOwnerEventTest {
  * Event property unregister after owner nulled
  */
 class EventOwnerPropertyTest {
-    class SomeClass(argument: SomeClass? = null) : CSEventOwnerHasDestroyBase(argument) {
+    class SomeClass(parent: SomeClass? = null) : CSEventOwnerHasDestroyBase(parent) {
         val string = property("initial value")
 
         init {
-            register(argument?.string?.onChange { string.value = it })
+            register(parent?.string?.onChange { string.value = it })
         }
     }
 
