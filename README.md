@@ -26,7 +26,7 @@ dependencies {
 }
 ```
 ## Examples
-```
+```kotlin
 /**
  * Simple event use cases
  */
@@ -115,7 +115,7 @@ class EventTest {
 
 ```
 
-```
+```kotlin
 /**
  * Simple event property use cases
  */
@@ -200,7 +200,7 @@ class EventPropertyTest {
 }
 ``` 
 
-```
+```kotlin
 /**
  * Event unregister after owner nulled
  */
@@ -221,7 +221,7 @@ class EventOwnerEventTest {
 }
 ``` 
 
-```
+```kotlin
 /**
  * Event property unregister after owner nulled
  */
