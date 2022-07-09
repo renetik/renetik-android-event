@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import renetik.android.event.owner.CSEventOwnerHasDestroyBase
 import renetik.android.event.owner.destroy
+import renetik.android.event.owner.register
 import renetik.android.event.property.CSEventPropertyFunctions.property
 
 /**

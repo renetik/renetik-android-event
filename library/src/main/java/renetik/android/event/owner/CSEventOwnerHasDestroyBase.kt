@@ -4,7 +4,6 @@ import renetik.android.core.lang.CSAssociation
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.listenOnce
-import renetik.android.event.register
 import renetik.android.event.registration.CSRegistrations
 
 open class CSEventOwnerHasDestroyBase(

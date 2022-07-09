@@ -1,6 +1,5 @@
-package renetik.android.event
+package renetik.android.event.owner
 
-import renetik.android.event.owner.CSEventOwner
 import renetik.android.event.registration.CSRegistration
 
 fun CSEventOwner.register(registration: CSRegistration) =

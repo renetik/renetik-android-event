@@ -4,7 +4,7 @@ import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.isFalse
 import renetik.android.core.lang.isTrue
-import renetik.android.core.lang.property.CSProperty
+import renetik.android.core.lang.property.CSVariable
 import renetik.android.event.registration.CSMultiRegistration
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.pause
@@ -94,7 +94,7 @@ fun <T : CSEventProperty<Int>> T.keepMax(maxValue: Int, fire: Boolean = true) = 
     onChange { if (value > maxValue) value(maxValue, fire) }
 }
 
-fun CSProperty<Boolean>.connect(property: CSEventProperty<Boolean>): CSRegistration {
+fun CSVariable<Boolean>.connect(property: CSEventProperty<Boolean>): CSRegistration {
     value = property.isTrue
     return property.onChange { value = it }
 }

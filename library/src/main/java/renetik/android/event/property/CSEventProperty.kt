@@ -1,9 +1,9 @@
 package renetik.android.event.property
 
-import renetik.android.core.lang.property.CSProperty
+import renetik.android.core.lang.property.CSVariable
 import renetik.android.event.registration.CSRegistration
 
-interface CSEventProperty<T> : CSProperty<T> {
+interface CSEventProperty<T> : CSVariable<T> {
 
     fun value(newValue: T, fire: Boolean = true)
 
