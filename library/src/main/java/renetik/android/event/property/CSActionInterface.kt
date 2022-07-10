@@ -1,11 +1,11 @@
 package renetik.android.event.property
 
-import renetik.android.core.lang.property.isTrue
-import renetik.android.core.lang.property.setFalse
-import renetik.android.core.lang.property.setTrue
-import renetik.android.event.property.CSEventPropertyFunctions.property
+import renetik.android.core.lang.variable.isTrue
+import renetik.android.core.lang.variable.setFalse
+import renetik.android.core.lang.variable.setTrue
+import renetik.android.event.property.CSPropertyFunctions.property
 
-typealias CSActionInterface = CSEventProperty<Boolean>
+typealias CSActionInterface = CSProperty<Boolean>
 
 fun CSActionInterface.start() = setTrue()
 fun CSActionInterface.stop() = setFalse()

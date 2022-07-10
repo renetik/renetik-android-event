@@ -6,7 +6,6 @@ import renetik.android.event.registration.CSFunctionRegistration
 import renetik.android.event.registration.CSRegistration
 
 object CSLater {
-
     fun later(delayMilliseconds: Int, function: () -> Unit): CSRegistration {
         val registration = CSFunctionRegistration(function = { function() },
             onCancel = ::removePosted)
