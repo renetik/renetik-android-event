@@ -3,7 +3,7 @@ package renetik.android.event
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import renetik.android.event.property.CSProperty
-import renetik.android.event.property.CSPropertyFunctions.property
+import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.apply
 import renetik.android.event.property.onChange
 import renetik.android.event.property.onChangeOnce

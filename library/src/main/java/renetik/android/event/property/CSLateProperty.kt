@@ -1,6 +1,7 @@
 package renetik.android.event.property
 
-class CSLateProperty<T>(onApply: ((value: T) -> Unit)? = null) :
+class CSLateProperty<T>(
+    onApply: ((value: T) -> Unit)? = null) :
     CSPropertyBase<T>(onApply) {
 
     private var _value: T? = null

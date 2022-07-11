@@ -1,4 +1,4 @@
-package renetik.android.event.registrations
+package renetik.android.event.common
 
 import android.content.Context
 

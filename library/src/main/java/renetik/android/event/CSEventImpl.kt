@@ -9,76 +9,76 @@ import java.io.Closeable
 
 class CSEventImpl<T> : CSEvent<T> {
 
-	private val listeners = list<CSEventListener<T>>()
-	private var toRemove = list<CSEventListener<T>>()
-	private var toAdd = list<CSEventListener<T>>()
-	private var running = false
-	private var paused = false
+    private val listeners = list<CSEventListener<T>>()
+    private var toRemove = list<CSEventListener<T>>()
+    private var toAdd = list<CSEventListener<T>>()
+    private var running = false
+    private var paused = false
 
-	override fun listen(function: (T) -> Unit): CSRegistration {
-		val listener = EventListenerImpl(function)
-		if (running) toAdd.add(listener)
-		else listeners.add(listener)
-		return listener
-	}
+    override fun listen(function: (T) -> Unit): CSRegistration {
+        val listener = EventListenerImpl(function)
+        if (running) toAdd.add(listener)
+        else listeners.add(listener)
+        return listener
+    }
 
-	override fun fire(argument: T) {
-		if (paused) return
-		if (running)
-			logError(exception("Event run while running"))
-		if (listeners.isEmpty()) return
-		running = true
-		for (listener in listeners) listener.onEvent(argument)
-		if (toRemove.hasItems) {
-			for (listener in toRemove) listeners.delete(listener)
-			toRemove.clear()
-		}
-		if (toAdd.hasItems) {
-			listeners.addAll(toAdd)
-			toAdd.clear()
-		}
-		running = false
-	}
+    override fun fire(argument: T) {
+        if (paused) return
+        if (running)
+            logError(exception("Event run while running"))
+        if (listeners.isEmpty()) return
+        running = true
+        for (listener in listeners) listener.onEvent(argument)
+        if (toRemove.hasItems) {
+            for (listener in toRemove) listeners.delete(listener)
+            toRemove.clear()
+        }
+        if (toAdd.hasItems) {
+            listeners.addAll(toAdd)
+            toAdd.clear()
+        }
+        running = false
+    }
 
-	override fun clear() = listeners.clear()
+    override fun clear() = listeners.clear()
 
-	override val isListened get() = listeners.hasItems
+    override val isListened get() = listeners.hasItems
 
-	internal inner class EventListenerImpl(
-		private val listener: (T) -> Unit) :
-		CSEventListener<T> {
-		override var isActive = true
-		private var canceled = false
-		override fun cancel() {
-			if (canceled) return
-			isActive = false
-			cancel(this)
-			canceled = true
-		}
+    internal inner class EventListenerImpl(
+        private val listener: (T) -> Unit) :
+        CSEventListener<T> {
+        override var isActive = true
+        private var canceled = false
+        override fun cancel() {
+            if (canceled) return
+            isActive = false
+            cancel(this)
+            canceled = true
+        }
 
-		override fun onEvent(argument: T) {
-			if (isActive) listener(argument)
-		}
-	}
+        override fun onEvent(argument: T) {
+            if (isActive) listener(argument)
+        }
+    }
 
-	override fun cancel(listener: CSEventListener<T>) {
-		val index = listeners.indexOf(listener)
-		if (index >= 0) {
-			if (running) toRemove.add(listener)
-			else listeners.removeAt(index)
-		} else logError("Listener not found")
-	}
+    override fun cancel(listener: CSEventListener<T>) {
+        val index = listeners.indexOf(listener)
+        if (index >= 0) {
+            if (running) toRemove.add(listener)
+            else listeners.removeAt(index)
+        } else logError(Throwable(), "Listener not found")
+    }
 
-	@Deprecated("Just for debugging")
-	override val registrations
-		get() = listeners
+    @Deprecated("Just for debugging")
+    override val registrations
+        get() = listeners
 
-	override fun pause(): Closeable {
-		paused = true
-		return Closeable { paused = false }
-	}
+    override fun pause(): Closeable {
+        paused = true
+        return Closeable { paused = false }
+    }
 
-	override fun resume() {
-		paused = false
-	}
+    override fun resume() {
+        paused = false
+    }
 }

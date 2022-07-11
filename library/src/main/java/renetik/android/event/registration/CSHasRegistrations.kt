@@ -1,12 +1,12 @@
-package renetik.android.event.registrations
+package renetik.android.event.registration
 
 import renetik.android.core.java.lang.isMain
 import renetik.android.core.lang.CSMainHandler.postOnMain
 import renetik.android.core.lang.CSMainHandler.removePosted
-import renetik.android.event.registration.CSFunctionRegistration
-import renetik.android.event.registration.CSRegistration
 
 interface CSHasRegistrations {
+    companion object
+
     val registrations: CSRegistrations
 
     // Is here to not call accidentally CSLater

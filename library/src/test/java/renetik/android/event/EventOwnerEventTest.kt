@@ -3,9 +3,9 @@ package renetik.android.event
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.registrations.CSHasRegistrationsHasDestroyBase
-import renetik.android.event.registrations.destroy
-import renetik.android.event.registrations.register
+import renetik.android.event.common.CSModel
+import renetik.android.event.common.destroy
+import renetik.android.event.registration.register
 
 /**
  * Event unregister after owner nulled
@@ -13,7 +13,7 @@ import renetik.android.event.registrations.register
 class EventOwnerEventTest {
     @Test
     fun testUnregisteredAfterNilled() {
-        val owner = CSHasRegistrationsHasDestroyBase()
+        val owner = CSModel()
         val event = event()
         var count = 0
         owner.register(event.listen { count += 1 })

@@ -3,7 +3,7 @@ package renetik.android.event
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import renetik.android.event.property.CSPropertyFunctions.lateProperty
+import renetik.android.event.property.CSProperty.Companion.lateProperty
 
 /**
  * Simple event property use cases

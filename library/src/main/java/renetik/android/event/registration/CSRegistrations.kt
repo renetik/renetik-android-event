@@ -1,8 +1,7 @@
-package renetik.android.event.registrations
+package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.collections.removeIf
-import renetik.android.event.registration.CSRegistration
 import java.lang.System.nanoTime
 
 class CSRegistrations {

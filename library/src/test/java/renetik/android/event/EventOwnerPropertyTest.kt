@@ -2,16 +2,16 @@ package renetik.android.event
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import renetik.android.event.registrations.CSHasRegistrationsHasDestroyBase
-import renetik.android.event.registrations.destroy
-import renetik.android.event.registrations.register
-import renetik.android.event.property.CSPropertyFunctions.property
+import renetik.android.event.common.CSModel
+import renetik.android.event.common.destroy
+import renetik.android.event.registration.register
+import renetik.android.event.property.CSProperty.Companion.property
 
 /**
  * Event property unregister after owner nulled
  */
 class EventOwnerPropertyTest {
-    class SomeClass(parent: SomeClass? = null) : CSHasRegistrationsHasDestroyBase(parent) {
+    class SomeClass(parent: SomeClass? = null) : CSModel(parent) {
         val string = property("initial value")
 
         init {

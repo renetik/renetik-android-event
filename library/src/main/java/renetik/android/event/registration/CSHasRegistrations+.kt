@@ -1,14 +1,11 @@
-package renetik.android.event.registrations
-
-import renetik.android.event.registration.CSRegistration
+package renetik.android.event.registration
 
 fun CSHasRegistrations.register(registration: CSRegistration) =
     registrations.add(registration)
 
-fun CSHasRegistrations.register(key: Any, registration: CSRegistration): CSRegistration {
-    registrations.add(key, registration)
-    return registration
-}
+fun CSHasRegistrations.register(
+    key: Any, registration: CSRegistration): CSRegistration =
+    registration.also { registrations.add(key, it) }
 
 fun CSHasRegistrations.cancel(registration: CSRegistration) =
     registration.also { registrations.cancel(it) }

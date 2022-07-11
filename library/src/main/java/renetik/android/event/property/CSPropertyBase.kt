@@ -2,13 +2,13 @@ package renetik.android.event.property
 
 import renetik.android.core.kotlin.run
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.registrations.CSHasRegistrationsHasDestroyBase
-import renetik.android.event.registrations.CSHasDestroy
+import renetik.android.event.common.CSModel
+import renetik.android.event.common.CSHasDestroy
 
 abstract class CSPropertyBase<T>(
     parent: CSHasDestroy? = null,
     val onChange: ((value: T) -> Unit)? = null)
-    : CSHasRegistrationsHasDestroyBase(parent), CSProperty<T> {
+    : CSModel(parent), CSProperty<T> {
 
     constructor(onApply: ((value: T) -> Unit)? = null)
             : this(parent = null, onChange = onApply)

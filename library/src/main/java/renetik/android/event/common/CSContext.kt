@@ -1,13 +1,16 @@
-package renetik.android.event.registrations
+package renetik.android.event.common
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
-import renetik.android.core.CSApplication.Companion.app
+import renetik.android.core.lang.CSEnvironment.app
+//import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.catchAllWarn
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.listenOnce
+import renetik.android.event.registration.CSRegistrations
+import renetik.android.event.registration.register
 
 abstract class CSContext : ContextWrapper, CSHasContext {
     constructor() : super(app)
