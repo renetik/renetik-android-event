@@ -21,8 +21,6 @@ interface CSEvent<T> {
 
 	fun listen(@UiThread function: (argument: T) -> Unit): CSRegistration
 
-	fun cancel(listener: CSEventListener<T>)
-
 	fun fire(argument: T)
 
 	fun clear()

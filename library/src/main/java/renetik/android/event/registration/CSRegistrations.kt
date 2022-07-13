@@ -11,14 +11,14 @@ class CSRegistrations {
     @Synchronized
     @AnyThread
     fun cancel() {
-        registrations.forEach { it.value.cancel() }
-        registrations.clear()
+        active = false
+        registrations.onEach { it.value.cancel() }.clear()
     }
 
     @Synchronized
     @AnyThread
     fun addAll(vararg registrations: CSRegistration): CSRegistrations {
-        registrations.forEach { add(it) }
+        registrations.onEach { add(it) }
         return this
     }
 
@@ -26,6 +26,7 @@ class CSRegistrations {
     @AnyThread
     fun add(registration: CSRegistration): CSRegistration {
         if (!registration.isActive) return registration
+        if (!active) return registration.apply(::cancel)
         registration.isActive = active
         registrations[nanoTime()] = registration
         return registration
@@ -35,6 +36,7 @@ class CSRegistrations {
     @AnyThread
     fun add(key: Any, registration: CSRegistration): CSRegistration {
         if (!registration.isActive) return registration
+        if (!active) return registration.apply(::cancel)
         registrations[key]?.cancel()
         registrations[key] = registration
         registration.isActive = active

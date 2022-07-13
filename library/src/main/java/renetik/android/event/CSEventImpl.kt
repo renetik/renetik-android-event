@@ -45,15 +45,15 @@ class CSEventImpl<T> : CSEvent<T> {
     override val isListened get() = listeners.hasItems
 
     internal inner class EventListenerImpl(
-        private val listener: (T) -> Unit) :
-        CSEventListener<T> {
-        override var isActive = true
+        private val listener: (T) -> Unit) : CSEventListener<T> {
         private var canceled = false
+        override var isActive = true
+
         override fun cancel() {
             if (canceled) return
-            isActive = false
-            cancel(this)
             canceled = true
+            isActive = false
+            remove(this)
         }
 
         override fun onEvent(argument: T) {
@@ -61,7 +61,7 @@ class CSEventImpl<T> : CSEvent<T> {
         }
     }
 
-    override fun cancel(listener: CSEventListener<T>) {
+    fun remove(listener: CSEventListener<T>) {
         val index = listeners.indexOf(listener)
         if (index >= 0) {
             if (running) toRemove.add(listener)

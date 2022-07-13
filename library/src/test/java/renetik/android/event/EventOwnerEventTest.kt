@@ -24,4 +24,15 @@ class EventOwnerEventTest {
         event.fire()
         assertEquals(count, 2)
     }
+
+    @Test
+    fun testOwnerDestroyed() {
+        val owner = CSModel().apply { destroy() }
+        val event = event()
+        var count = 0
+        owner.register(event.listen { count += 1 })
+        event.fire()
+        event.fire()
+        assertEquals(count, 0)
+    }
 }

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
 import renetik.android.core.lang.CSEnvironment.app
-//import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.catchAllWarn
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
@@ -13,11 +12,11 @@ import renetik.android.event.registration.CSRegistrations
 import renetik.android.event.registration.register
 
 abstract class CSContext : ContextWrapper, CSHasContext {
-    constructor() : super(app)
+    constructor() : this(app)
     constructor(context: Context) : super(context)
-    constructor(context: CSContext) : this(context as CSHasContext)
-    constructor(context: CSHasContext) : super(context.context) {
-        register(context.eventDestroy.listenOnce { onDestroy() })
+    constructor(csContext: CSContext) : this(csContext as CSHasContext)
+    constructor(hasContext: CSHasContext) : this(hasContext.context) {
+        register(hasContext.eventDestroy.listenOnce { onDestroy() })
     }
 
     final override val registrations = CSRegistrations()
@@ -26,10 +25,10 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         private set
 
     override fun onDestroy() {
-        registrations.cancel()
+        if (isDestroyed) return
         isDestroyed = true
         eventDestroy.fire().clear()
-//        fixInputMethodLeak() Was this good for something ?
+        registrations.cancel()
     }
 
     override val context: Context get() = this

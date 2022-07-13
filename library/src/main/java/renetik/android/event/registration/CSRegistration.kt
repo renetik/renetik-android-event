@@ -16,16 +16,6 @@ interface CSRegistration {
             registrations.onEach { it.isActive = true }
         }
 
-//        //TODO: Rename to CSRegistration
-//        @Deprecated("use fun CSRegistration(...")
-//        fun construct(onCancel: Func? = null) = object : CSRegistration {
-//            override var isActive = true
-//            override fun cancel() {
-//                isActive = false
-//                onCancel?.invoke()
-//            }
-//        }
-
         fun CSRegistration(onCancel: ArgFunc<CSRegistration>? = null) =
             object : CSRegistration {
                 override var isActive = true

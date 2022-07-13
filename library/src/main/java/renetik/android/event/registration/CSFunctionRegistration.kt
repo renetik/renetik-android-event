@@ -18,9 +18,4 @@ class CSFunctionRegistration(function: ArgFunc<CSRegistration>,
         isActive = false
         onCancel?.invoke(function)
     }
-
-    companion object {
-        fun CSFunctionRegistration(function: ArgFunc<CSRegistration>) =
-            CSFunctionRegistration(function, null)
-    }
 }
