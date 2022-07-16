@@ -1,9 +1,10 @@
 package renetik.android.event
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.registration.pause
+import renetik.android.event.registration.paused
 
 /**
  * Simple event use cases
@@ -16,7 +17,7 @@ class EventTest {
         event.listen { count += 1 }
         event.fire()
         event.fire()
-        assertEquals(count, 2)
+        assertEquals(2, count)
     }
 
     @Test
@@ -26,7 +27,7 @@ class EventTest {
         event.listen { count += it }
         event.fire(2)
         event.fire(3)
-        assertEquals(count, 5)
+        assertEquals(5, count)
     }
 
     @Test
@@ -36,7 +37,7 @@ class EventTest {
         event.listenOnce { count += 1 }
         event.fire()
         event.fire()
-        assertEquals(count, 1)
+        assertEquals(1, count)
     }
 
     @Test
@@ -46,7 +47,7 @@ class EventTest {
         event.listenOnce { count += 1 }
         event.fire()
         event.fire()
-        assertEquals(count, 1)
+        assertEquals(1, count)
     }
 
     @Test
@@ -60,7 +61,7 @@ class EventTest {
         event.fire()
         event.fire()
         event.fire()
-        assertEquals(count, 2)
+        assertEquals(2, count)
     }
 
     @Test
@@ -84,11 +85,23 @@ class EventTest {
         val event = event()
         var count = 0
         val registration = event.listen { count += 1 }
-        registration.pause { event.fire() }
-        assertEquals(count, 0)
+        registration.paused { event.fire() }
+        assertEquals(0, count)
         event.fire()
-        assertEquals(count, 1)
+        assertEquals(1, count)
+    }
+
+    @Test
+    fun testCancelWhilePaused() {
+        val event = event()
+        var count = 0
+        val registration = event.listen { count += 1 }
+        registration.paused {
+            event.fire()
+            registration.cancel()
+        }
+        event.fire()
+        assertEquals(0, count)
+        assertFalse(registration.isActive)
     }
 }
-
-

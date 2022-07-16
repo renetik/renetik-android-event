@@ -3,23 +3,23 @@ package renetik.android.event.registration
 import renetik.android.core.lang.Func
 import java.io.Closeable
 
-fun List<CSRegistration>.pause(function: Func) {
-    onEach { it.isActive = false }
+fun List<CSRegistration>.paused(function: Func) {
+    onEach { it.pause() }
     function()
-    onEach { it.isActive = true }
+    onEach { it.resume() }
 }
 
-fun CSRegistration.pause(): Closeable {
-    isActive = false
+fun CSRegistration.paused(function: Func) {
+    pause()
+    function()
+    resume()
+}
+
+fun CSRegistration.setActive(active: Boolean) {
+    if (active) resume() else pause()
+}
+
+fun CSRegistration.paused(): Closeable {
+    pause()
     return Closeable { resume() }
-}
-
-fun CSRegistration.pause(function: Func) {
-    isActive = false
-    function()
-    isActive = true
-}
-
-fun CSRegistration.resume() = apply {
-    isActive = true
 }

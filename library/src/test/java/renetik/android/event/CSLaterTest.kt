@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.shadows.ShadowLooper.runUiThreadTasks
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 import renetik.android.event.util.CSLater.later
 

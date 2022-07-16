@@ -1,20 +1,20 @@
 package renetik.android.event.registration
 
-fun CSHasRegistrations.register(registration: CSRegistration) =
+fun CSHasRegistrations.register(
+    registration: CSRegistration): CSRegistration =
     registrations.add(registration)
 
 fun CSHasRegistrations.register(
     key: Any, registration: CSRegistration): CSRegistration =
     registration.also { registrations.add(key, it) }
 
-fun CSHasRegistrations.cancel(registration: CSRegistration) =
+fun CSHasRegistrations.cancel(
+    registration: CSRegistration): CSRegistration =
     registration.also { registrations.cancel(it) }
 
-fun CSHasRegistrations.remove(registration: CSRegistration) =
-    registration.also { registrations.remove(it) }
-
 @JvmName("CSEventOwnerRegisterNullable")
-fun CSHasRegistrations.register(registration: CSRegistration?) =
+fun CSHasRegistrations.register(
+    registration: CSRegistration?): CSRegistration? =
     registration?.let { registrations.add(it) }
 
 @JvmName("CSEventOwnerCancelNullable")
@@ -27,7 +27,3 @@ fun CSHasRegistrations.cancel(vararg registrations: CSRegistration?) =
 fun CSHasRegistrations.cancel(registrations: List<CSRegistration>?) {
     registrations?.forEach { cancel(it) }
 }
-
-@JvmName("CSEventOwnerRemoveNullable")
-fun CSHasRegistrations.remove(registration: CSRegistration?) =
-    registration?.also { registrations.remove(it) }

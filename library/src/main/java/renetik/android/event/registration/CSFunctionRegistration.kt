@@ -7,15 +7,13 @@ fun CSFunctionRegistration(function: ArgFunc<CSRegistration>) =
     CSFunctionRegistration(function, null)
 
 class CSFunctionRegistration(function: ArgFunc<CSRegistration>,
-                             val onCancel: ArgFunc<Func>? = null) : CSRegistration {
-
-    override var isActive = true
-    val function: Func = {
-        if (isActive) function(this)
-    }
+                             val onCancel: ArgFunc<Func>? = null) : CSRegistrationImpl() {
+    val function: Func = { if (isActive) function(this) }
 
     override fun cancel() {
-        isActive = false
+        super.cancel()
         onCancel?.invoke(function)
     }
+
+    fun invoke() = function()
 }

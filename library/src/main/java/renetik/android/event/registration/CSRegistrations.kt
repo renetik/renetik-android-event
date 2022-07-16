@@ -2,63 +2,67 @@ package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.collections.removeIf
+import renetik.android.core.logging.CSLog.logWarn
 import java.lang.System.nanoTime
 
 class CSRegistrations {
-    private val registrations: MutableMap<Any, CSRegistration> = mutableMapOf()
-    private var active = true
+    val registrations: MutableMap<Any, CSRegistration> = mutableMapOf()
+    var isCanceled = false
+
+    private var idCount = 0
+    private fun createUniqId() = "$idCount: ${nanoTime()}".also { idCount++ }
 
     @Synchronized
     @AnyThread
     fun cancel() {
-        active = false
+        if (isCanceled) {
+            logWarn("Already canceled:$this")
+            return
+        }
+        isCanceled = true
         registrations.onEach { it.value.cancel() }.clear()
     }
 
     @Synchronized
     @AnyThread
-    fun addAll(vararg registrations: CSRegistration): CSRegistrations {
-        registrations.onEach { add(it) }
-        return this
-    }
-
-    @Synchronized
-    @AnyThread
     fun add(registration: CSRegistration): CSRegistration {
-        if (!registration.isActive) return registration
-        if (!active) return registration.apply(::cancel)
-        registration.isActive = active
-        registrations[nanoTime()] = registration
+        if (isCanceled) logWarn("Already canceled:$this")
+        if (registration.isCanceled) return registration
+        if (isCanceled) return registration.also { it.cancel() }
+        registrations[createUniqId()] = registration
         return registration
     }
 
     @Synchronized
     @AnyThread
     fun add(key: Any, registration: CSRegistration): CSRegistration {
-        if (!registration.isActive) return registration
-        if (!active) return registration.apply(::cancel)
+        if (isCanceled) logWarn("Already canceled:$this")
+        if (registration.isCanceled) return registration
+        if (isCanceled) return registration.also { it.cancel() }
         registrations[key]?.cancel()
         registrations[key] = registration
-        registration.isActive = active
         return registration
     }
 
     @Synchronized
     @AnyThread
     fun cancel(registration: CSRegistration) {
+        if (isCanceled) {
+            logWarn("Already canceled:$this")
+            return
+        }
         registration.cancel()
-        remove(registration)
+        if (!registrations.removeIf { _, value -> value == registration })
+            logWarn("Registration not found")
     }
 
     @Synchronized
     @AnyThread
-    fun remove(registration: CSRegistration) =
-        registrations.removeIf { _, value -> value == registration }
-
-    @Synchronized
-    @AnyThread
     fun setActive(active: Boolean) {
-        this.active = active
-        for (registration in registrations) registration.value.isActive = active
+        if (isCanceled) {
+            logWarn("Already canceled:$this")
+            return
+        }
+        registrations.forEach { it.value.setActive(active) }
     }
 }

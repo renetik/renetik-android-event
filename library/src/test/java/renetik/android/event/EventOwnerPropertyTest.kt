@@ -4,8 +4,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destroy
-import renetik.android.event.registration.register
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.registration.register
 
 /**
  * Event property unregister after owner nulled
@@ -24,11 +24,11 @@ class EventOwnerPropertyTest {
         val instance1 = SomeClass()
         val instance2 = SomeClass(instance1)
         val instance3 = SomeClass(instance2)
-        assertEquals(instance3.string.value, "initial value")
+        assertEquals("initial value", instance3.string.value)
         instance1.string.value = "first value"
-        assertEquals(instance3.string.value, "first value")
+        assertEquals("first value", instance3.string.value)
         instance2.destroy()
         instance1.string.value = "second value"
-        assertEquals(instance3.string.value, "first value")
+        assertEquals("first value", instance3.string.value)
     }
 }

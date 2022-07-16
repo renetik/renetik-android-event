@@ -4,21 +4,37 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 
 interface CSRegistration {
-    var isActive: Boolean
-    fun cancel() {
-        isActive = false
-    }
+    val isActive: Boolean
+    val isCanceled: Boolean
+    fun resume()
+    fun pause()
+    fun cancel()
 
     companion object {
         fun pause(vararg registrations: CSRegistration, function: Func) {
-            registrations.onEach { it.isActive = false }
+            registrations.onEach { it.pause() }
             function()
-            registrations.onEach { it.isActive = true }
+            registrations.onEach { it.resume() }
         }
 
-        fun CSRegistration(onCancel: ArgFunc<CSRegistration>? = null) =
-            object : CSRegistration {
-                override var isActive = true
+        fun CSRegistration(onResume: ArgFunc<CSRegistration>? = null,
+                           onPause: ArgFunc<CSRegistration>? = null,
+                           onCancel: ArgFunc<CSRegistration>? = null) =
+            object : CSRegistrationImpl() {
+                init {
+                    onResume?.invoke(this)
+                }
+
+                override fun pause() {
+                    super.pause()
+                    onPause?.invoke(this)
+                }
+
+                override fun resume() {
+                    super.resume()
+                    onResume?.invoke(this)
+                }
+
                 override fun cancel() {
                     super.cancel()
                     onCancel?.invoke(this)

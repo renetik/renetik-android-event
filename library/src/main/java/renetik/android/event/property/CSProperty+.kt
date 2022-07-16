@@ -7,7 +7,7 @@ import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.registration.CSMultiRegistration
 import renetik.android.event.registration.CSRegistration
-import renetik.android.event.registration.pause
+import renetik.android.event.registration.paused
 
 fun <T : CSProperty<*>> T.apply() = apply { fireChange() }
 
@@ -23,10 +23,10 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     value = property.value
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange: CSRegistration = onChange { value ->
-        propertyOnChange.pause().use { property.value = value }
+        propertyOnChange.paused() { property.value = value }
     }
     propertyOnChange = property.onChange { value ->
-        thisOnChange.pause().use { this.value = value }
+        thisOnChange.paused() { this.value = value }
     }
     return CSMultiRegistration(thisOnChange, propertyOnChange)
 }

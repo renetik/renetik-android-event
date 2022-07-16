@@ -19,10 +19,10 @@ class EventOwnerEventTest {
         owner.register(event.listen { count += 1 })
         event.fire()
         event.fire()
-        assertEquals(count, 2)
+        assertEquals(2, count)
         owner.destroy()
         event.fire()
-        assertEquals(count, 2)
+        assertEquals(2, count)
     }
 
     @Test
@@ -33,6 +33,7 @@ class EventOwnerEventTest {
         owner.register(event.listen { count += 1 })
         event.fire()
         event.fire()
-        assertEquals(count, 0)
+        assertEquals(0, count)
     }
+
 }

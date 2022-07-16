@@ -13,7 +13,7 @@ interface CSHasRegistrations {
     fun later(delayMilliseconds: Int, function: () -> Unit): CSRegistration {
         val registration = CSFunctionRegistration(function = {
             function()
-            remove(it)
+            cancel(it)
         }, onCancel = { removePosted(it) })
         register(registration)
         postOnMain(if (delayMilliseconds < 10) 10 else delayMilliseconds,

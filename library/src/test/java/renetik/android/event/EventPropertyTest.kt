@@ -7,7 +7,7 @@ import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.apply
 import renetik.android.event.property.onChange
 import renetik.android.event.property.onChangeOnce
-import renetik.android.event.registration.pause
+import renetik.android.event.registration.paused
 
 /**
  * Simple event property use cases
@@ -86,7 +86,7 @@ class EventPropertyTest {
         var changeCount = 0
         val property: CSProperty<Int> = property(0)
         val registration = property.onChange { changeCount += it }
-        registration.pause { property.value = 1 }
+        registration.paused { property.value = 1 }
         assertEquals(changeCount, 0)
         property.value = 2
         assertEquals(changeCount, 2)
