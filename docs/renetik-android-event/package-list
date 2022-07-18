@@ -2,7 +2,7 @@ $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:renetik.android.event.common////PointingToDeclaration/renetik-android-event/renetik.android.event.common/index.html
 $dokka.location:renetik.android.event.common//destroy/renetik.android.event.common.CSHasDestroy#/PointingToDeclaration/renetik-android-event/renetik.android.event.common/destroy.html
-$dokka.location:renetik.android.event.common//onDestroy/renetik.android.event.common.CSHasDestroy#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.common/on-destroy.html
+$dokka.location:renetik.android.event.common//onDestroy/renetik.android.event.common.CSHasRegistrationsHasDestroy#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.common/on-destroy.html
 $dokka.location:renetik.android.event.common/CSContext///PointingToDeclaration/renetik-android-event/renetik.android.event.common/-c-s-context/index.html
 $dokka.location:renetik.android.event.common/CSContext/CSContext/#/PointingToDeclaration/renetik-android-event/renetik.android.event.common/-c-s-context/-c-s-context.html
 $dokka.location:renetik.android.event.common/CSContext/CSContext/#android.content.Context/PointingToDeclaration/renetik-android-event/renetik.android.event.common/-c-s-context/-c-s-context.html
@@ -101,6 +101,7 @@ $dokka.location:renetik.android.event.registration//cancel/renetik.android.event
 $dokka.location:renetik.android.event.registration//cancel/renetik.android.event.registration.CSHasRegistrations#kotlin.collections.List[renetik.android.event.registration.CSRegistration]?/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/cancel.html
 $dokka.location:renetik.android.event.registration//cancel/renetik.android.event.registration.CSHasRegistrations#renetik.android.event.registration.CSRegistration/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/cancel.html
 $dokka.location:renetik.android.event.registration//cancel/renetik.android.event.registration.CSHasRegistrations#renetik.android.event.registration.CSRegistration?/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/cancel.html
+$dokka.location:renetik.android.event.registration//listenOnce/renetik.android.event.registration.CSHasRegistrations#renetik.android.event.CSEvent[TypeParam(bounds=[kotlin.Any?])]#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/listen-once.html
 $dokka.location:renetik.android.event.registration//paused/kotlin.collections.List[renetik.android.event.registration.CSRegistration]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/paused.html
 $dokka.location:renetik.android.event.registration//paused/renetik.android.event.registration.CSRegistration#/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/paused.html
 $dokka.location:renetik.android.event.registration//paused/renetik.android.event.registration.CSRegistration#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.registration/paused.html

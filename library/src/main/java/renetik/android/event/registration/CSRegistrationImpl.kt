@@ -1,6 +1,8 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
+import renetik.android.core.logging.CSLog.logError
+import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 
 open class CSRegistrationImpl : CSRegistration {
     override var isActive: Boolean = true
@@ -21,6 +23,10 @@ open class CSRegistrationImpl : CSRegistration {
     @Synchronized
     @AnyThread
     override fun cancel() {
+        if (isCanceled) {
+            logError { traceMessage("Already canceled:$this") }
+            return
+        }
         pause()
         isCanceled = true
     }

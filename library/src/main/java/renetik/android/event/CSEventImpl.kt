@@ -2,11 +2,10 @@ package renetik.android.event
 
 import renetik.android.core.kotlin.collections.hasItems
 import renetik.android.core.kotlin.collections.list
-import renetik.android.core.kotlin.exception
 import renetik.android.core.logging.CSLog.logError
+import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
-import java.io.Closeable
 
 class CSEventImpl<T> : CSEvent<T> {
     private val listeners = list<CSEventListener<T>>()
@@ -24,7 +23,7 @@ class CSEventImpl<T> : CSEvent<T> {
 
     override fun fire(argument: T) {
         if (paused) return
-        if (firing) logError(exception("Event fired while firing"))
+        if (firing) logError { traceMessage("Event fired while firing") }
         if (listeners.isEmpty()) return
 
         firing = true
@@ -55,12 +54,12 @@ class CSEventImpl<T> : CSEvent<T> {
         }
 
         override fun cancel() {
-            isActive = false
-            isCanceled = true
+            if (isCanceled) {
+                logError { traceMessage("Already canceled:$this") }
+                return
+            }
             super.cancel()
             remove(this)
-            isActive = false
-            isCanceled = true
         }
     }
 
@@ -69,7 +68,7 @@ class CSEventImpl<T> : CSEvent<T> {
         if (index >= 0) {
             if (firing) toRemove.add(listener)
             else listeners.removeAt(index)
-        } else logError(Throwable(), "Listener not found")
+        } else logError { traceMessage("Listener not found") }
     }
 
     override fun pause() {

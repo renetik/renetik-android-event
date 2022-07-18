@@ -3,9 +3,8 @@ package renetik.android.event.common
 import renetik.android.core.lang.CSAssociation
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
-import renetik.android.event.listenOnce
 import renetik.android.event.registration.CSRegistrations
-import renetik.android.event.registration.register
+import renetik.android.event.registration.listenOnce
 
 open class CSModel(
     parent: CSHasDestroy? = null) : CSHasRegistrationsHasDestroy {
@@ -14,7 +13,7 @@ open class CSModel(
     final override val registrations = CSRegistrations()
 
     init {
-        parent?.let { register(it.eventDestroy.listenOnce { onDestroy() }) }
+        parent?.let { listenOnce(it.eventDestroy) { onDestroy() } }
     }
 
     override fun onDestroy() {

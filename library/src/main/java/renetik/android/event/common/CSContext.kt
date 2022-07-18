@@ -8,9 +8,8 @@ import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.catchAllWarn
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
-import renetik.android.event.listenOnce
 import renetik.android.event.registration.CSRegistrations
-import renetik.android.event.registration.register
+import renetik.android.event.registration.listenOnce
 
 abstract class CSContext : ContextWrapper, CSHasContext {
     constructor() : super(app)
@@ -18,11 +17,11 @@ abstract class CSContext : ContextWrapper, CSHasContext {
 
     constructor(parent: CSContext) : this(parent.context) {
         if (parent.isDestroyed) unexpected()
-        register(parent.eventDestroy.listenOnce { onDestroy() })
+        listenOnce(parent.eventDestroy) { onDestroy() }
     }
 
     constructor(parent: CSHasContext) : this(parent.context) {
-        register(parent.eventDestroy.listenOnce { onDestroy() })
+        listenOnce(parent.eventDestroy) { onDestroy() }
     }
 
     final override val registrations = CSRegistrations()

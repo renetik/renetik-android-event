@@ -1,8 +1,9 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
-import renetik.android.core.kotlin.collections.removeIf
+import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.logging.CSLog.logWarn
+import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import java.lang.System.nanoTime
 
 class CSRegistrations {
@@ -16,7 +17,7 @@ class CSRegistrations {
     @AnyThread
     fun cancel() {
         if (isCanceled) {
-            logWarn("Already canceled:$this")
+            logWarn { traceMessage("Already canceled:$this") }
             return
         }
         isCanceled = true
@@ -26,7 +27,7 @@ class CSRegistrations {
     @Synchronized
     @AnyThread
     fun add(registration: CSRegistration): CSRegistration {
-        if (isCanceled) logWarn("Already canceled:$this")
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrations[createUniqId()] = registration
@@ -36,7 +37,7 @@ class CSRegistrations {
     @Synchronized
     @AnyThread
     fun add(key: Any, registration: CSRegistration): CSRegistration {
-        if (isCanceled) logWarn("Already canceled:$this")
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrations[key]?.cancel()
@@ -48,19 +49,24 @@ class CSRegistrations {
     @AnyThread
     fun cancel(registration: CSRegistration) {
         if (isCanceled) {
-            logWarn("Already canceled:$this")
+            logWarn { traceMessage("Already canceled:$this") }
+            return
+        }
+        if (registration.isCanceled) {
+            logWarn { traceMessage("Registration already canceled:$registration") }
+            registrations.removeValue(registration)
             return
         }
         registration.cancel()
-        if (!registrations.removeIf { _, value -> value == registration })
-            logWarn("Registration not found")
+        if (!registrations.removeValue(registration))
+            logWarn { traceMessage("Registration not found") }
     }
 
     @Synchronized
     @AnyThread
     fun setActive(active: Boolean) {
         if (isCanceled) {
-            logWarn("Already canceled:$this")
+            logWarn { traceMessage("Already canceled:$this") }
             return
         }
         registrations.forEach { it.value.setActive(active) }

@@ -6,8 +6,10 @@ import renetik.android.core.lang.Func
 fun CSFunctionRegistration(function: ArgFunc<CSRegistration>) =
     CSFunctionRegistration(function, null)
 
-class CSFunctionRegistration(function: ArgFunc<CSRegistration>,
-                             val onCancel: ArgFunc<Func>? = null) : CSRegistrationImpl() {
+class CSFunctionRegistration(
+    function: ArgFunc<CSRegistration>,
+    val onCancel: ArgFunc<Func>? = null) : CSRegistrationImpl() {
+
     val function: Func = { if (isActive) function(this) }
 
     override fun cancel() {
