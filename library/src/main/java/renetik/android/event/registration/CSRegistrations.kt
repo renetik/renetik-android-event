@@ -7,7 +7,7 @@ import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import java.lang.System.nanoTime
 
 class CSRegistrations {
-    val registrations: MutableMap<Any, CSRegistration> = mutableMapOf()
+    val registrations: MutableMap<String, CSRegistration> = mutableMapOf()
     var isCanceled = false
 
     private var idCount = 0
@@ -26,7 +26,7 @@ class CSRegistrations {
 
     @Synchronized
     @AnyThread
-    fun add(registration: CSRegistration): CSRegistration {
+    fun register(registration: CSRegistration): CSRegistration {
         if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
@@ -36,13 +36,30 @@ class CSRegistrations {
 
     @Synchronized
     @AnyThread
-    fun add(key: Any, registration: CSRegistration): CSRegistration {
+    fun register(replace: CSRegistration?, registration: CSRegistration): CSRegistration {
+        replace?.let(::cancel)
+        return register(registration)
+    }
+
+    @Synchronized
+    @AnyThread
+    fun register(key: String, registration: CSRegistration?): CSRegistration? {
         if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        registrations.remove(key)?.cancel()
+        if (registration == null) return null
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
-        registrations[key]?.cancel()
         registrations[key] = registration
         return registration
+    }
+
+    @Synchronized
+    @AnyThread
+    fun cancel(key: String) {
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        registrations.remove(key)?.cancel() ?: logWarn {
+            traceMessage("Registration not found:$this")
+        }
     }
 
     @Synchronized

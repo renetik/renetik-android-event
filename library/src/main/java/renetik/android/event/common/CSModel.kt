@@ -1,6 +1,8 @@
 package renetik.android.event.common
 
+
 import renetik.android.core.lang.CSAssociation
+import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistrations
@@ -18,6 +20,7 @@ open class CSModel(
     override fun onDestroy() {
         registrations.cancel()
         eventDestroy.fire().clear()
+        expectWeaklyReachable("Model $this onDestroy")
     }
 }
 

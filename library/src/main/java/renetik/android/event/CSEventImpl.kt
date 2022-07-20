@@ -3,6 +3,7 @@ package renetik.android.event
 import renetik.android.core.kotlin.collections.hasItems
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.logging.CSLog.logError
+import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
@@ -55,7 +56,7 @@ class CSEventImpl<T> : CSEvent<T> {
 
         override fun cancel() {
             if (isCanceled) {
-                logError { traceMessage("Already canceled:$this") }
+                logWarn { traceMessage("Already canceled:$this") }
                 return
             }
             super.cancel()
@@ -68,7 +69,7 @@ class CSEventImpl<T> : CSEvent<T> {
         if (index >= 0) {
             if (firing) toRemove.add(listener)
             else listeners.removeAt(index)
-        } else logError { traceMessage("Listener not found") }
+        } else logWarn { traceMessage("Listener not found") }
     }
 
     override fun pause() {
