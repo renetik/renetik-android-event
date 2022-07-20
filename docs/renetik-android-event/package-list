@@ -2,7 +2,8 @@ $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:renetik.android.event.common////PointingToDeclaration/renetik-android-event/renetik.android.event.common/index.html
 $dokka.location:renetik.android.event.common//destroy/renetik.android.event.common.CSHasDestroy#/PointingToDeclaration/renetik-android-event/renetik.android.event.common/destroy.html
-$dokka.location:renetik.android.event.common//onDestroy/renetik.android.event.common.CSHasRegistrationsHasDestroy#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.common/on-destroy.html
+$dokka.location:renetik.android.event.common//onDestroy/TypeParam(bounds=[renetik.android.event.registration.CSHasRegistrations, renetik.android.event.common.CSHasDestroy])#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.common/on-destroy.html
+$dokka.location:renetik.android.event.common//parent/TypeParam(bounds=[renetik.android.event.registration.CSHasRegistrations, renetik.android.event.common.CSHasDestroy])#renetik.android.event.common.CSHasDestroy/PointingToDeclaration/renetik-android-event/renetik.android.event.common/parent.html
 $dokka.location:renetik.android.event.common/CSContext///PointingToDeclaration/renetik-android-event/renetik.android.event.common/-c-s-context/index.html
 $dokka.location:renetik.android.event.common/CSContext/CSContext/#/PointingToDeclaration/renetik-android-event/renetik.android.event.common/-c-s-context/-c-s-context.html
 $dokka.location:renetik.android.event.common/CSContext/CSContext/#android.content.Context/PointingToDeclaration/renetik-android-event/renetik.android.event.common/-c-s-context/-c-s-context.html
@@ -78,7 +79,7 @@ $dokka.location:renetik.android.event.property/CSPropertyImpl/CSPropertyImpl/#Ty
 $dokka.location:renetik.android.event.property/CSPropertyImpl/value/#/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-impl/value.html
 $dokka.location:renetik.android.event.property/CSPropertyImpl/value/#TypeParam(bounds=[kotlin.Any?])#kotlin.Boolean/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-impl/value.html
 $dokka.location:renetik.android.event.property/CSPropertyWrapper///PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-wrapper/index.html
-$dokka.location:renetik.android.event.property/CSPropertyWrapper/CSPropertyWrapper/#/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-wrapper/-c-s-property-wrapper.html
+$dokka.location:renetik.android.event.property/CSPropertyWrapper/CSPropertyWrapper/#renetik.android.event.common.CSHasDestroy?/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-wrapper/-c-s-property-wrapper.html
 $dokka.location:renetik.android.event.property/CSPropertyWrapper/fireChange/#/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-wrapper/fire-change.html
 $dokka.location:renetik.android.event.property/CSPropertyWrapper/onChange/#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-wrapper/on-change.html
 $dokka.location:renetik.android.event.property/CSPropertyWrapper/value/#/PointingToDeclaration/renetik-android-event/renetik.android.event.property/-c-s-property-wrapper/value.html
