@@ -17,26 +17,23 @@ interface CSRegistration {
             registrations.onEach { it.resume() }
         }
 
-        fun CSRegistration(onResume: ArgFunc<CSRegistration>? = null,
+        fun CSRegistration(isActive: Boolean = false,
+                           onResume: ArgFunc<CSRegistration>? = null,
                            onPause: ArgFunc<CSRegistration>? = null,
                            onCancel: ArgFunc<CSRegistration>? = null) =
-            object : CSRegistrationImpl() {
-                init {
+            object : CSRegistrationImpl(isActive) {
+                override fun onResume() {
+                    super.onResume()
                     onResume?.invoke(this)
                 }
 
-                override fun pause() {
-                    super.pause()
+                override fun onPause() {
+                    super.onPause()
                     onPause?.invoke(this)
                 }
 
-                override fun resume() {
-                    super.resume()
-                    onResume?.invoke(this)
-                }
-
-                override fun cancel() {
-                    super.cancel()
+                override fun onCancel() {
+                    super.onCancel()
                     onCancel?.invoke(this)
                 }
             }

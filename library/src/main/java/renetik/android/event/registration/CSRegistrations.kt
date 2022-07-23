@@ -7,7 +7,7 @@ import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import java.lang.System.nanoTime
 
 class CSRegistrations {
-    val registrations: MutableMap<String, CSRegistration> = mutableMapOf()
+    private val registrations: MutableMap<String, CSRegistration> = mutableMapOf()
     var isCanceled = false
 
     private var idCount = 0
@@ -37,7 +37,7 @@ class CSRegistrations {
     @Synchronized
     @AnyThread
     fun register(replace: CSRegistration?, registration: CSRegistration): CSRegistration {
-        replace?.let(::cancel)
+        replace?.let { cancel(it) }
         return register(registration)
     }
 
@@ -45,7 +45,7 @@ class CSRegistrations {
     @AnyThread
     fun register(key: String, registration: CSRegistration?): CSRegistration? {
         if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
-        registrations.remove(key)?.cancel()
+        remove(key)
         if (registration == null) return null
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
@@ -57,26 +57,27 @@ class CSRegistrations {
     @AnyThread
     fun cancel(key: String) {
         if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
-        registrations.remove(key)?.cancel() ?: logWarn {
-            traceMessage("Registration not found:$this")
-        }
+        remove(key)
     }
+
+    private fun remove(key: String) = registrations.remove(key)?.cancel()
 
     @Synchronized
     @AnyThread
     fun cancel(registration: CSRegistration) {
-        if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
-            return
-        }
         if (registration.isCanceled) {
             logWarn { traceMessage("Registration already canceled:$registration") }
             registrations.removeValue(registration)
             return
         }
         registration.cancel()
-        if (!registrations.removeValue(registration))
-            logWarn { traceMessage("Registration not found") }
+        if (!registrations.removeValue(registration)) logWarn {
+            traceMessage("Registration not found")
+        }
+        if (isCanceled) {
+            logWarn { traceMessage("Already canceled:$this") }
+            return
+        }
     }
 
     @Synchronized
@@ -88,4 +89,6 @@ class CSRegistrations {
         }
         registrations.forEach { it.value.setActive(active) }
     }
+
+    val size: Int get() = registrations.size
 }

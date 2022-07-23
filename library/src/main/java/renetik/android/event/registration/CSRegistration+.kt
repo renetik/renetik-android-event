@@ -23,3 +23,7 @@ fun CSRegistration.paused(): Closeable {
     pause()
     return Closeable { resume() }
 }
+
+val CSRegistration.isResumed get() = isActive
+val CSRegistration.isPaused get() = !isActive
+fun CSRegistration.start() = apply { resume() }

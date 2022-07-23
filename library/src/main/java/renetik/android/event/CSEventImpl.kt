@@ -2,6 +2,7 @@ package renetik.android.event
 
 import renetik.android.core.kotlin.collections.hasItems
 import renetik.android.core.kotlin.collections.list
+import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
@@ -48,20 +49,9 @@ class CSEventImpl<T> : CSEvent<T> {
 
     inner class EventListenerImpl(
         private val listener: (T) -> Unit)
-        : CSEventListener<T>, CSRegistrationImpl() {
-
-        override fun invoke(argument: T) {
-            if (isActive) listener(argument)
-        }
-
-        override fun cancel() {
-            if (isCanceled) {
-                logWarn { traceMessage("Already canceled:$this") }
-                return
-            }
-            super.cancel()
-            remove(this)
-        }
+        : CSEventListener<T>, CSRegistrationImpl(isActive = true) {
+        override fun invoke(argument: T) = isActive.isTrue { listener(argument) }
+        override fun onCancel() = remove(this)
     }
 
     fun remove(listener: CSEventListener<T>) {

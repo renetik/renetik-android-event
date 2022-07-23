@@ -5,7 +5,6 @@ import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
-import renetik.android.event.registration.CSMultiRegistration
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
 
@@ -19,6 +18,9 @@ fun <T> CSProperty<T>.onChange(function: (CSRegistration, T) -> Unit): CSRegistr
     return registration
 }
 
+fun <T> CSProperty<T>.onChange(function: () -> Unit): CSRegistration =
+    onChange { function() }
+
 fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     value = property.value
     lateinit var propertyOnChange: CSRegistration
@@ -28,7 +30,7 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     propertyOnChange = property.onChange { value ->
         thisOnChange.paused() { this.value = value }
     }
-    return CSMultiRegistration(thisOnChange, propertyOnChange)
+    return CSRegistration(thisOnChange, propertyOnChange)
 }
 
 fun <T> CSProperty<T?>.clear() = value(null)

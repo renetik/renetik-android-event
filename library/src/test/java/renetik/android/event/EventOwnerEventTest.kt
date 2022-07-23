@@ -1,7 +1,10 @@
 package renetik.android.event
 
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
+import renetik.android.core.logging.CSDummyLogger
+import renetik.android.core.logging.CSLog
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destroy
@@ -11,6 +14,10 @@ import renetik.android.event.registration.register
  * Event unregister after owner nulled
  */
 class EventOwnerEventTest {
+
+    @Before
+    fun before() = CSLog.init(CSDummyLogger())
+
     @Test
     fun testUnregisteredAfterNilled() {
         val owner = CSModel()

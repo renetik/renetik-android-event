@@ -10,9 +10,6 @@ android {
         targetSdkVersion project.properties.sdk_version
     }
     testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
         unitTests.all {
             testLogging {
                 outputs.upToDateWhen { false }
@@ -54,9 +51,6 @@ task sourceJar(type: Jar) {
 }
 dokkaHtml {
     outputDirectory = file("${projectDir}/../docs")
-    dokkaSourceSets {
-        configureEach {
-            includes.from("../README.md")
-        }
-    }
+    dokkaSourceSets { configureEach { includes.from("../README.md") } }
 }
+afterEvaluate { rootProject.onAfterEvaluate(project, tasks) }

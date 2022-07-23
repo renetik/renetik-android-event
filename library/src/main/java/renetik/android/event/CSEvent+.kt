@@ -6,8 +6,12 @@ import renetik.android.event.registration.CSRegistration
 
 fun CSEvent<Unit>.fire() = apply { fire(Unit) }
 
+@JvmName("listenNoArg")
+fun CSEvent<*>.listen(@UiThread function: Func): CSRegistration =
+    listen { _, _ -> function() }
+
 inline fun CSEvent<Unit>.listen(
-    @UiThread crossinline function: () -> Unit) = listen { _, _ -> function() }
+    @UiThread crossinline function: Func) = listen { _, _ -> function() }
 
 inline fun CSEvent<*>.action(
     @UiThread crossinline function: () -> Unit): CSRegistration {

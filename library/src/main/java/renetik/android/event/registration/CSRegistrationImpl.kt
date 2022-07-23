@@ -4,30 +4,51 @@ import androidx.annotation.AnyThread
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 
-open class CSRegistrationImpl : CSRegistration {
-    override var isActive: Boolean = true
+open class CSRegistrationImpl(
+    override var isActive: Boolean = false) : CSRegistration {
     override var isCanceled: Boolean = false
 
     @Synchronized
     @AnyThread
-    override fun pause() {
-        isActive = false
-    }
-
-    @Synchronized
-    @AnyThread
-    override fun resume() {
-        if (!isCanceled) isActive = true
-    }
-
-    @Synchronized
-    @AnyThread
-    override fun cancel() {
+    final override fun resume() {
         if (isCanceled) {
             logWarn { traceMessage("Already canceled:$this") }
             return
         }
-        pause()
-        isCanceled = true
+        if (isPaused) {
+            isActive = true
+            onResume()
+        } else logWarn { traceMessage("Already resume:$this") }
     }
+
+    open fun onResume() = Unit
+
+    @Synchronized
+    @AnyThread
+    final override fun pause() {
+        if (isCanceled) {
+            logWarn { traceMessage("Already canceled:$this") }
+            return
+        }
+        if (isActive) {
+            isActive = false
+            onPause()
+        } else logWarn { traceMessage("Already pause:$this") }
+    }
+
+    open fun onPause() = Unit
+
+    @Synchronized
+    @AnyThread
+    final override fun cancel() {
+        if (isCanceled) {
+            logWarn { traceMessage("Already canceled:$this") }
+            return
+        }
+        if (isActive) pause()
+        isCanceled = true
+        onCancel()
+    }
+
+    open fun onCancel() = Unit
 }

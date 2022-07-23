@@ -12,12 +12,15 @@ open class CSModel(
     val associated = CSAssociation()
     override val eventDestroy = event<Unit>()
     final override val registrations = CSRegistrations()
+    var isDestroyed = false
+        private set
 
     init {
         parent?.let { parent(it) }
     }
 
     override fun onDestroy() {
+        isDestroyed = true
         registrations.cancel()
         eventDestroy.fire().clear()
         expectWeaklyReachable("Model $this onDestroy")
