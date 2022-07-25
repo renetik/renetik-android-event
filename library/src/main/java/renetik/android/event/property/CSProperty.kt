@@ -10,28 +10,28 @@ interface CSProperty<T> : CSVariable<T> {
 
     companion object {
         fun <T> property(
-            value: T, onApply: ((value: T) -> Unit)? = null): CSProperty<T> =
-            CSPropertyImpl(value, onApply)
+            value: T, onChange: ((value: T) -> Unit)? = null): CSProperty<T> =
+            CSPropertyImpl(value, onChange)
 
         fun <T> property(
-            onApply: ((value: T?) -> Unit)? = null): CSProperty<T?> =
-            CSPropertyImpl(null, onApply)
+            onChange: ((value: T?) -> Unit)? = null): CSProperty<T?> =
+            CSPropertyImpl(null, onChange)
 
         fun <T> synchronizedProperty(
-            value: T, onApply: ((value: T) -> Unit)? = null): CSSynchronizedProperty<T> =
-            CSSynchronizedPropertyImpl(value, onApply)
+            value: T, onChange: ((value: T) -> Unit)? = null): CSSynchronizedProperty<T> =
+            CSSynchronizedPropertyImpl(value, onChange)
 
         fun <T> synchronizedProperty(
-            property: CSProperty<T>, onApply: ((value: T) -> Unit)? = null)
-                : CSSynchronizedProperty<T> =
-            synchronizedProperty(property.value, onApply).apply { connect(property) }
+            property: CSProperty<T>,
+            onChange: ((value: T) -> Unit)? = null): CSSynchronizedProperty<T> =
+            synchronizedProperty(property.value, onChange).apply { connect(property) }
 
         fun <T> lateProperty(
-            onApply: ((value: T) -> Unit)? = null): CSLateProperty<T> =
-            CSLateProperty(onApply)
+            onChange: ((value: T) -> Unit)? = null): CSLateProperty<T> =
+            CSLateProperty(onChange)
 
         fun <T> nullableProperty(
-            onApply: ((value: T?) -> Unit)? = null): CSProperty<T?> =
-            CSPropertyImpl(null, onApply)
+            onChange: ((value: T?) -> Unit)? = null): CSProperty<T?> =
+            CSPropertyImpl(null, onChange)
     }
 }

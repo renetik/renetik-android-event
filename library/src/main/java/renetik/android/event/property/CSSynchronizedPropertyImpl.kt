@@ -1,8 +1,8 @@
 package renetik.android.event.property
 
 class CSSynchronizedPropertyImpl<T>(
-    value: T, onApply: ((value: T) -> Unit)? = null)
-    : CSPropertyBase<T>(onApply), CSSynchronizedProperty<T> {
+    value: T, onChange: ((value: T) -> Unit)? = null)
+    : CSPropertyBase<T>(onChange), CSSynchronizedProperty<T> {
 
     @get:Synchronized
     private var _value: T = value

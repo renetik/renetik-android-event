@@ -3,6 +3,11 @@ package renetik.android.event.common
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
+import renetik.android.core.extensions.app.fixInputMethod
+import renetik.android.core.extensions.app.fixInputMethodLeak
+import renetik.android.core.extensions.app.fixInputMethodManagerLeak
+import renetik.android.core.extensions.app.fixInputMethodManagerLeak2
+import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.lang.catchAllWarn
@@ -22,10 +27,10 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         parent(parent)
     }
 
+    final override val context: Context get() = this
+    val associated = CSAssociations()
     final override val registrations = CSRegistrations()
-
-    override val eventDestroy = event<Unit>()
-
+    final override val eventDestroy = event<Unit>()
     var isDestroyed = false
         private set
 
@@ -36,7 +41,6 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         expectWeaklyReachable("CSContext $this onDestroy")
     }
 
-    override val context: Context get() = this
 
     override fun unregisterReceiver(receiver: BroadcastReceiver) =
         catchAllWarn { super.unregisterReceiver(receiver) }
