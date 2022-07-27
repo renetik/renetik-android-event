@@ -25,7 +25,7 @@ class CSEventImpl<T> : CSEvent<T> {
 
     override fun fire(argument: T) {
         if (paused) return
-        if (firing) logError { traceMessage("Event fired while firing") }
+        if (firing) logWarn { traceMessage("Event fired while firing") }
         if (listeners.isEmpty()) return
 
         firing = true
