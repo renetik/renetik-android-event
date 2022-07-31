@@ -3,10 +3,6 @@ package renetik.android.event.common
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
-import renetik.android.core.extensions.app.fixInputMethod
-import renetik.android.core.extensions.app.fixInputMethodLeak
-import renetik.android.core.extensions.app.fixInputMethodManagerLeak
-import renetik.android.core.extensions.app.fixInputMethodManagerLeak2
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
