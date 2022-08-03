@@ -2,8 +2,8 @@ package renetik.android.event.property
 
 import renetik.android.core.kotlin.run
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSModel
 import renetik.android.event.common.CSHasDestroy
+import renetik.android.event.common.CSModel
 
 abstract class CSPropertyBase<T>(
     parent: CSHasDestroy? = null,
@@ -27,7 +27,9 @@ abstract class CSPropertyBase<T>(
     }
 
     open fun onValueChanged(newValue: T, fire: Boolean = true) {
-        onChange?.invoke(newValue)
-        if (fire) eventChange.fire(newValue)
+        if (fire) {
+            onChange?.invoke(newValue)
+            eventChange.fire(newValue)
+        }
     }
 }

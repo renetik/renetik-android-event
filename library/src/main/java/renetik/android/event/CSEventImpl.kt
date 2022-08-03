@@ -59,7 +59,7 @@ class CSEventImpl<T> : CSEvent<T> {
         if (index >= 0) {
             if (firing) toRemove.add(listener)
             else listeners.removeAt(index)
-        } else logWarn { traceMessage("Listener not found") }
+        } else logWarn { traceMessage("Listener $listener not found") }
     }
 
     override fun pause() {

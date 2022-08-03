@@ -6,7 +6,7 @@ import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import java.lang.System.nanoTime
 
-class CSRegistrations {
+class CSRegistrations(val parent: Any) {
     private val registrations: MutableMap<String, CSRegistration> = mutableMapOf()
     var isCanceled = false
 
@@ -17,7 +17,7 @@ class CSRegistrations {
     @AnyThread
     fun cancel() {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarn { traceMessage("Already canceled:$parent") }
             return
         }
         isCanceled = true
@@ -26,27 +26,29 @@ class CSRegistrations {
 
     @Synchronized
     @AnyThread
-    fun register(registration: CSRegistration): CSRegistration {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
-        if (registration.isCanceled) return registration
-        if (isCanceled) return registration.also { it.cancel() }
-        registrations[createUniqId()] = registration
-        return registration
-    }
-
-    @Synchronized
-    @AnyThread
-    fun register(replace: CSRegistration?, registration: CSRegistration): CSRegistration {
-        replace?.let { cancel(it) }
-        return register(registration)
-    }
-
-    @Synchronized
-    @AnyThread
     fun register(key: String, registration: CSRegistration?): CSRegistration? {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$parent") }
         remove(key)
-        if (registration == null) return null
+        return registration?.let { add(key, it) }
+    }
+
+    @Synchronized
+    @AnyThread
+    fun register(replace: CSRegistration?, registration: CSRegistration?): CSRegistration? {
+        if (isCanceled) logWarn { traceMessage("Already canceled:$parent") }
+        replace?.let { cancel(it) }
+        return registration?.let { add(createUniqId(), it) }
+    }
+
+    @Synchronized
+    @AnyThread
+    fun register(registration: CSRegistration): CSRegistration =
+        add(createUniqId(), registration)
+
+    @Synchronized
+    @AnyThread
+    private fun add(key: String, registration: CSRegistration): CSRegistration {
+        if (isCanceled) logWarn { traceMessage("Already canceled:$parent") }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrations[key] = registration
@@ -56,7 +58,7 @@ class CSRegistrations {
     @Synchronized
     @AnyThread
     fun cancel(key: String) {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$parent") }
         remove(key)
     }
 
@@ -75,7 +77,7 @@ class CSRegistrations {
             traceMessage("Registration not found")
         }
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarn { traceMessage("Already canceled:$parent") }
             return
         }
     }
@@ -84,7 +86,7 @@ class CSRegistrations {
     @AnyThread
     fun setActive(active: Boolean) {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarn { traceMessage("Already canceled:$parent") }
             return
         }
         registrations.forEach { it.value.setActive(active) }

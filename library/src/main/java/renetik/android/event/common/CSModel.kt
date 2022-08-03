@@ -10,9 +10,9 @@ import renetik.android.event.registration.CSRegistrations
 open class CSModel(
     parent: CSHasDestroy? = null) : CSHasRegistrationsHasDestroy {
 
-    val associated = CSAssociations()
-    final override val registrations = CSRegistrations()
-    final override val eventDestroy = event<Unit>()
+    val associated by lazy { CSAssociations() }
+    final override val registrations by lazy { CSRegistrations(this) }
+    final override val eventDestroy by lazy { event<Unit>() }
     var isDestroyed = false
         private set
 
