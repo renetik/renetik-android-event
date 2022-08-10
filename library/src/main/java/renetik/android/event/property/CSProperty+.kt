@@ -2,9 +2,13 @@ package renetik.android.event.property
 
 import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
+import renetik.android.event.CSEvent
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
 
@@ -97,3 +101,30 @@ fun <T : CSProperty<Int>> T.keepMax(maxValue: Int, fire: Boolean = true) = apply
 
 fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
     property.action { value = it }
+
+fun <T> CSProperty<T>.eventBoolean(condition: (T) -> Boolean): CSEvent<Boolean> {
+    val event = event<Boolean>()
+    var value = condition(value)
+    onChange {
+        val newValue = condition(it)
+        if (value != newValue) {
+            event.fire(newValue)
+            value = newValue
+        }
+    }
+    return event
+}
+
+fun <T> CSProperty<T>.propertyBoolean(
+    from: (T) -> Boolean, to: (Boolean) -> T,
+    onChange: ArgFunc<Boolean>? = null): CSProperty<Boolean> {
+    val property: CSProperty<Boolean> = property(from(value), onChange)
+    lateinit var propertyOnChange: CSRegistration
+    val thisOnChange = onChange {
+        propertyOnChange.paused { property.value = from(value) }
+    }
+    propertyOnChange = property.onChange {
+        thisOnChange.paused { value = to(it) }
+    }
+    return property
+}

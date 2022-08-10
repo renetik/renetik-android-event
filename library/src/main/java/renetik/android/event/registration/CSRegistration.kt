@@ -3,6 +3,8 @@ package renetik.android.event.registration
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 
+// TODO: ActivityRegistration vs Registration
+
 interface CSRegistration {
     val isActive: Boolean
     val isCanceled: Boolean

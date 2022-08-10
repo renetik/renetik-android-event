@@ -18,7 +18,7 @@ fun List<CSRegistration>.paused(function: Func) {
 fun CSRegistration.paused(function: Func) {
     pause()
     function()
-    resume()
+    if (!isCanceled) resume()
 }
 
 fun CSRegistration.setActive(active: Boolean) {

@@ -5,6 +5,7 @@ import renetik.android.core.kotlin.collections.list
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logWarn
+import renetik.android.core.logging.CSLogMessage.Companion.message
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
@@ -43,7 +44,10 @@ class CSEventImpl<T> : CSEvent<T> {
         }
     }
 
-    override fun clear() = listeners.clear()
+    override fun clear() {
+        if (firing) logError { message("firing") }
+        listeners.clear()
+    }
 
     override val isListened get() = listeners.hasItems
 
