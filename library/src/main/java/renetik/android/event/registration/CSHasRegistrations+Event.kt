@@ -43,7 +43,7 @@ fun CSHasRegistrations.later(
 }
 
 fun CSHasRegistrations.laterEach(
-    interval: Int, delay: Int = 0, function: () -> Unit): CSRegistration {
+    interval: Int, delay: Int = interval, function: () -> Unit): CSRegistration {
     val registration = CSFunctionRegistration(function = {
         function()
         postOnMain(interval, it.function)
