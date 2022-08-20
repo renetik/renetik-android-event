@@ -33,7 +33,8 @@ open class CSRegistrationImpl(
         if (isActive) {
             isActive = false
             onPause()
-        } else logWarn { traceMessage("Already pause:$this") }
+        } else
+            logWarn { traceMessage("Already pause:$this") }
     }
 
     open fun onPause() = Unit

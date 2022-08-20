@@ -6,7 +6,7 @@ import java.io.Closeable
 fun CSRegistration(vararg registrations: CSRegistration) = CSRegistration.CSRegistration(
     isActive = true,
     onResume = { registrations.forEach { it.resume() } },
-    onPause = { registrations.forEach { it.pause() } },
+    onPause = { registrations.forEach { if (it.isActive) it.pause() } },
     onCancel = { registrations.forEach { it.cancel() } })
 
 fun List<CSRegistration>.paused(function: Func) {
