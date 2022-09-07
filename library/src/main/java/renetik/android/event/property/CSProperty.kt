@@ -17,15 +17,6 @@ interface CSProperty<T> : CSVariable<T> {
             onChange: ((value: T?) -> Unit)? = null): CSProperty<T?> =
             CSPropertyImpl(null, onChange)
 
-//        fun <T> synchronizedProperty(
-//            value: T, onChange: ((value: T) -> Unit)? = null): CSSynchronizedProperty<T> =
-//            CSSynchronizedPropertyImpl(parent = null, value, onChange)
-
-//        fun <T> synchronizedProperty(
-//            property: CSProperty<T>,
-//            onChange: ((value: T) -> Unit)? = null): CSSynchronizedProperty<T> =
-//            synchronizedProperty(property.value, onChange).apply { connect(property) }
-
         fun <T> lateProperty(
             onChange: ((value: T) -> Unit)? = null): CSLateProperty<T> =
             CSLateProperty(onChange)
