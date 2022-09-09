@@ -17,6 +17,7 @@ class CSEventImpl<T> : CSEvent<T> {
     private var firing = false
     private var paused = false
 
+    @Synchronized
     override fun listen(function: (T) -> Unit): CSRegistration {
         val listener = EventListenerImpl(function)
         if (firing) toAdd.add(listener)
@@ -24,6 +25,7 @@ class CSEventImpl<T> : CSEvent<T> {
         return listener
     }
 
+    @Synchronized
     override fun fire(argument: T) {
         if (paused) return
         if (firing) logWarn { traceMessage("Event fired while firing") }
@@ -44,6 +46,7 @@ class CSEventImpl<T> : CSEvent<T> {
         }
     }
 
+    @Synchronized
     override fun clear() {
         if (firing) logError { message("firing") }
         listeners.clear()
@@ -54,22 +57,25 @@ class CSEventImpl<T> : CSEvent<T> {
     inner class EventListenerImpl(
         private val listener: (T) -> Unit)
         : CSEventListener<T>, CSRegistrationImpl(isActive = true) {
+
         override fun invoke(argument: T) = isActive.isTrue { listener(argument) }
-        override fun onCancel() = remove(this)
+
+        override fun onCancel() {
+            synchronized(this@CSEventImpl) {
+                val index = listeners.indexOf(this)
+                if (index >= 0) {
+                    if (firing) toRemove.add(this) else listeners.removeAt(index)
+                } else logWarn { traceMessage("Listener $this not found") }
+            }
+        }
     }
 
-    fun remove(listener: CSEventListener<T>) {
-        val index = listeners.indexOf(listener)
-        if (index >= 0) {
-            if (firing) toRemove.add(listener)
-            else listeners.removeAt(index)
-        } else logWarn { traceMessage("Listener $listener not found") }
-    }
-
+    @Synchronized
     override fun pause() {
         paused = true
     }
 
+    @Synchronized
     override fun resume() {
         paused = false
     }

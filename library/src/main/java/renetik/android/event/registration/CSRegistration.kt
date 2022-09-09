@@ -1,15 +1,21 @@
 package renetik.android.event.registration
 
+import androidx.annotation.AnyThread
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 
 // TODO: ActivityRegistration vs Registration
-
 interface CSRegistration {
     val isActive: Boolean
     val isCanceled: Boolean
+
+    @AnyThread
     fun resume()
+
+    @AnyThread
     fun pause()
+
+    @AnyThread
     fun cancel()
 
     companion object {
