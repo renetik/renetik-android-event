@@ -20,7 +20,7 @@ abstract class CSPropertyBase<T>(
     override fun toString() = super.toString() + "$value"
 
     override fun fireChange() {
-        value?.run {
+        value?.run {  //TODO: why value?.run{ ca be also value.let{
             onChange?.invoke(it)
             eventChange.fire(it)
         }
