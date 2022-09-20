@@ -1,6 +1,5 @@
 package renetik.android.event.property
 
-import renetik.android.core.kotlin.run
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestroy
 import renetik.android.event.common.CSModel
@@ -19,17 +18,12 @@ abstract class CSPropertyBase<T>(
 
     override fun toString() = super.toString() + "$value"
 
-    override fun fireChange() {
-        value?.run {  //TODO: why value?.run{ ca be also value.let{
-            onChange?.invoke(it)
-            eventChange.fire(it)
-        }
+    override fun fireChange() = value.let {
+        onChange?.invoke(it)
+        eventChange.fire(it)
     }
 
     open fun onValueChanged(newValue: T, fire: Boolean = true) {
-        if (fire) {
-            onChange?.invoke(newValue)
-            eventChange.fire(newValue)
-        }
+        if (fire) fireChange()
     }
 }
