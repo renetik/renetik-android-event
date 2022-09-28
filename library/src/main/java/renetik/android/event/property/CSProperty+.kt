@@ -8,7 +8,9 @@ import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.CSEvent
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.common.CSHasDestroy
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.common.update
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
 
@@ -128,3 +130,7 @@ fun <T> CSProperty<T>.propertyBoolean(
     }
     return property
 }
+
+fun <Item : CSHasDestroy> CSProperty<Int>.updates(
+    list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
+    action { value -> list.update(value, function) }
