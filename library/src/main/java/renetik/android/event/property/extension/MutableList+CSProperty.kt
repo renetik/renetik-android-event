@@ -9,7 +9,9 @@ import renetik.android.event.registration.CSRegistration
 
 fun <Item : CSHasDestroy> CSProperty<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
-    action { value ->
-        list.size.update(value, onAdd = { index -> list.add(function(index)) },
-            onRemove = { index -> list.removeAt(index).destroy() })
-    }
+    action { value -> list.update(value, function) }
+
+fun <Item : CSHasDestroy> MutableList<Item>.update(
+    value: Int, function: (index: Int) -> Item) = size.update(value,
+    onAdd = { index -> add(function(index)) },
+    onRemove = { index -> removeAt(index).destroy() })
