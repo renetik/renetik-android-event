@@ -131,6 +131,22 @@ fun <T> CSProperty<T>.propertyBoolean(
     return property
 }
 
+
+fun <T,V> CSProperty<T>.propertyComputed(
+    from: (T) -> V, to: (V) -> T,
+    onChange: ArgFunc<V>? = null): CSProperty<V> {
+    val property: CSProperty<V> = property(from(value), onChange)
+    lateinit var propertyOnChange: CSRegistration
+    val thisOnChange = onChange {
+        propertyOnChange.paused { property.value = from(value) }
+    }
+    propertyOnChange = property.onChange {
+        thisOnChange.paused { value = to(it) }
+    }
+    return property
+}
+
+
 fun <Item : CSHasDestroy> CSProperty<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
     action { value -> list.update(value, function) }
