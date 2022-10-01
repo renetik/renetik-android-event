@@ -9,8 +9,8 @@ import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.CSEvent
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestroy
-import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.common.update
+import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
 
@@ -31,10 +31,10 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     value = property.value
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange: CSRegistration = onChange { value ->
-        propertyOnChange.paused() { property.value = value }
+        propertyOnChange.paused { property.value = value }
     }
     propertyOnChange = property.onChange { value ->
-        thisOnChange.paused() { this.value = value }
+        thisOnChange.paused { this.value = value }
     }
     return CSRegistration(thisOnChange, propertyOnChange)
 }
@@ -79,7 +79,7 @@ fun CSProperty<Boolean>.listenUntilTrueOnce(
     registration = onChange { argument: Boolean ->
         if (argument) {
             registration.cancel()
-            listener(argument)
+            listener(true)
         }
     }
     return registration
@@ -91,7 +91,7 @@ fun CSProperty<Boolean>.listenUntilFalseOnce(
     registration = onChange { argument: Boolean ->
         if (!argument) {
             registration.cancel()
-            listener(argument)
+            listener(false)
         }
     }
     return registration
@@ -131,8 +131,7 @@ fun <T> CSProperty<T>.propertyBoolean(
     return property
 }
 
-
-fun <T,V> CSProperty<T>.propertyComputed(
+fun <T, V> CSProperty<T>.propertyComputed(
     from: (T) -> V, to: (V) -> T,
     onChange: ArgFunc<V>? = null): CSProperty<V> {
     val property: CSProperty<V> = property(from(value), onChange)
@@ -146,7 +145,10 @@ fun <T,V> CSProperty<T>.propertyComputed(
     return property
 }
 
-
 fun <Item : CSHasDestroy> CSProperty<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
     action { value -> list.update(value, function) }
+
+operator fun CSProperty<List<Int>>.set(index: Int, newValue: Int) {
+    value = value.toMutableList().also { it[index] = newValue }
+}

@@ -9,15 +9,15 @@ class CSSynchronizedPropertyImpl<T>(
     : CSPropertyBase<T>(parent, onChange), CSSynchronizedProperty<T> {
 
     @get:Synchronized
-    private var _value: T = value
+    private var field: T = value
 
     override fun value(newValue: T, fire: Boolean): Unit = synchronized(this) {
-        if (_value == newValue) return
-        _value = newValue
+        if (field == newValue) return
+        field = newValue
         onMain { onValueChanged(newValue) }
     }
 
     override var value: T
-        get() = _value
+        get() = this.field
         set(value) = value(value)
 }
