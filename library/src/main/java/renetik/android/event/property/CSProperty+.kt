@@ -97,25 +97,8 @@ fun CSProperty<Boolean>.listenUntilFalseOnce(
     return registration
 }
 
-//fun <T : CSProperty<Int>> T.keepMax(maxValue: Int, fire: Boolean = true) = apply {
-//    action { if (value > maxValue) value(maxValue, fire) }
-//}
-
 fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
     property.action { value = it }
-
-fun <T> CSProperty<T>.eventBoolean(condition: (T) -> Boolean): CSEvent<Boolean> {
-    val event = event<Boolean>()
-    var value = condition(value)
-    onChange {
-        val newValue = condition(it)
-        if (value != newValue) {
-            event.fire(newValue)
-            value = newValue
-        }
-    }
-    return event
-}
 
 fun <T> CSProperty<T>.propertyBoolean(
     from: (T) -> Boolean, to: (Boolean) -> T,

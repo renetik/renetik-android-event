@@ -1,9 +1,10 @@
 package renetik.android.event
 
 import androidx.annotation.UiThread
+import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSRegistration
 
-interface CSEvent<T> {
+interface CSEvent<T> : CSHasChange<T> {
 
     companion object {
         @JvmName("eventWithArgument")

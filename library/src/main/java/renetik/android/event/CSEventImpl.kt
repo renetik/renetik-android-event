@@ -3,6 +3,7 @@ package renetik.android.event
 import renetik.android.core.kotlin.collections.hasItems
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.void
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.message
@@ -79,4 +80,7 @@ class CSEventImpl<T> : CSEvent<T> {
     override fun resume() {
         paused = false
     }
+
+    override fun onChange(function: (T) -> void): CSRegistration =
+        listen(function)
 }
