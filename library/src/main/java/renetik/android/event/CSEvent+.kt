@@ -28,7 +28,7 @@ inline fun <T> CSEvent<T>.listen(
 }
 
 inline fun <T> CSEvent<T>.listenOnce(
-    @UiThread crossinline listener: (argument: T) -> Unit) =
+    @UiThread crossinline listener: (argument: T) -> Unit): CSRegistration =
     listen { registration, argument ->
         registration.cancel()
         listener(argument)

@@ -22,6 +22,20 @@ inline fun CSHasChange<void>.action(crossinline function: () -> void): CSRegistr
     return onChange(function)
 }
 
+inline fun <Argument> CSHasChange<Argument>.onChange(
+    crossinline function: (CSRegistration, Argument) -> void): CSRegistration {
+    lateinit var registration: CSRegistration
+    registration = onChange { function(registration, it) }
+    return registration
+}
+
+inline fun <Argument> CSHasChange<Argument>.onChange(
+    crossinline function: (CSRegistration) -> void): CSRegistration {
+    lateinit var registration: CSRegistration
+    registration = onChange { function(registration) }
+    return registration
+}
+
 inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
     crossinline listener: (Argument) -> void): CSRegistration {
     var registration: CSRegistration by variable()
