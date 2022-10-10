@@ -4,7 +4,7 @@ import androidx.annotation.AnyThread
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 
-interface CSRegistration {
+interface CSRegistration : CSHasCancel {
     val isActive: Boolean
     val isCanceled: Boolean
 
@@ -15,7 +15,7 @@ interface CSRegistration {
     fun pause()
 
     @AnyThread
-    fun cancel()
+    override fun cancel()
 
     companion object {
         fun pause(vararg registrations: CSRegistration, function: Func) {

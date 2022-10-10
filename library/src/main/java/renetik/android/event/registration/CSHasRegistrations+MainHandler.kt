@@ -27,7 +27,7 @@ fun CSHasRegistrations.laterEach(
     return registration
 }
 
-fun CSHasRegistrations.later(function: () -> Unit) = later(10, function)
+fun CSHasRegistrations.later(function: () -> Unit) = later(0, function)
 
 fun <T : CSHasRegistrations> T.onMain(function: (T).() -> Unit): CSRegistration? =
     if (currentThread.isMain) {
