@@ -1,6 +1,7 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
+import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
@@ -11,7 +12,7 @@ class CSRegistrations(val parent: Any) {
     var isCanceled = false
 
     private var idCount = 0
-    private fun createUniqId() = "$idCount: ${nanoTime()}".also { idCount++ }
+    private fun createUniqId() = "$idCount: $nanoTime".also { idCount++ }
 
     @Synchronized
     @AnyThread
