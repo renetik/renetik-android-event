@@ -4,15 +4,6 @@ fun CSHasRegistrations.register(
     registration: CSRegistration): CSRegistration =
     registrations.register(registration)
 
-@JvmName("registerReplaceKeyRegistrationNullable")
-fun CSHasRegistrations.register(
-    key: String, registration: CSRegistration?): CSRegistration? =
-    registrations.register(key, registration)
-
-fun CSHasRegistrations.register(
-    key: String, registration: CSRegistration): CSRegistration =
-    registration.also { registrations.register(key, registration) }
-
 @JvmName("registerReplaceRegistrationNullable")
 fun CSHasRegistrations.register(
     replace: CSRegistration?, registration: CSRegistration?): CSRegistration? =
@@ -34,9 +25,6 @@ fun CSHasRegistrations.register(
 @JvmName("CSEventOwnerCancelNullable")
 fun CSHasRegistrations.cancel(registration: CSRegistration?) =
     registration?.let { registrations.cancel(it) }
-
-@JvmName("CSEventOwnerCancelNullable")
-fun CSHasRegistrations.cancel(key: String) = registrations.cancel(key)
 
 fun CSHasRegistrations.cancel(vararg registrations: CSRegistration?) =
     registrations.forEach { cancel(it) }

@@ -7,13 +7,13 @@ import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.message
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
-import renetik.android.event.registration.CSRegistrations
+import renetik.android.event.registration.CSRegistrationsMap
 
 open class CSModel(
     parent: CSHasDestroy? = null) : CSHasRegistrationsHasDestroy {
 
     val associated by lazy { CSAssociations() }
-    final override val registrations by lazy { CSRegistrations(this) }
+    final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestroy by lazy { event<Unit>() }
     var isDestroyed = false
         private set
