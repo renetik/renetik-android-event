@@ -3,6 +3,8 @@ package renetik.android.event.common
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
+import renetik.android.core.kotlin.className
+import renetik.android.core.kotlin.unexpected
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
@@ -31,6 +33,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         private set
 
     override fun onDestroy() {
+        if (isDestroyed) unexpected("$className $this Already destroyed")
         isDestroyed = true
         registrations.cancel()
         eventDestroy.fire().clear()

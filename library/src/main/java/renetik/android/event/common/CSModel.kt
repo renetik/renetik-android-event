@@ -1,6 +1,7 @@
 package renetik.android.event.common
 
 
+import renetik.android.core.kotlin.className
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logWarn
@@ -30,7 +31,7 @@ open class CSModel(
         isDestroyed = true
         registrations.cancel()
         eventDestroy.fire().clear()
-        expectWeaklyReachable("Model $this onDestroy")
+        expectWeaklyReachable("$className $this onDestroy")
     }
 }
 

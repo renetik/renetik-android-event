@@ -62,6 +62,7 @@ class CSEventImpl<T> : CSEvent<T> {
         override fun invoke(argument: T) = isActive.isTrue { listener(argument) }
 
         override fun onCancel() {
+            super.onCancel()
             synchronized(this@CSEventImpl) {
                 val index = listeners.indexOf(this)
                 if (index >= 0) {

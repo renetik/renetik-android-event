@@ -2,9 +2,9 @@ package renetik.android.event.property
 
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.registration.CSHasChange
-import renetik.android.event.registration.CSRegistration
+import renetik.android.event.registration.CSHasChangeValue
 
-interface CSProperty<T> : CSVariable<T>, CSHasChange<T> {
+interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
     fun value(newValue: T, fire: Boolean = true)
     fun fireChange()
 

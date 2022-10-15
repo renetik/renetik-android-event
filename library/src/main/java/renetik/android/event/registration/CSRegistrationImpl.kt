@@ -49,6 +49,9 @@ open class CSRegistrationImpl(
         if (isActive) pause()
         isCanceled = true
         onCancel()
+//TODO: this will be probably leaking for now
+// as it can stan in registrations list after canceled
+// expectWeaklyReachable("$className $this cancel")
     }
 
     open fun onCancel() = Unit

@@ -6,26 +6,14 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
-import renetik.android.event.CSEvent
-import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestroy
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
 
 fun <T : CSProperty<*>> T.apply() = apply { fireChange() }
-
-fun <T> CSProperty<T>.onChange(function: (CSRegistration, T) -> Unit): CSRegistration {
-    lateinit var registration: CSRegistration
-    registration = onChange {
-        function(registration, it)
-    }
-    return registration
-}
-
-fun <T> CSProperty<T>.onChange(function: () -> Unit): CSRegistration =
-    onChange { function() }
 
 fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     value = property.value
@@ -40,31 +28,29 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
 }
 
 fun <T> CSProperty<T?>.clear() = value(null)
-val <T> CSProperty<T?>.isEmpty get() = value == null
-val <T> CSProperty<T?>.isSet get() = !isEmpty
 
-fun <T> CSProperty<T>.action(function: (T) -> Unit): CSRegistration {
+fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
     function(value)
     return onChange(function)
 }
 
-fun CSProperty<Boolean>.onFalse(function: () -> Unit) =
+fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
     onChange { if (it.isFalse) function() }
 
-fun CSProperty<Boolean>.onTrue(function: () -> Unit) =
+fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit) =
     onChange { if (it.isTrue) function() }
 
-fun CSProperty<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
+fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
     if (isTrue) function()
     return onTrue(function)
 }
 
-fun CSProperty<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
+fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
     if (isFalse) function()
     return onFalse(function)
 }
 
-fun <T> CSProperty<T>.onChangeOnce(listener: (argument: T) -> Unit): CSRegistration {
+fun <T> CSHasChangeValue<T>.onChangeOnce(listener: (argument: T) -> Unit): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { argument: T ->
         registration.cancel()
@@ -73,7 +59,7 @@ fun <T> CSProperty<T>.onChangeOnce(listener: (argument: T) -> Unit): CSRegistrat
     return registration
 }
 
-fun CSProperty<Boolean>.listenUntilTrueOnce(
+fun CSHasChangeValue<Boolean>.listenUntilTrueOnce(
     listener: (argument: Boolean) -> Unit): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { argument: Boolean ->
@@ -85,7 +71,7 @@ fun CSProperty<Boolean>.listenUntilTrueOnce(
     return registration
 }
 
-fun CSProperty<Boolean>.listenUntilFalseOnce(
+fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
     listener: (argument: Boolean) -> Unit): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { argument: Boolean ->
@@ -128,7 +114,14 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
-fun <Item : CSHasDestroy> CSProperty<Int>.updates(
+fun <T, V> CSProperty<T>.valueComputed(
+    from: (T) -> V, onChange: ArgFunc<V>? = null): CSHasChangeValue<V> {
+    val property: CSProperty<V> = property(from(value), onChange)
+    onChange { property.value = from(value) }
+    return property
+}
+
+fun <Item : CSHasDestroy> CSHasChangeValue<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
     action { value -> list.update(value, function) }
 
