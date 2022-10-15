@@ -28,15 +28,15 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     final override val context: Context get() = this
     val associated by lazy { CSAssociations() }
     final override val registrations by lazy { CSRegistrationsMap(this) }
-    final override val eventDestroy by lazy { event<Unit>() }
-    final override var isDestroyed = false
+    final override val eventDestruct by lazy { event<Unit>() }
+    final override var isDestructed = false
         private set
 
-    override fun onDestroy() {
-        if (isDestroyed) unexpected("$className $this Already destroyed")
-        isDestroyed = true
+    override fun onDestruct() {
+        if (isDestructed) unexpected("$className $this Already destroyed")
+        isDestructed = true
         registrations.cancel()
-        eventDestroy.fire().clear()
+        eventDestruct.fire().clear()
         expectWeaklyReachable("CSContext $this onDestroy")
     }
 

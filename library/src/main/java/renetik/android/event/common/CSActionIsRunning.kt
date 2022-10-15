@@ -10,7 +10,7 @@ import renetik.android.event.property.CSPropertyWrapper
 import renetik.android.event.registration.register
 
 class CSActionIsRunning(
-    parent: CSHasDestroy,
+    parent: CSHasDestruct,
     vararg actions: CSActionInterface)
     : CSPropertyWrapper<Boolean>(parent) {
     override val property = property(false)

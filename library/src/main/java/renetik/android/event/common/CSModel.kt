@@ -11,26 +11,26 @@ import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistrationsMap
 
 open class CSModel(
-    parent: CSHasDestroy? = null) : CSHasRegistrationsHasDestroy {
+    parent: CSHasDestruct? = null) : CSHasRegistrationsHasDestroy {
 
     val associated by lazy { CSAssociations() }
     final override val registrations by lazy { CSRegistrationsMap(this) }
-    final override val eventDestroy by lazy { event<Unit>() }
-    final override var isDestroyed = false
+    final override val eventDestruct by lazy { event<Unit>() }
+    final override var isDestructed = false
         private set
 
     init {
         parent?.let { parent(it) }
     }
 
-    override fun onDestroy() {
-        if (isDestroyed) {
+    override fun onDestruct() {
+        if (isDestructed) {
             logWarn { message("Already destroyed: $this") }
             return
         }
-        isDestroyed = true
+        isDestructed = true
         registrations.cancel()
-        eventDestroy.fire().clear()
+        eventDestruct.fire().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
 }

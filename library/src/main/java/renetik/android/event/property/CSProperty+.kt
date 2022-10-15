@@ -6,7 +6,7 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
-import renetik.android.event.common.CSHasDestroy
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue
@@ -121,7 +121,7 @@ fun <T, V> CSProperty<T>.valueComputed(
     return property
 }
 
-fun <Item : CSHasDestroy> CSHasChangeValue<Int>.updates(
+fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
     action { value -> list.update(value, function) }
 

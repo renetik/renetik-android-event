@@ -30,8 +30,8 @@ class CSHeadsetAudioPlugDetector(
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestruct() {
+        super.onDestruct()
         unregisterReceiver(receiver)
     }
 }

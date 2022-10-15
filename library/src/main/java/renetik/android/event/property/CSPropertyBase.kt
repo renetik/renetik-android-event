@@ -1,11 +1,11 @@
 package renetik.android.event.property
 
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSHasDestroy
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
 
 abstract class CSPropertyBase<T>(
-    parent: CSHasDestroy? = null,
+    parent: CSHasDestruct? = null,
     val onChange: ((value: T) -> Unit)? = null)
     : CSModel(parent), CSProperty<T> {
 
