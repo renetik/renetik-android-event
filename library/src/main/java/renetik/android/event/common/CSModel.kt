@@ -16,7 +16,7 @@ open class CSModel(
     val associated by lazy { CSAssociations() }
     final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestroy by lazy { event<Unit>() }
-    var isDestroyed = false
+    final override var isDestroyed = false
         private set
 
     init {
