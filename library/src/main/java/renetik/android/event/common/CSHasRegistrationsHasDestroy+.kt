@@ -5,5 +5,5 @@ import renetik.android.event.registration.listenOnce
 
 fun <T> T.parent(parent: CSHasDestruct)
         where  T : CSHasRegistrations, T : CSHasDestruct = apply {
-    listenOnce(parent.eventDestruct) { destroy() }
+    listenOnce(parent.eventDestruct) { destruct() }
 }

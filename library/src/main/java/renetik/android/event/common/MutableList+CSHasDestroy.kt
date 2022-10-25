@@ -5,7 +5,7 @@ import renetik.android.core.kotlin.primitives.update
 fun <Item : CSHasDestruct> MutableList<Item>.update(
     value: Int, function: (index: Int) -> Item) = size.update(value,
     onAdd = { index -> add(function(index)) },
-    onRemove = { index -> removeAt(index).destroy() })
+    onRemove = { index -> removeAt(index).destruct() })
 
 fun <Item : CSHasDestruct> MutableList<Item>.updateOnAdd(
     value: Int, function: (index: Int) -> Item) = size.update(value,

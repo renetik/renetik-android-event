@@ -7,7 +7,7 @@ import renetik.android.core.logging.CSDummyLogger
 import renetik.android.core.logging.CSLog
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSModel
-import renetik.android.event.common.destroy
+import renetik.android.event.common.destruct
 import renetik.android.event.registration.register
 
 /**
@@ -27,14 +27,14 @@ class EventOwnerEventTest {
         event.fire()
         event.fire()
         assertEquals(2, count)
-        owner.destroy()
+        owner.destruct()
         event.fire()
         assertEquals(2, count)
     }
 
     @Test
     fun testOwnerDestroyed() {
-        val owner = CSModel().apply { destroy() }
+        val owner = CSModel().apply { destruct() }
         val event = event()
         var count = 0
         owner.register(event.listen { count += 1 })
