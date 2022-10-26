@@ -5,7 +5,8 @@ import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 
-class CSRegistrationsList(val parent: Any) : CSRegistrations, CSHasRegistrations {
+class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
+    private val id by lazy { "$parent" }
     override val registrations: CSRegistrations = this
     private val registrationList = mutableListOf<CSRegistration>()
     override var isActive by variable(true, ::onActiveChange)
@@ -13,7 +14,7 @@ class CSRegistrationsList(val parent: Any) : CSRegistrations, CSHasRegistrations
 
     private fun onActiveChange(isActive: Boolean) {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$parent") }
+            logWarn { traceMessage("Already canceled:$id") }
             return
         }
         registrationList.forEach { it.setActive(isActive) }
@@ -43,7 +44,7 @@ class CSRegistrationsList(val parent: Any) : CSRegistrations, CSHasRegistrations
     @AnyThread
     override fun cancel() {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$parent") }
+            logWarn { traceMessage("Already canceled:$id") }
             return
         }
         isCanceled = true
@@ -54,7 +55,7 @@ class CSRegistrationsList(val parent: Any) : CSRegistrations, CSHasRegistrations
     @AnyThread
     override fun register(replace: CSRegistration?,
                           registration: CSRegistration?): CSRegistration? {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$parent") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$id") }
         replace?.let { cancel(it) }
         return registration?.let(::add)
     }
@@ -66,7 +67,7 @@ class CSRegistrationsList(val parent: Any) : CSRegistrations, CSHasRegistrations
     @Synchronized
     @AnyThread
     private fun add(registration: CSRegistration): CSRegistration {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$parent") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$id") }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationList.add(registration)
@@ -86,7 +87,7 @@ class CSRegistrationsList(val parent: Any) : CSRegistrations, CSHasRegistrations
             traceMessage("Registration not found")
         }
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$parent") }
+            logWarn { traceMessage("Already canceled:$id") }
             return
         }
     }
