@@ -42,16 +42,10 @@ open class CSRegistrationImpl(
     @Synchronized
     @AnyThread
     final override fun cancel() {
-        if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
-            return
-        }
+        if (isCanceled) return
         if (isActive) pause()
         isCanceled = true
         onCancel()
-//TODO: this will be probably leaking for now
-// as it can stan in registrations list after canceled
-// expectWeaklyReachable("$className $this cancel")
     }
 
     open fun onCancel() = Unit

@@ -1,8 +1,7 @@
 package renetik.android.event.registration
 
-fun CSHasRegistrations.register(
-    registration: CSRegistration): CSRegistration =
-    registrations.register(registration)
+fun <T : CSRegistration> CSHasRegistrations.register(
+    registration: T): T = registration.also { registrations.register(it) }
 
 @JvmName("registerReplaceRegistrationNullable")
 fun CSHasRegistrations.register(
