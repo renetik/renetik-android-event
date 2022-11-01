@@ -7,18 +7,18 @@ import renetik.android.core.lang.CSMainHandler.removePosted
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun CSHasRegistrations.later(
-    delay: Int, function: () -> Unit): CSRegistration {
+    after: Int, function: () -> Unit): CSRegistration {
     val registration = CSFunctionRegistration(function = {
         cancel(it)
         function()
     }, onCancel = { removePosted(it.function) })
     register(registration)
-    postOnMain(if (delay < 10) 10 else delay, registration.function)
+    postOnMain(if (after < 10) 10 else after, registration.function)
     return CSRegistration { cancel(registration) }
 }
 
 fun CSHasRegistrations.laterEach(
-    interval: Int, delay: Int = interval,
+    interval: Int, after: Int = interval,
     function: (CSRegistration) -> Unit): CSRegistration {
     lateinit var functionRegistration: CSFunctionRegistration
     val outerRegistration = CSRegistration { cancel(functionRegistration) }
@@ -26,7 +26,7 @@ fun CSHasRegistrations.laterEach(
         function(outerRegistration)
         postOnMain(interval, it.function)
     }, onCancel = { removePosted(it.function) }))
-    postOnMain(delay, functionRegistration.function)
+    postOnMain(after, functionRegistration.function)
     return outerRegistration
 }
 
