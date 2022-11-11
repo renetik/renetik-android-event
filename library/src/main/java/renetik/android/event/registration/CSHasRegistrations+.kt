@@ -25,9 +25,6 @@ fun CSHasRegistrations.register(
 fun CSHasRegistrations.cancel(registration: CSRegistration?) =
     registration?.let { registrations.cancel(it) }
 
-fun CSHasRegistrations.cancel(vararg registrations: CSRegistration?) =
-    registrations.forEach { cancel(it) }
-
 fun CSHasRegistrations.cancel(registrations: List<CSRegistration>?) {
     registrations?.forEach { cancel(it) }
 }

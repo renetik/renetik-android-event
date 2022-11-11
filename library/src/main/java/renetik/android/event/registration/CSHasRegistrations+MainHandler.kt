@@ -1,5 +1,6 @@
 package renetik.android.event.registration
 
+import android.view.View
 import renetik.android.core.java.lang.CSThread.currentThread
 import renetik.android.core.java.lang.isMain
 import renetik.android.core.lang.CSBackground.backgroundRepeat
