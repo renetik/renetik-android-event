@@ -1,12 +1,9 @@
 package renetik.android.event.registration
 
-import android.view.View
 import renetik.android.core.java.lang.CSThread.currentThread
 import renetik.android.core.java.lang.isMain
-import renetik.android.core.lang.CSBackground.backgroundRepeat
 import renetik.android.core.lang.CSMainHandler.postOnMain
 import renetik.android.core.lang.CSMainHandler.removePosted
-import renetik.android.event.common.CSHasRegistrationsHasDestroy
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun CSHasRegistrations.later(
