@@ -6,6 +6,7 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.CSVariable
+import renetik.android.core.lang.void
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty.Companion.property
@@ -110,6 +111,20 @@ fun <T, V> CSProperty<T>.propertyComputed(
     }
     propertyOnChange = property.onChange {
         thisOnChange.paused { value = to(it) }
+    }
+    return property
+}
+
+fun <T, V> CSProperty<T>.propertyComputed(
+    get: (T) -> V, set: (CSProperty<T>, V) -> void,
+    onChange: ArgFunc<V>? = null): CSProperty<V> {
+    val property: CSProperty<V> = property(get(value), onChange)
+    lateinit var propertyOnChange: CSRegistration
+    val thisOnChange = onChange {
+        propertyOnChange.paused { property.value = get(value) }
+    }
+    propertyOnChange = property.onChange {
+        thisOnChange.paused { set(this, it) }
     }
     return property
 }
