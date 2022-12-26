@@ -61,7 +61,8 @@ fun <T> CSHasChangeValue<T>.onChangeOnce(listener: (argument: T) -> Unit): CSReg
 }
 
 fun CSHasChangeValue<Boolean>.listenUntilTrueOnce(
-    listener: (argument: Boolean) -> Unit): CSRegistration {
+    listener: (argument: Boolean) -> Unit
+): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { argument: Boolean ->
         if (argument) {
@@ -73,7 +74,8 @@ fun CSHasChangeValue<Boolean>.listenUntilTrueOnce(
 }
 
 fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
-    listener: (argument: Boolean) -> Unit): CSRegistration {
+    listener: (argument: Boolean) -> Unit
+): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { argument: Boolean ->
         if (!argument) {
@@ -89,7 +91,8 @@ fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
 
 fun <T> CSProperty<T>.propertyBoolean(
     from: (T) -> Boolean, to: (Boolean) -> T,
-    onChange: ArgFunc<Boolean>? = null): CSProperty<Boolean> {
+    onChange: ArgFunc<Boolean>? = null
+): CSProperty<Boolean> {
     val property: CSProperty<Boolean> = property(from(value), onChange)
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange = onChange {
@@ -103,7 +106,8 @@ fun <T> CSProperty<T>.propertyBoolean(
 
 fun <T, V> CSProperty<T>.propertyComputed(
     from: (T) -> V, to: (V) -> T,
-    onChange: ArgFunc<V>? = null): CSProperty<V> {
+    onChange: ArgFunc<V>? = null
+): CSProperty<V> {
     val property: CSProperty<V> = property(from(value), onChange)
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange = onChange {
@@ -117,7 +121,8 @@ fun <T, V> CSProperty<T>.propertyComputed(
 
 fun <T, V> CSProperty<T>.propertyComputed(
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
-    onChange: ArgFunc<V>? = null): CSProperty<V> {
+    onChange: ArgFunc<V>? = null
+): CSProperty<V> {
     val property: CSProperty<V> = property(get(value), onChange)
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange = onChange {
@@ -129,15 +134,34 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
+@Deprecated("Use ifValue")
 fun <T, V> CSProperty<T>.valueComputed(
-    from: (T) -> V, onChange: ArgFunc<V>? = null): CSHasChangeValue<V> {
+    from: (T) -> V, onChange: ArgFunc<V>? = null
+): CSHasChangeValue<V> {
     val property: CSProperty<V> = property(from(value), onChange)
     onChange { property.value = from(value) }
     return property
 }
 
+fun <T> CSProperty<T>.ifValue(from: (T) -> Boolean): CSHasChangeValue<Boolean> {
+    val self = this
+    return object : CSHasChangeValue<Boolean> {
+        override var value: Boolean = from(self.value)
+        override fun onChange(function: (Boolean) -> void): CSRegistration {
+            return self.onChange {
+                val newValue = from(self.value)
+                if (value != newValue) {
+                    value = newValue
+                    function(newValue)
+                }
+            }
+        }
+    }
+}
+
 fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
-    list: MutableList<Item>, function: (index: Int) -> Item): CSRegistration =
+    list: MutableList<Item>, function: (index: Int) -> Item
+): CSRegistration =
     action { value -> list.update(value, function) }
 
 operator fun CSProperty<List<Int>>.set(index: Int, newValue: Int) {
