@@ -7,11 +7,15 @@ import renetik.android.event.registration.later
 
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
-    private val function: () -> void) : CSFunc {
+    private val function: () -> Unit,
+    val after: Int = 0) : CSFunc {
 
     companion object {
         fun CSHasRegistrations.laterOnce(function: () -> void) =
             CSLaterOnceFunc(this, function)
+
+        fun CSHasRegistrations.laterOnce(after: Int, function: () -> void) =
+            CSLaterOnceFunc(this, function, after)
     }
 
     private var isInvoking = false
@@ -19,7 +23,7 @@ class CSLaterOnceFunc(
     override operator fun invoke() {
         if (!isInvoking) {
             isInvoking = true
-            parent.later {
+            parent.later(after) {
                 function()
                 isInvoking = false
             }
