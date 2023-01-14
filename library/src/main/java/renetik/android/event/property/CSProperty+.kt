@@ -134,7 +134,6 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
-@Deprecated("Use ifValue")
 fun <T, V> CSProperty<T>.valueComputed(
     from: (T) -> V, onChange: ArgFunc<V>? = null
 ): CSHasChangeValue<V> {

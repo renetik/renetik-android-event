@@ -24,6 +24,14 @@ interface CSRegistration : CSHasCancel {
             registrations.onEach { it.resume() }
         }
 
+        fun resume(vararg registrations: CSRegistration) {
+            registrations.onEach { it.resume() }
+        }
+
+        fun pause(vararg registrations: CSRegistration) {
+            registrations.onEach { it.pause() }
+        }
+
         fun CSRegistration(isActive: Boolean = false,
                            onResume: ArgFunc<CSRegistration>? = null,
                            onPause: ArgFunc<CSRegistration>? = null,
