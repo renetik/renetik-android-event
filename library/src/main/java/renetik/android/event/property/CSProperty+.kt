@@ -142,6 +142,15 @@ fun <T, V> CSProperty<T>.valueComputed(
     return property
 }
 
+fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.valueComputed(
+    from: (T, V) -> X, onChange: ArgFunc<X>? = null
+): CSHasChangeValue<X> {
+    val property: CSProperty<X> = property(from(first.value, second.value), onChange)
+    first.onChange { property.value = from(it, second.value) }
+    second.onChange { property.value = from(first.value, it) }
+    return property
+}
+
 fun <T> CSProperty<T>.ifValue(from: (T) -> Boolean): CSHasChangeValue<Boolean> {
     val self = this
     return object : CSHasChangeValue<Boolean> {
