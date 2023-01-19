@@ -134,7 +134,7 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
-fun <T, V> CSProperty<T>.valueComputed(
+fun <T, V> CSProperty<T>.hasChangeValue(
     from: (T) -> V, onChange: ArgFunc<V>? = null
 ): CSHasChangeValue<V> {
     val property: CSProperty<V> = property(from(value), onChange)
@@ -142,7 +142,7 @@ fun <T, V> CSProperty<T>.valueComputed(
     return property
 }
 
-fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.valueComputed(
+fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     from: (T, V) -> X, onChange: ArgFunc<X>? = null
 ): CSHasChangeValue<X> {
     val property: CSProperty<X> = property(from(first.value, second.value), onChange)
