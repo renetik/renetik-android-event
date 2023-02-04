@@ -89,7 +89,7 @@ fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
 fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
     property.action { value = it }
 
-fun <T> CSProperty<T>.propertyBoolean(
+fun <T> CSProperty<T>.propertyBoolean( //TODO!! rename to property
     from: (T) -> Boolean, to: (Boolean) -> T,
     onChange: ArgFunc<Boolean>? = null
 ): CSProperty<Boolean> {
@@ -104,7 +104,7 @@ fun <T> CSProperty<T>.propertyBoolean(
     return property
 }
 
-fun <T, V> CSProperty<T>.propertyComputed(
+fun <T, V> CSProperty<T>.propertyComputed( //TODO!! rename to property
     from: (T) -> V, to: (V) -> T,
     onChange: ArgFunc<V>? = null
 ): CSProperty<V> {
@@ -119,7 +119,7 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
-fun <T, V> CSProperty<T>.propertyComputed(
+fun <T, V> CSProperty<T>.propertyComputed( //TODO!! rename to property
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
     onChange: ArgFunc<V>? = null
 ): CSProperty<V> {
