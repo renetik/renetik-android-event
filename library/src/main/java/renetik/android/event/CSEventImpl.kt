@@ -67,7 +67,9 @@ class CSEventImpl<T> : CSEvent<T> {
                 val index = listeners.indexOf(this)
                 if (index >= 0) {
                     if (firing) toRemove.add(this) else listeners.removeAt(index)
-                } else logWarn { traceMessage("Listener $this not found") }
+                } else logWarn {
+                    traceMessage("${this::class} listener:${listener::class} not found")
+                }
             }
         }
     }
