@@ -102,7 +102,7 @@ class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
         val wasPresent = registrationMap.removeValue(registration)
         if (registration.isCanceled && !wasPresent) return
         if (!wasPresent)
-            logWarn { traceMessage("Registration not found") }
+            logWarn { traceMessage("Registration not found:$registration") }
         if (registration.isCanceled) {
             logWarn { traceMessage("Registration already canceled but was present:$registration") }
             return

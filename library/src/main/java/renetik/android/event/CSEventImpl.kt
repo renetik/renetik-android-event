@@ -72,6 +72,8 @@ class CSEventImpl<T> : CSEvent<T> {
                 }
             }
         }
+
+        override fun toString() = "${super.toString()} listener:${listener::class}"
     }
 
     @Synchronized
