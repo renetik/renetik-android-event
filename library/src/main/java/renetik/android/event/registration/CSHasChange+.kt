@@ -1,12 +1,15 @@
 package renetik.android.event.registration
 
+import renetik.android.core.lang.Func
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.lang.void
+import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
 
 typealias HasChange = CSHasChange<void>
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
-    crossinline function: () -> void): CSRegistration =
+    crossinline function: () -> void
+): CSRegistration =
     onChange { _ -> function() }
 
 inline fun CSHasChange<void>.action(crossinline function: () -> void): CSRegistration {
@@ -14,15 +17,26 @@ inline fun CSHasChange<void>.action(crossinline function: () -> void): CSRegistr
     return onChange(function)
 }
 
+inline fun <Argument> CSHasChange<Argument>.onChangeLater(
+    crossinline function: Func
+): CSRegistration {
+    val registrations = CSRegistrationsList(this)
+    val laterOnceFunction = registrations.laterOnce { function() }
+    registrations.register(onChange { laterOnceFunction() })
+    return registrations
+}
+
 inline fun <Argument> CSHasChange<Argument>.onChange(
-    crossinline function: (CSRegistration, Argument) -> void): CSRegistration {
+    crossinline function: (CSRegistration, Argument) -> void
+): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { function(registration, it) }
     return registration
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
-    crossinline function: (CSRegistration) -> void): CSRegistration {
+    crossinline function: (CSRegistration) -> void
+): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { function(registration) }
     return registration
