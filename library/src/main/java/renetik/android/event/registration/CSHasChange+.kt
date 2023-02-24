@@ -9,21 +9,13 @@ typealias HasChange = CSHasChange<void>
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
     crossinline function: () -> void
-): CSRegistration =
-    onChange { _ -> function() }
+): CSRegistration = onChange { _ -> function() }
 
-inline fun CSHasChange<void>.action(crossinline function: () -> void): CSRegistration {
+inline fun CSHasChange<void>.action(
+    crossinline function: () -> void
+): CSRegistration {
     function()
     return onChange(function)
-}
-
-inline fun <Argument> CSHasChange<Argument>.onChangeLater(
-    crossinline function: Func
-): CSRegistration {
-    val registrations = CSRegistrationsList(this)
-    val laterOnceFunction = registrations.laterOnce { function() }
-    registrations.register(onChange { laterOnceFunction() })
-    return registrations
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
@@ -42,8 +34,18 @@ inline fun <Argument> CSHasChange<Argument>.onChange(
     return registration
 }
 
+inline fun <Argument> CSHasChange<Argument>.onChangeLater(
+    crossinline function: Func
+): CSRegistration {
+    val registrations = CSRegistrationsList(this)
+    val laterOnceFunction = registrations.laterOnce { function() }
+    registrations.register(onChange { laterOnceFunction() })
+    return registrations
+}
+
 inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
-    crossinline listener: (Argument) -> void): CSRegistration {
+    crossinline listener: (Argument) -> void
+): CSRegistration {
     var registration: CSRegistration by variable()
     registration = onChange { argument ->
         registration.cancel()
@@ -53,5 +55,5 @@ inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
 }
 
 inline fun HasChange.onChangeOnce(
-    crossinline listener: () -> void): CSRegistration =
-    onChangeOnce { _ -> listener() }
+    crossinline listener: () -> void
+): CSRegistration = onChangeOnce { _ -> listener() }
