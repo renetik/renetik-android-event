@@ -26,3 +26,10 @@ inline fun <T : CSHasChange<*>> List<T>.actionOnChangeLater(
     function()
     return onChangeLater(function)
 }
+
+inline fun <T : CSHasChange<*>> List<T>.action(
+    crossinline function: Func
+): CSRegistration {
+    function()
+    return onChange(function)
+}
