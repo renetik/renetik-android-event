@@ -51,27 +51,27 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
     return onFalse(function)
 }
 
-fun <T> CSHasChangeValue<T>.onChangeOnce(listener: (argument: T) -> Unit): CSRegistration {
-    lateinit var registration: CSRegistration
-    registration = onChange { argument: T ->
-        registration.cancel()
-        listener(argument)
-    }
-    return registration
-}
+//fun <T> CSHasChangeValue<T>.onChangeOnce(listener: (argument: T) -> Unit): CSRegistration {
+//    lateinit var registration: CSRegistration
+//    registration = onChange { argument: T ->
+//        registration.cancel()
+//        listener(argument)
+//    }
+//    return registration
+//}
 
-fun CSHasChangeValue<Boolean>.listenUntilTrueOnce(
-    listener: (argument: Boolean) -> Unit
-): CSRegistration {
-    lateinit var registration: CSRegistration
-    registration = onChange { argument: Boolean ->
-        if (argument) {
-            registration.cancel()
-            listener(true)
-        }
-    }
-    return registration
-}
+//fun CSHasChangeValue<Boolean>.listenUntilTrueOnce(
+//    listener: (argument: Boolean) -> Unit
+//): CSRegistration {
+//    lateinit var registration: CSRegistration
+//    registration = onChange { argument: Boolean ->
+//        if (argument) {
+//            registration.cancel()
+//            listener(true)
+//        }
+//    }
+//    return registration
+//}
 
 fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
     listener: (argument: Boolean) -> Unit
