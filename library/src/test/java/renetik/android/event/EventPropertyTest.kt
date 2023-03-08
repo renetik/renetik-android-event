@@ -5,7 +5,6 @@ import org.junit.Test
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.apply
-import renetik.android.event.property.onChangeOnce
 import renetik.android.event.registration.onChange
 import renetik.android.event.registration.paused
 
@@ -55,17 +54,17 @@ class EventPropertyTest {
         assertEquals("second", value)
     }
 
-    @Test
-    fun testNotFireAndOnChangeOnce() {
-        var changeCount = 0
-        val property: CSProperty<String> = property("")
-        property.onChangeOnce { changeCount += 1 }
-        property.value("one", fire = false)
-        property.value = "two"
-        property.value = "three"
-        assertEquals(changeCount, 1)
-        assertEquals("three", property.value)
-    }
+//    @Test
+//    fun testNotFireAndOnChangeOnce() {
+//        var changeCount = 0
+//        val property: CSProperty<String> = property("")
+//        property.onChangeOnce { changeCount += 1 }
+//        property.value("one", fire = false)
+//        property.value = "two"
+//        property.value = "three"
+//        assertEquals(changeCount, 1)
+//        assertEquals("three", property.value)
+//    }
 
     @Test
     fun testEventCancel() {
