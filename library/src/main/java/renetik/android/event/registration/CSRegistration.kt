@@ -3,8 +3,9 @@ package renetik.android.event.registration
 import androidx.annotation.AnyThread
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
+import java.io.Closeable
 
-interface CSRegistration : CSHasCancel {
+interface CSRegistration : CSHasCancel, Closeable {
     val isActive: Boolean
     val isCanceled: Boolean
 
@@ -32,10 +33,12 @@ interface CSRegistration : CSHasCancel {
             registrations.onEach { it.pause() }
         }
 
-        fun CSRegistration(isActive: Boolean = false,
-                           onResume: ArgFunc<CSRegistration>? = null,
-                           onPause: ArgFunc<CSRegistration>? = null,
-                           onCancel: ArgFunc<CSRegistration>? = null) =
+        fun CSRegistration(
+            isActive: Boolean = false,
+            onResume: ArgFunc<CSRegistration>? = null,
+            onPause: ArgFunc<CSRegistration>? = null,
+            onCancel: ArgFunc<CSRegistration>? = null
+        ) =
             object : CSRegistrationImpl(isActive) {
                 override fun onResume() {
                     super.onResume()
@@ -54,4 +57,6 @@ interface CSRegistration : CSHasCancel {
 
             }
     }
+
+    override fun close() = cancel()
 }
