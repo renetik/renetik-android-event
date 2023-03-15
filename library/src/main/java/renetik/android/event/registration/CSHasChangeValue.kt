@@ -38,5 +38,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 childRegistration?.cancel()
             })
         }
+
+        inline fun <ParentValue, ChildValue> actionNullableChild(
+            parent: CSHasChangeValue<ParentValue>,
+            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+            crossinline onChange: (ChildValue) -> Unit
+        ): CSRegistration {
+            child(parent.value)?.value?.let(onChange)
+            return onChangeNullableChild(parent, child, onChange)
+        }
     }
 }
