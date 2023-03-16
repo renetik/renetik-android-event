@@ -33,6 +33,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     return onChange(child, onChange)
 }
 
+//TODO: Test this !!! Not used at all maybe not working good..
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChangeNullableChild(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
     crossinline onChange: (ChildValue) -> Unit
@@ -50,10 +51,20 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChangeNulla
     })
 }
 
+//TODO: Test this !!!
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.actionNullableChild(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
     crossinline onChange: (ChildValue) -> Unit
 ): CSRegistration {
-    child(value)?.value?.let(onChange)
-    return onChangeNullableChild(child, onChange)
+    var childRegistration: CSRegistration? = null
+    val parentRegistration = action { parentValue ->
+        childRegistration?.cancel()
+        childRegistration = child(parentValue)?.action { childValue ->
+            onChange(childValue)
+        }
+    }
+    return CSRegistration.CSRegistration(isActive = true, onCancel = {
+        parentRegistration.cancel()
+        childRegistration?.cancel()
+    })
 }
