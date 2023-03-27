@@ -11,7 +11,7 @@ import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistrationsMap
 
 open class CSModel(
-    parent: CSHasDestruct? = null) : CSHasRegistrationsHasDestroy {
+    parent: CSHasDestruct? = null) : CSHasRegistrationsHasDestruct {
 
     val associated by lazy { CSAssociations() }
     final override val registrations by lazy { CSRegistrationsMap(this) }
