@@ -6,6 +6,7 @@ import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.message
+import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistrationsMap
@@ -25,7 +26,7 @@ open class CSModel(
 
     override fun onDestruct() {
         if (isDestructed) {
-            logWarn { message("Already destroyed: $this") }
+            logWarn { traceMessage("Already destroyed: $this") }
             return
         }
         isDestructed = true
