@@ -91,7 +91,8 @@ fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
 fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
     property.action { value = it }
 
-fun <T> CSProperty<T>.propertyBoolean( //TODO!! rename to property
+fun <T> CSProperty<T>.propertyBoolean(
+    parent: CSHasRegistrations? = null,
     from: (T) -> Boolean, to: (Boolean) -> T,
     onChange: ArgFunc<Boolean>? = null
 ): CSProperty<Boolean> {
@@ -99,22 +100,7 @@ fun <T> CSProperty<T>.propertyBoolean( //TODO!! rename to property
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange = onChange {
         propertyOnChange.paused { property.value = from(value) }
-    }
-    propertyOnChange = property.onChange {
-        thisOnChange.paused { value = to(it) }
-    }
-    return property
-}
-
-fun <T, V> CSProperty<T>.propertyComputed( //TODO!! rename to property
-    from: (T) -> V, to: (V) -> T,
-    onChange: ArgFunc<V>? = null
-): CSProperty<V> {
-    val property: CSProperty<V> = property(from(value), onChange)
-    lateinit var propertyOnChange: CSRegistration
-    val thisOnChange = onChange {
-        propertyOnChange.paused { property.value = from(value) }
-    }
+    }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
         thisOnChange.paused { value = to(it) }
     }
@@ -122,15 +108,31 @@ fun <T, V> CSProperty<T>.propertyComputed( //TODO!! rename to property
 }
 
 fun <T, V> CSProperty<T>.propertyComputed(
-    parent: CSHasRegistrations,
+    parent: CSHasRegistrations? = null,
+    from: (T) -> V, to: (V) -> T,
+    onChange: ArgFunc<V>? = null
+): CSProperty<V> {
+    val property: CSProperty<V> = property(from(value), onChange)
+    lateinit var propertyOnChange: CSRegistration
+    val thisOnChange = onChange {
+        propertyOnChange.paused { property.value = from(value) }
+    }.also { parent?.register(it) }
+    propertyOnChange = property.onChange {
+        thisOnChange.paused { value = to(it) }
+    }
+    return property
+}
+
+fun <T, V> CSProperty<T>.propertyComputed(
+    parent: CSHasRegistrations? = null,
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
     onChange: ArgFunc<V>? = null
 ): CSProperty<V> {
     val property: CSProperty<V> = property(get(value), onChange)
     lateinit var propertyOnChange: CSRegistration
-    val thisOnChange = parent.register(onChange {
+    val thisOnChange = onChange {
         propertyOnChange.paused { property.value = get(value) }
-    })
+    }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
         thisOnChange.paused { set(this, it) }
     }
@@ -138,42 +140,45 @@ fun <T, V> CSProperty<T>.propertyComputed(
 }
 
 fun <T, V> CSProperty<T>.hasChangeValue(
+    parent: CSHasRegistrations? = null,
     from: (T) -> V, onChange: ArgFunc<V>? = null
 ): CSHasChangeValue<V> {
     val property: CSProperty<V> = property(from(value), onChange)
-    onChange { property.value = from(value) }
+    onChange { property.value = from(value) }.also { parent?.register(it) }
     return property
 }
 
 fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
+    parent: CSHasRegistrations? = null,
     from: (T, V) -> X, onChange: ArgFunc<X>? = null
 ): CSHasChangeValue<X> {
     val property: CSProperty<X> = property(from(first.value, second.value), onChange)
-    first.onChange { property.value = from(it, second.value) }
-    second.onChange { property.value = from(first.value, it) }
+    first.onChange { property.value = from(it, second.value) }.also { parent?.register(it) }
+    second.onChange { property.value = from(first.value, it) }.also { parent?.register(it) }
     return property
 }
 
-fun <T> CSProperty<T>.ifValue(from: (T) -> Boolean): CSHasChangeValue<Boolean> {
+fun <T> CSProperty<T>.ifValue(
+    parent: CSHasRegistrations? = null,
+    from: (T) -> Boolean
+): CSHasChangeValue<Boolean> {
     val self = this
     return object : CSHasChangeValue<Boolean> {
         override var value: Boolean = from(self.value)
-        override fun onChange(function: (Boolean) -> void): CSRegistration {
-            return self.onChange {
+        override fun onChange(function: (Boolean) -> void): CSRegistration =
+            self.onChange {
                 val newValue = from(self.value)
                 if (value != newValue) {
                     value = newValue
                     function(newValue)
                 }
-            }
-        }
+            }.also { parent?.register(it) }
     }
 }
 
 fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item
-): CSRegistration =
-    action { value -> list.update(value, function) }
+): CSRegistration = action { value -> list.update(value, function) }
 
 operator fun CSProperty<List<Int>>.set(index: Int, newValue: Int) {
     value = value.toMutableList().also { it[index] = newValue }
