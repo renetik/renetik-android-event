@@ -11,8 +11,10 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue
+import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
+import renetik.android.event.registration.register
 
 fun <T : CSProperty<*>> T.apply() = apply { fireChange() }
 
@@ -119,15 +121,16 @@ fun <T, V> CSProperty<T>.propertyComputed( //TODO!! rename to property
     return property
 }
 
-fun <T, V> CSProperty<T>.propertyComputed( //TODO!! rename to property
+fun <T, V> CSProperty<T>.propertyComputed(
+    parent: CSHasRegistrations,
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
     onChange: ArgFunc<V>? = null
 ): CSProperty<V> {
     val property: CSProperty<V> = property(get(value), onChange)
     lateinit var propertyOnChange: CSRegistration
-    val thisOnChange = onChange {
+    val thisOnChange = parent.register(onChange {
         propertyOnChange.paused { property.value = get(value) }
-    }
+    })
     propertyOnChange = property.onChange {
         thisOnChange.paused { set(this, it) }
     }
