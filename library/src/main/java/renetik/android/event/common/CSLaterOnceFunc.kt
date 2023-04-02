@@ -3,7 +3,7 @@ package renetik.android.event.common
 import renetik.android.core.lang.CSFunc
 import renetik.android.core.lang.void
 import renetik.android.event.registration.CSHasRegistrations
-import renetik.android.event.registration.later
+import renetik.android.event.registration.registerLater
 
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
@@ -23,7 +23,7 @@ class CSLaterOnceFunc(
     override operator fun invoke() {
         if (!isInvoking) {
             isInvoking = true
-            parent.later(after) {
+            parent.registerLater(after) {
                 function()
                 isInvoking = false
             }

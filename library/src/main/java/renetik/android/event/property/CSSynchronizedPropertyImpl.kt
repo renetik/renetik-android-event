@@ -1,7 +1,7 @@
 package renetik.android.event.property
 
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.registration.onMain
+import renetik.android.event.registration.registerOnMain
 
 class CSSynchronizedPropertyImpl<T>(
     parent: CSHasDestruct? = null,
@@ -14,7 +14,7 @@ class CSSynchronizedPropertyImpl<T>(
     override fun value(newValue: T, fire: Boolean): Unit = synchronized(this) {
         if (field == newValue) return
         field = newValue
-        onMain { onValueChanged(newValue) }
+        registerOnMain { onValueChanged(newValue) }
     }
 
     override var value: T

@@ -2,39 +2,28 @@ package renetik.android.event.registration
 
 import renetik.android.core.java.lang.CSThread.currentThread
 import renetik.android.core.java.lang.isMain
-import renetik.android.core.lang.CSMainHandler.postOnMain
-import renetik.android.core.lang.CSMainHandler.removePosted
+import renetik.android.core.lang.CSMainHandler.mainHandler
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
-fun CSHasRegistrations.later(
-    after: Int, function: () -> Unit): CSRegistration {
-    val registration = CSFunctionRegistration(function = {
-        cancel(it)
-        function()
-    }, onCancel = { removePosted(it.function) })
-    register(registration)
-    postOnMain(if (after < 10) 10 else after, registration.function)
+fun CSHasRegistrations.registerLater(
+    after: Int, function: () -> Unit
+): CSRegistration {
+    val registration = register(mainHandler.registerLater(if (after < 10) 10 else after, function))
     return CSRegistration { cancel(registration) }
 }
 
-fun CSHasRegistrations.laterEach(
-    interval: Int, after: Int = interval,
-    function: (CSRegistration) -> Unit): CSRegistration {
-    lateinit var functionRegistration: CSFunctionRegistration
-    val outerRegistration = CSRegistration { cancel(functionRegistration) }
-    functionRegistration = register(CSFunctionRegistration(function = {
-        function(outerRegistration)
-        postOnMain(interval, it.function)
-    }, onCancel = { removePosted(it.function) }))
-    postOnMain(after, functionRegistration.function)
-    return outerRegistration
+fun CSHasRegistrations.registerRepeat(
+    interval: Int, after: Int = interval, function: () -> Unit
+): CSRegistration {
+    val registration = register(mainHandler.repeat(interval, after, function))
+    return CSRegistration { cancel(registration) }
 }
 
-fun CSHasRegistrations.later(function: () -> Unit) = later(5, function)
+fun CSHasRegistrations.registerLater(function: () -> Unit) = registerLater(5, function)
 
-fun <T : CSHasRegistrations> T.onMain(function: (T).() -> Unit): CSRegistration? =
+fun <T : CSHasRegistrations> T.registerOnMain(function: (T).() -> Unit): CSRegistration? =
     if (currentThread.isMain) {
         function()
         null
-    } else later { function(this) }
+    } else registerLater { function(this) }
 

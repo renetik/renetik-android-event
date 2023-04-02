@@ -10,7 +10,7 @@ import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
-import renetik.android.event.registration.later
+import renetik.android.event.registration.registerLater
 
 open class CSProcess<Data : Any>(
     parent: CSHasDestruct? = null,
@@ -22,7 +22,7 @@ open class CSProcess<Data : Any>(
             parent: CSHasDestruct, function: CSProcess<Data>.() -> Unit
         )
             : CSProcess<Data> = CSProcess<Data>(parent).also {
-            it.later { function(it) }
+            it.registerLater { function(it) }
         }
     }
 
