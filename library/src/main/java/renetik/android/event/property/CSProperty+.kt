@@ -148,6 +148,21 @@ fun <T, V> CSProperty<T>.hasChangeValue(
     return property
 }
 
+fun <T, V> CSProperty<T>.hasChangeValueDelegate(
+    parent: CSHasRegistrations? = null,
+    from: (T) -> V, onChange: ArgFunc<V>? = null
+): CSHasChangeValue<V> = this.let { property ->
+    object : CSHasChangeValue<V> {
+        override val value: V get() = from(property.value)
+        override fun onChange(function: (V) -> void) =
+            property.onChange {
+                val value = from(it)
+                onChange?.invoke(value)
+                function(value)
+            }.also { parent?.register(it) }
+    }
+}
+
 fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     parent: CSHasRegistrations? = null,
     from: (T, V) -> X, onChange: ArgFunc<X>? = null
