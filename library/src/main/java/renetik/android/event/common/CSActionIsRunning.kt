@@ -9,12 +9,13 @@ import renetik.android.event.property.CSPropertyWrapper
 import renetik.android.event.property.action
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.cancel
 import renetik.android.event.registration.register
 
 class CSActionIsRunning(
     parent: CSHasDestruct,
-    vararg actions: CSActionInterface)
-    : CSPropertyWrapper<Boolean>(parent) {
+    vararg actions: CSActionInterface
+) : CSPropertyWrapper<Boolean>(parent) {
     override val property = property(false)
     private val runningActions = list<CSProperty<Boolean>>()
 
@@ -33,7 +34,7 @@ class CSActionIsRunning(
         val actionOnChange = register(action.action { updateIsRunning(it) })
 
         return CSRegistration(onCancel = {
-            actionOnChange.cancel()
+            cancel(actionOnChange)
             runningActions.remove(action)
         })
     }

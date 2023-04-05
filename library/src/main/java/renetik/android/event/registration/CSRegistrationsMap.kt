@@ -7,18 +7,21 @@ import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 
-class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
-    private val id by lazy { "$parent" }
+class CSRegistrationsMap(
+    private val parent: Any
+) : CSRegistrations, CSHasRegistrations {
+
     override val registrations: CSRegistrationsMap = this
+    override var isActive: Boolean by variable(true, ::onActiveChange)
+    override var isCanceled: Boolean = false
+
     private val registrationMap: MutableMap<String, CSRegistration> = mutableMapOf()
-    override var isActive by variable(true, ::onActiveChange)
-    override var isCanceled = false
-    private var idCount = 0
-    private fun createUniqId() = "$idCount: $nanoTime".also { idCount++ }
+    private var idCount: Int = 0
+    private fun createUniqueId() = "$idCount: $nanoTime".also { idCount++ }
 
     private fun onActiveChange(isActive: Boolean) {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$id") }
+            logWarn { traceMessage("Already canceled:$parent") }
             return
         }
         registrationMap.forEach { it.value.setActive(isActive) }
@@ -48,7 +51,7 @@ class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
     @AnyThread
     override fun cancel() {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$id") }
+            logWarn { traceMessage("Already canceled:$this") }
             return
         }
         isCanceled = true
@@ -58,29 +61,31 @@ class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
     @Synchronized
     @AnyThread
     fun register(key: String, registration: CSRegistration?): CSRegistration? {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$id") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         remove(key)
         return registration?.let { add(key, it) }
     }
 
     @Synchronized
     @AnyThread
-    override fun register(replace: CSRegistration?,
-                          registration: CSRegistration?): CSRegistration? {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$id") }
+    override fun register(
+        replace: CSRegistration?,
+        registration: CSRegistration?
+    ): CSRegistration? {
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         replace?.let { cancel(it) }
-        return registration?.let { add(createUniqId(), it) }
+        return registration?.let { add(createUniqueId(), it) }
     }
 
     @Synchronized
     @AnyThread
     override fun register(registration: CSRegistration): CSRegistration =
-        add(createUniqId(), registration)
+        add(createUniqueId(), registration)
 
     @Synchronized
     @AnyThread
     private fun add(key: String, registration: CSRegistration): CSRegistration {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$id") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationMap[key] = registration
@@ -90,7 +95,7 @@ class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
     @Synchronized
     @AnyThread
     fun cancel(key: String) {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$id") }
+        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
         remove(key)
     }
 
@@ -109,10 +114,13 @@ class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
         }
         registration.cancel()
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$id") }
+            logWarn { traceMessage("Already canceled:$this") }
             return
         }
     }
 
     val size: Int get() = registrationMap.size
+
+    override fun toString(): String =
+        "${super.toString()} parent:$parent size:$size isActive:$isActive isCanceled:$isCanceled"
 }
