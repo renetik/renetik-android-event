@@ -139,6 +139,7 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
+@Deprecated("Use hasChangeValueDelegate probably :)")
 fun <T, V> CSProperty<T>.hasChangeValue(
     parent: CSHasRegistrations? = null,
     from: (T) -> V, onChange: ArgFunc<V>? = null
@@ -163,6 +164,7 @@ fun <T, V> CSProperty<T>.hasChangeValueDelegate(
     }
 }
 
+@Deprecated("Use hasChangeValueDelegate probably :)")
 fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     parent: CSHasRegistrations? = null,
     from: (T, V) -> X, onChange: ArgFunc<X>? = null
@@ -171,6 +173,27 @@ fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     first.onChange { property.value = from(it, second.value) }.also { parent?.register(it) }
     second.onChange { property.value = from(first.value, it) }.also { parent?.register(it) }
     return property
+}
+
+fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValueDelegate(
+    parent: CSHasRegistrations? = null,
+    from: (T, V) -> X, onChange: ArgFunc<X>? = null
+): CSHasChangeValue<X> = this.let { properties ->
+    object : CSHasChangeValue<X> {
+        override val value: X get() = from(properties.first.value, properties.second.value)
+        override fun onChange(function: (X) -> void) = CSRegistration(
+            first.onChange {
+                val value = from(it, second.value)
+                onChange?.invoke(value)
+                function(value)
+            }.also { parent?.register(it) },
+            second.onChange {
+                val value = from(first.value, it)
+                onChange?.invoke(value)
+                function(value)
+            }.also { parent?.register(it) }
+        )
+    }
 }
 
 fun <T> CSProperty<T>.ifValue(
