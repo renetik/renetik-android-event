@@ -6,16 +6,16 @@ import renetik.android.core.lang.CSMainHandler.mainHandler
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun CSHasRegistrations.registerLater(
-    after: Int, function: () -> Unit
+    delay: Int, function: () -> Unit
 ): CSRegistration {
-    val registration = register(mainHandler.registerLater(if (after < 10) 10 else after, function))
+    val registration = register(mainHandler.registerLater(if (delay < 10) 10 else delay, function))
     return CSRegistration { cancel(registration) }
 }
 
 fun CSHasRegistrations.registerRepeat(
-    interval: Int, after: Int = interval, function: () -> Unit
+    delay: Int, period: Int = delay, function: () -> Unit
 ): CSRegistration {
-    val registration = register(mainHandler.repeat(interval, after, function))
+    val registration = register(mainHandler.repeat(delay, period, function))
     return CSRegistration { cancel(registration) }
 }
 
