@@ -20,8 +20,7 @@ open class CSProcess<Data : Any>(
     companion object {
         fun <Data : Any> CSProcess(
             parent: CSHasDestruct, function: CSProcess<Data>.() -> Unit
-        )
-            : CSProcess<Data> = CSProcess<Data>(parent).also {
+        ): CSProcess<Data> = CSProcess<Data>(parent).also {
             it.registerLater { function(it) }
         }
     }
@@ -116,8 +115,8 @@ open class CSProcess<Data : Any>(
         logDebug {
             message(
                 "cancel $this, isDestroyed:$isDestructed, " +
-                    "isCanceled:$isCanceled, isDone:$isDone, " +
-                    "isSuccess:$isSuccess, isFailed:$isFailed"
+                        "isCanceled:$isCanceled, isDone:$isDone, " +
+                        "isSuccess:$isSuccess, isFailed:$isFailed"
             )
         }
         if (isDestructed || isCanceled || isDone || isSuccess || isFailed) return
