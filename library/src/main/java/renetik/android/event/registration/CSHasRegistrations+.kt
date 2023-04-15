@@ -1,5 +1,8 @@
 package renetik.android.event.registration
 
+import androidx.annotation.AnyThread
+
+@AnyThread
 fun <T : CSRegistration> CSHasRegistrations.register(
     registration: T): T = registration.also { registrations.register(it) }
 
