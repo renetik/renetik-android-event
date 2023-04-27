@@ -6,7 +6,7 @@ import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.ScheduledFuture
 
-fun CSHasRegistrations.background(@WorkerThread function: Func): CSRegistration {
+fun CSHasRegistrations.registerBackground(@WorkerThread function: Func): CSRegistration {
     var scheduled: ScheduledFuture<*>? = null
     val registration = register(CSRegistration(isActive = true,
         onCancel = { scheduled?.cancel(false) }))
