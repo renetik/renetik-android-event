@@ -4,9 +4,8 @@ import renetik.android.core.kotlin.rootCause
 import renetik.android.core.lang.variable.CSSynchronizedProperty.Companion.synchronized
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.core.logging.CSLog.logError
+import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.core.logging.CSLog.logWarn
-import renetik.android.core.logging.CSLogMessage.Companion.message
-import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
@@ -14,12 +13,12 @@ import renetik.android.event.registration.registerLater
 
 open class CSProcess<Data : Any>(
     parent: CSHasDestruct? = null,
-    var data: Data? = null
+    var data: Data? = null,
 ) : CSModel(parent) {
 
     companion object {
         fun <Data : Any> CSProcess(
-            parent: CSHasDestruct, function: CSProcess<Data>.() -> Unit
+            parent: CSHasDestruct, function: CSProcess<Data>.() -> Unit,
         ): CSProcess<Data> = CSProcess<Data>(parent).also {
             it.registerLater { function(it) }
         }
@@ -69,10 +68,10 @@ open class CSProcess<Data : Any>(
     }
 
     private fun onSuccessImpl() {
-        logDebug { message("onSuccessImpl $this, $data") }
-        if (isFailed) logError { traceMessage("already failed") }
-        if (isSuccess) logError { traceMessage("already success") }
-        if (isDone) logError { traceMessage("already done") }
+        logDebug { "onSuccessImpl $this, $data" }
+        if (isFailed) logErrorTrace { "already failed" }
+        if (isSuccess) logErrorTrace { "already success" }
+        if (isDone) logErrorTrace { "already done" }
         isSuccess = true
         eventSuccess.fire(this)
     }
@@ -100,24 +99,22 @@ open class CSProcess<Data : Any>(
     }
 
     private fun onFailedImpl(process: CSProcess<*>) {
-        if (isDone) logError { traceMessage("already done") }
-        if (isFailed) logError { traceMessage("already failed") }
+        if (isDone) logErrorTrace { "already done" }
+        if (isFailed) logErrorTrace { "already failed" }
         else isFailed = true
         failedProcess = process
         failedMessage = process.failedMessage
-        process.throwable?.rootCause?.let { logWarn { message(it) } }
+        process.throwable?.rootCause?.let { logWarn(it) }
         throwable = process.throwable ?: Throwable()
-        logError { message(throwable, failedMessage) }
+        logError(throwable) { "$failedMessage" }
         eventFailed.fire(process)
     }
 
     open fun cancel() {
         logDebug {
-            message(
-                "cancel $this, isDestroyed:$isDestructed, " +
-                        "isCanceled:$isCanceled, isDone:$isDone, " +
-                        "isSuccess:$isSuccess, isFailed:$isFailed"
-            )
+            "cancel $this, isDestroyed:$isDestructed, " +
+                "isCanceled:$isCanceled, isDone:$isDone, " +
+                "isSuccess:$isSuccess, isFailed:$isFailed"
         }
         if (isDestructed || isCanceled || isDone || isSuccess || isFailed) return
         isCanceled = true
@@ -126,9 +123,9 @@ open class CSProcess<Data : Any>(
     }
 
     private fun onDoneImpl() {
-        logDebug { message("onDoneImpl: $this") }
+        logDebug { "onDoneImpl: $this" }
         if (isDone) {
-            logError { traceMessage("already done") }
+            logErrorTrace { "already done" }
             return
         }
         isDone = true

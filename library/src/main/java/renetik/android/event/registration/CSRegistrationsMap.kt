@@ -4,11 +4,10 @@ import androidx.annotation.AnyThread
 import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
-import renetik.android.core.logging.CSLog.logWarn
-import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
+import renetik.android.core.logging.CSLog.logWarnTrace
 
 class CSRegistrationsMap(
-    private val parent: Any
+    private val parent: Any,
 ) : CSRegistrations, CSHasRegistrations {
 
     override val registrations: CSRegistrationsMap = this
@@ -21,7 +20,7 @@ class CSRegistrationsMap(
 
     private fun onActiveChange(isActive: Boolean) {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$parent") }
+            logWarnTrace { "Already canceled:$parent" }
             return
         }
         registrationMap.forEach { it.value.setActive(isActive) }
@@ -31,27 +30,27 @@ class CSRegistrationsMap(
     @AnyThread
     override fun resume() {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarnTrace { "Already canceled:$this" }
             return
         }
-        if (isPaused) isActive = true else logWarn { traceMessage("Already resume:$this") }
+        if (isPaused) isActive = true else logWarnTrace { "Already resume:$this" }
     }
 
     @Synchronized
     @AnyThread
     override fun pause() {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarnTrace { "Already canceled:$this" }
             return
         }
-        if (isActive) isActive = false else logWarn { traceMessage("Already pause:$this") }
+        if (isActive) isActive = false else logWarnTrace { "Already pause:$this" }
     }
 
     @Synchronized
     @AnyThread
     override fun cancel() {
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarnTrace { "Already canceled:$this" }
             return
         }
         isCanceled = true
@@ -61,7 +60,7 @@ class CSRegistrationsMap(
     @Synchronized
     @AnyThread
     fun register(key: String, registration: CSRegistration?): CSRegistration? {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
         remove(key)
         return registration?.let { add(key, it) }
     }
@@ -70,9 +69,9 @@ class CSRegistrationsMap(
     @AnyThread
     override fun register(
         replace: CSRegistration?,
-        registration: CSRegistration?
+        registration: CSRegistration?,
     ): CSRegistration? {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
         replace?.let { cancel(it) }
         return registration?.let { add(createUniqueId(), it) }
     }
@@ -85,7 +84,7 @@ class CSRegistrationsMap(
     @Synchronized
     @AnyThread
     private fun add(key: String, registration: CSRegistration): CSRegistration {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationMap[key] = registration
@@ -95,7 +94,7 @@ class CSRegistrationsMap(
     @Synchronized
     @AnyThread
     fun cancel(key: String) {
-        if (isCanceled) logWarn { traceMessage("Already canceled:$this") }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
         remove(key)
     }
 
@@ -107,20 +106,20 @@ class CSRegistrationsMap(
         val wasPresent = registrationMap.removeValue(registration)
         if (registration.isCanceled && !wasPresent) return
         if (!wasPresent)
-            logWarn { traceMessage("Registration not found:$registration") }
+            logWarnTrace { "Registration not found:$registration" }
         if (registration.isCanceled) {
-            logWarn { traceMessage("Registration already canceled but was present:$registration") }
+            logWarnTrace { "Registration already canceled but was present:$registration" }
             return
         }
         registration.cancel()
         if (isCanceled) {
-            logWarn { traceMessage("Already canceled:$this") }
+            logWarnTrace { "Already canceled:$this" }
             return
         }
     }
 
     val size: Int get() = registrationMap.size
 
-    override fun toString(): String =
-        "${super.toString()} parent:$parent size:$size isActive:$isActive isCanceled:$isCanceled"
+    override fun toString(): String = "${super.toString()} parent:$parent " +
+        "size:$size isActive:$isActive isCanceled:$isCanceled"
 }

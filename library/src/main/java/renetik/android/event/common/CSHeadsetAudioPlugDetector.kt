@@ -17,7 +17,7 @@ class CSHeadsetAudioPlugDetector(
         if (intent.action == ACTION_HEADSET_PLUG)
             when (val state = intent.getIntExtra("state", -1)) {
                 0, 1 -> onStateReceived(state, receiver)
-                else -> logWarn { message("ACTION_HEADSET_PLUG unknown ") }
+                else -> logWarn { "ACTION_HEADSET_PLUG unknown " }
             }
     }
 
@@ -25,7 +25,7 @@ class CSHeadsetAudioPlugDetector(
         val isPlugged = state != 0
         if (this.isPlugged != isPlugged) {
             this.isPlugged = isPlugged
-            logDebug { message("ACTION_HEADSET_PLUG isUnplugged:$isPlugged") }
+            logDebug { "ACTION_HEADSET_PLUG isUnplugged:$isPlugged" }
             if (!receiver.isInitialStickyBroadcast) onHeadsetPlugChanged(isPlugged)
         }
     }

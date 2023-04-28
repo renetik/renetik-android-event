@@ -5,9 +5,7 @@ import renetik.android.core.kotlin.collections.list
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.void
 import renetik.android.core.logging.CSLog.logError
-import renetik.android.core.logging.CSLog.logWarn
-import renetik.android.core.logging.CSLogMessage.Companion.message
-import renetik.android.core.logging.CSLogMessage.Companion.traceMessage
+import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
 
@@ -29,7 +27,7 @@ class CSEventImpl<T> : CSEvent<T> {
     @Synchronized
     override fun fire(argument: T) {
         if (paused) return
-        if (firing) logWarn { traceMessage("Event fired while firing") }
+        if (firing) logWarnTrace { "Event fired while firing" }
         if (listeners.isEmpty()) return
 
         firing = true
@@ -49,15 +47,15 @@ class CSEventImpl<T> : CSEvent<T> {
 
     @Synchronized
     override fun clear() {
-        if (firing) logError { message("firing") }
+        if (firing) logError { "firing" }
         listeners.clear()
     }
 
     override val isListened get() = listeners.hasItems
 
     inner class EventListenerImpl(
-        private val listener: (T) -> Unit)
-        : CSEventListener<T>, CSRegistrationImpl(isActive = true) {
+        private val listener: (T) -> Unit,
+    ) : CSEventListener<T>, CSRegistrationImpl(isActive = true) {
 
         override fun invoke(argument: T) = isActive.isTrue { listener(argument) }
 
@@ -67,8 +65,8 @@ class CSEventImpl<T> : CSEvent<T> {
                 val index = listeners.indexOf(this)
                 if (index >= 0) {
                     if (firing) toRemove.add(this) else listeners.removeAt(index)
-                } else logWarn {
-                    traceMessage("${this::class} listener:${listener::class} not found")
+                } else logWarnTrace {
+                    "${this::class} listener:${listener::class} not found"
                 }
             }
         }
