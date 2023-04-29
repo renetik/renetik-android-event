@@ -4,9 +4,7 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.event.property.action
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
-    companion object {
-
-    }
+    companion object
 }
 
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
@@ -17,6 +15,22 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
     val parentRegistration = onChange {
         childRegistration?.cancel()
         childRegistration = child(value).action { onChange(it) }
+    }
+    return CSRegistration.CSRegistration(isActive = true, onCancel = {
+        parentRegistration.cancel()
+        childRegistration?.cancel()
+    })
+}
+
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
+    crossinline childChange: (ParentValue) -> CSHasChange<ChildValue>,
+    crossinline onChange: () -> Unit,
+): CSRegistration {
+    var childRegistration: CSRegistration? = null
+    val parentRegistration = onChange {
+        childRegistration?.cancel()
+        childRegistration = childChange(value).onChange(onChange)
+        onChange()
     }
     return CSRegistration.CSRegistration(isActive = true, onCancel = {
         parentRegistration.cancel()
