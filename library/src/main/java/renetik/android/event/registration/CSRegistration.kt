@@ -37,25 +37,24 @@ interface CSRegistration : CSHasCancel, Closeable {
             isActive: Boolean = false,
             onResume: ArgFunc<CSRegistration>? = null,
             onPause: ArgFunc<CSRegistration>? = null,
-            onCancel: ArgFunc<CSRegistration>? = null
-        ) =
-            object : CSRegistrationImpl(isActive) {
-                override fun onResume() {
-                    super.onResume()
-                    onResume?.invoke(this)
-                }
-
-                override fun onPause() {
-                    super.onPause()
-                    onPause?.invoke(this)
-                }
-
-                override fun onCancel() {
-                    super.onCancel()
-                    onCancel?.invoke(this)
-                }
-
+            onCancel: ArgFunc<CSRegistration>? = null,
+        ) = object : CSRegistrationImpl(isActive) {
+            override fun onResume() {
+                super.onResume()
+                onResume?.invoke(this)
             }
+
+            override fun onPause() {
+                super.onPause()
+                onPause?.invoke(this)
+            }
+
+            override fun onCancel() {
+                super.onCancel()
+                onCancel?.invoke(this)
+            }
+
+        }
     }
 
     override fun close() = cancel()
