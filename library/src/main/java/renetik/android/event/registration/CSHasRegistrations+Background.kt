@@ -7,6 +7,6 @@ import renetik.android.event.registration.task.CSBackground.background
 inline fun CSHasRegistrations.registerBackground(
     @WorkerThread crossinline function: Func,
 ): CSRegistration = register(background {
-    if (it.isActive) function()
+    function()
     cancel(it)
 })

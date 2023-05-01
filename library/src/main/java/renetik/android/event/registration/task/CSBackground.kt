@@ -16,11 +16,11 @@ object CSBackground {
         after: Int = 0,
         @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
-        lateinit var registration: CSRegistration
-        val task = executor.background(after.toLong()) {
+        lateinit var task: ScheduledFuture<*>
+        val registration = CSRegistration(isActive = true) { task.cancel(true) }
+        task = executor.background(after.toLong()) {
             if (registration.isActive) function(registration)
         }
-        registration = CSRegistration(isActive = true) { task.cancel(true) }
         return registration
     }
 
