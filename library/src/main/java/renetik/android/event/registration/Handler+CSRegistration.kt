@@ -55,7 +55,7 @@ fun Handler.repeat(
 //    }
 //}
 
-fun Handler.registerLater(
+fun Handler.later(
     after: Int, function: Func
 ): CSRegistration {
     val token = object {}
@@ -84,7 +84,7 @@ fun repeat(
     delay: Int, period: Int = delay, function: () -> Unit
 ): CSRegistration = mainHandler.repeat(delay, period, function)
 
-fun registerLater(delay: Int, function: () -> Unit): CSRegistration =
-    mainHandler.registerLater(delay, function)
+fun later(delay: Int, function: () -> Unit): CSRegistration =
+    mainHandler.later(delay, function)
 
 
