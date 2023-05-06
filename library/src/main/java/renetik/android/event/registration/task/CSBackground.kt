@@ -4,13 +4,20 @@ import androidx.annotation.WorkerThread
 import renetik.android.core.java.util.concurrent.background
 import renetik.android.core.java.util.concurrent.backgroundNano
 import renetik.android.core.java.util.concurrent.backgroundRepeat
+import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 
 object CSBackground {
-    val executor = ScheduledThreadPoolExecutor(3)
+    var executor = ScheduledThreadPoolExecutor(3)
+        private set
+
+    fun restartExecutor() {
+        executor.shutdownAndWait()
+        executor = ScheduledThreadPoolExecutor(3)
+    }
 
     inline fun background(
         after: Int = 0,
