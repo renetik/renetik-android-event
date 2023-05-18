@@ -11,7 +11,11 @@ import renetik.android.event.registration.task.CSBackground.background
 fun CSHasRegistrations.registerLater(
     delay: Int = 0, function: () -> Unit,
 ): CSRegistration {
-    val registration = register(later(if (delay < 10) 10 else delay, function))
+    lateinit var registration: CSRegistration
+    registration = register(later(if (delay < 10) 10 else delay) {
+        function()
+        cancel(registration)
+    })
     return CSRegistration { cancel(registration) }
 }
 
@@ -19,7 +23,11 @@ fun CSHasRegistrations.registerLater(
 fun CSHasRegistrations.registerLater(
     function: () -> Unit,
 ): CSRegistration {
-    val registration = register(later(0, function))
+    lateinit var registration: CSRegistration
+    registration = register(later(10) {
+        function()
+        cancel(registration)
+    })
     return CSRegistration { cancel(registration) }
 }
 
@@ -43,7 +51,11 @@ fun <T : CSHasRegistrations> T.registerOnMain(
 fun CSHasRegistrations.registerBackground(
     delay: Int, function: () -> Unit,
 ): CSRegistration {
-    val registration = register(background(if (delay < 10) 10 else delay) { function() })
+    lateinit var registration: CSRegistration
+    registration = register(background(if (delay < 10) 10 else delay) {
+        function()
+        cancel(registration)
+    })
     return CSRegistration { cancel(registration) }
 }
 

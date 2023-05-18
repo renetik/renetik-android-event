@@ -23,7 +23,7 @@ fun Handler.repeat(
         }
     }
     postAtTime(runnable, token, uptimeMillis() + delay.toLong())
-    return CSRegistration {
+    return CSRegistration(isActive = true) {
         isCanceled = true
         removeCallbacksAndMessages(token)
     }
@@ -61,7 +61,7 @@ fun Handler.later(
     val token = object {}
     var isCanceled = false
     postAtTime({ if (!isCanceled) function() }, token, uptimeMillis() + after.toLong())
-    return CSRegistration {
+    return CSRegistration(isActive = true) {
         isCanceled = true
         removeCallbacksAndMessages(token)
     }
