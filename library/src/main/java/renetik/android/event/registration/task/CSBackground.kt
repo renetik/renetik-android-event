@@ -12,11 +12,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor
 
 object CSBackground {
     var executor = ScheduledThreadPoolExecutor(3)
+        //    var executor = newSingleThreadScheduledExecutor()
         private set
 
     fun restartExecutor() {
         executor.shutdownAndWait()
         executor = ScheduledThreadPoolExecutor(3)
+//        executor = newSingleThreadScheduledExecutor()
     }
 
     inline fun background(
@@ -24,7 +26,9 @@ object CSBackground {
         @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         lateinit var task: ScheduledFuture<*>
-        val registration = CSRegistration(isActive = true) { task.cancel(true) }
+        val registration = CSRegistration(isActive = true) {
+            if (!task.isDone) task.cancel(true)
+        }
         task = executor.background(after.toLong()) {
             if (registration.isActive) function(registration)
         }
