@@ -15,8 +15,10 @@ object CSBackground {
         //    var executor = newSingleThreadScheduledExecutor()
         private set
 
+    fun shutdownExecutor() = executor.shutdownAndWait()
+
     fun restartExecutor() {
-        executor.shutdownAndWait()
+        shutdownExecutor()
         executor = ScheduledThreadPoolExecutor(3)
 //        executor = newSingleThreadScheduledExecutor()
     }
