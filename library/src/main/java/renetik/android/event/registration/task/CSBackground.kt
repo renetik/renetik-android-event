@@ -15,10 +15,12 @@ object CSBackground {
         //    var executor = newSingleThreadScheduledExecutor()
         private set
 
-    fun shutdownExecutor() = executor.shutdownAndWait()
+    fun shutdownBackground() = executor.shutdownAndWait()
 
-    fun restartExecutor() {
-        shutdownExecutor()
+    val isBackgroundOff get() = executor.isShutdown
+
+    fun restartBackground() {
+        shutdownBackground()
         executor = ScheduledThreadPoolExecutor(3)
 //        executor = newSingleThreadScheduledExecutor()
     }
