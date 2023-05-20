@@ -28,7 +28,9 @@ fun CSHasRegistrations.registerLater(
         function()
         cancel(registration)
     })
-    return CSRegistration { cancel(registration) }
+    return CSRegistration {
+        if (!registration.isCanceled) cancel(registration)
+    }
 }
 
 @AnyThread
