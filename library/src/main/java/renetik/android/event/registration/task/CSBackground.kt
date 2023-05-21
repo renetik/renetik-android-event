@@ -7,12 +7,13 @@ import renetik.android.core.java.util.concurrent.backgroundRepeat
 import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import java.util.concurrent.Executors.newScheduledThreadPool
 import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.ScheduledThreadPoolExecutor
 
 object CSBackground {
-    var executor = ScheduledThreadPoolExecutor(3)
-        //    var executor = newSingleThreadScheduledExecutor()
+
+    var executor = newScheduledThreadPool(3)
+        //            var executor = newSingleThreadScheduledExecutor()
         private set
 
     fun shutdownBackground() = executor.shutdownAndWait()
@@ -21,7 +22,7 @@ object CSBackground {
 
     fun restartBackground() {
         shutdownBackground()
-        executor = ScheduledThreadPoolExecutor(3)
+        executor = newScheduledThreadPool(3)
 //        executor = newSingleThreadScheduledExecutor()
     }
 
