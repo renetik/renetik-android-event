@@ -16,7 +16,7 @@ fun CSHasRegistrations.registerLater(
         function()
         cancel(registration)
     })
-    return CSRegistration { cancel(registration) }
+    return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }
 
 @AnyThread
@@ -28,9 +28,7 @@ fun CSHasRegistrations.registerLater(
         function()
         cancel(registration)
     })
-    return CSRegistration {
-        if (!registration.isCanceled) cancel(registration)
-    }
+    return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }
 
 @AnyThread
@@ -58,6 +56,6 @@ fun CSHasRegistrations.registerBackground(
         function()
         cancel(registration)
     })
-    return CSRegistration { cancel(registration) }
+    return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }
 
