@@ -34,10 +34,10 @@ fun CSHasRegistrations.registerLater(
 }
 
 @AnyThread
-fun CSHasRegistrations.registerRepeat(
+fun CSHasRegistrations.registerLaterEach(
     delay: Int, period: Int = delay, function: () -> Unit,
 ): CSRegistration {
-    val registration = register(mainHandler.repeat(delay, period, function))
+    val registration = register(mainHandler.laterEach(delay, period, function))
     return CSRegistration { cancel(registration) }
 }
 

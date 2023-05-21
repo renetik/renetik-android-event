@@ -10,7 +10,7 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
  * LeakCanary was reporting false positives for leaks because removeCallbacks
  * looks like doesn't remove runnable immediately
  */
-fun Handler.repeat(
+fun Handler.laterEach(
     delay: Int, period: Int = delay, function: Func
 ): CSRegistration {
     val token = object {}
@@ -80,9 +80,9 @@ fun Handler.later(
 //    }
 //}
 
-fun repeat(
+fun laterEach(
     delay: Int, period: Int = delay, function: () -> Unit
-): CSRegistration = mainHandler.repeat(delay, period, function)
+): CSRegistration = mainHandler.laterEach(delay, period, function)
 
 fun later(delay: Int, function: () -> Unit): CSRegistration =
     mainHandler.later(delay, function)
