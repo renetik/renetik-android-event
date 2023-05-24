@@ -8,11 +8,12 @@ import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.Executors.newScheduledThreadPool
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 
 object CSBackground {
 
-    var executor = newScheduledThreadPool(3)
+    var executor: ScheduledExecutorService = newScheduledThreadPool(3)
         //            var executor = newSingleThreadScheduledExecutor()
         private set
 
