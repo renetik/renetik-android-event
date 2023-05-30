@@ -21,7 +21,7 @@ object CSBackground {
 
     val isBackgroundOff get() = executor.isShutdown
 
-    fun restartBackground() {
+    fun restart() {
         shutdownBackground()
         executor = newScheduledThreadPool(3)
 //        executor = newSingleThreadScheduledExecutor()
