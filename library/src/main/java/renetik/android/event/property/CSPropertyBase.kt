@@ -6,11 +6,11 @@ import renetik.android.event.common.CSModel
 
 abstract class CSPropertyBase<T>(
     parent: CSHasDestruct? = null,
-    val onChange: ((value: T) -> Unit)? = null)
-    : CSModel(parent), CSProperty<T> {
+    val onChange: ((value: T) -> Unit)? = null
+) : CSModel(parent), CSProperty<T> {
 
     constructor(onApply: ((value: T) -> Unit)? = null)
-            : this(parent = null, onChange = onApply)
+        : this(parent = null, onChange = onApply)
 
     val eventChange = event<T>()
 

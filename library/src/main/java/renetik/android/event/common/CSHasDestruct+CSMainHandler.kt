@@ -1,5 +1,6 @@
 package renetik.android.event.common
 
+import renetik.android.core.java.lang.isThreadMain
 import renetik.android.core.lang.CSMainHandler
 
 /**
@@ -10,3 +11,6 @@ fun CSHasDestruct.postOnMain(function: () -> Unit) =
 
 fun CSHasDestruct.postOnMain(delay: Int, function: () -> Unit) =
     CSMainHandler.postOnMain(delay) { if (!isDestructed) function() }
+
+fun CSHasDestruct.onMain(function: () -> Unit) =
+    if (isThreadMain) function() else postOnMain { if (!isDestructed) function() }
