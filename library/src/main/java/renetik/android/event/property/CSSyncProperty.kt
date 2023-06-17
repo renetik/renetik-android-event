@@ -5,13 +5,16 @@ import renetik.android.event.common.CSHasDestruct
 
 interface CSSyncProperty<T> : CSSynchronizedVariable<T>, CSProperty<T>
 
-fun <T> CSHasDestruct.syncProperty(
+fun <T> CSHasDestruct.synced(
     value: T, onChange: ((value: T) -> Unit)? = null
 ): CSSyncProperty<T> = CSSyncPropertyImpl(this, value, onChange)
 
-fun <T> CSHasDestruct.syncProperty(
-    property: CSProperty<T>,
-    onChange: ((value: T) -> Unit)? = null
+fun <T> CSHasDestruct.synced(
+    property: CSProperty<T>, onChange: ((value: T) -> Unit)? = null
 ): CSSyncProperty<T> = CSSyncPropertyImpl(
     this, property.value, onChange
 ).apply { connect(property) }
+
+fun <T> CSProperty<T>.synced(
+    parent: CSHasDestruct
+): CSSyncProperty<T> = parent.synced(this)

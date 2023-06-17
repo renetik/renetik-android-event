@@ -107,7 +107,7 @@ fun <T> CSProperty<T>.propertyBoolean(
     return property
 }
 
-fun <T, V> CSProperty<T>.propertyComputed(
+fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     from: (T) -> V, to: (V) -> T,
     onChange: ArgFunc<V>? = null
@@ -123,7 +123,7 @@ fun <T, V> CSProperty<T>.propertyComputed(
     return property
 }
 
-fun <T, V> CSProperty<T>.propertyComputed(
+fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
     onChange: ArgFunc<V>? = null
