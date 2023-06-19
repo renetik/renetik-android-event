@@ -51,6 +51,7 @@ class CSEventImpl<T> : CSEvent<T> {
         listeners.clear()
     }
 
+    @get:Synchronized
     override val isListened get() = listeners.hasItems
 
     inner class EventListenerImpl(

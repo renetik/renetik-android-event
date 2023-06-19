@@ -202,7 +202,7 @@ fun <T> CSProperty<T>.ifValue(
 ): CSHasChangeValue<Boolean> {
     val self = this
     return object : CSHasChangeValue<Boolean> {
-        override var value: Boolean = from(self.value)
+        override var value: Boolean = from(self.value) //TODO: Is this ok ?
         override fun onChange(function: (Boolean) -> void): CSRegistration =
             self.onChange {
                 val newValue = from(self.value)
