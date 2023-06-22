@@ -12,9 +12,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 
 object CSBackground {
-
     var executor: ScheduledExecutorService = newScheduledThreadPool(3)
-        //            var executor = newSingleThreadScheduledExecutor()
         private set
 
     fun shutdownBackground() = executor.shutdownAndWait()
