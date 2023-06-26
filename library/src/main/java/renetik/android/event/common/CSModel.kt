@@ -14,7 +14,7 @@ open class CSModel(
     parent: CSHasDestruct? = null
 ) : CSHasRegistrationsHasDestruct {
 
-    val associated by lazy { CSAssociations() }
+    val associated by lazy(::CSAssociations)
     final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestruct by lazy { event<Unit>() }
     final override var isDestructed = false
