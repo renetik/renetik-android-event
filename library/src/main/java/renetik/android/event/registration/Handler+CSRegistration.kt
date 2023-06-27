@@ -11,7 +11,7 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
  * looks like doesn't remove runnable immediately
  */
 fun Handler.laterEach(
-    delay: Int, period: Int = delay, function: Func
+    after: Int, period: Int = after, function: Func
 ): CSRegistration {
     val token = object {}
     var isCanceled = false
@@ -22,7 +22,7 @@ fun Handler.laterEach(
             if (!isCanceled) postAtTime(runnable, token, uptimeMillis() + period.toLong())
         }
     }
-    postAtTime(runnable, token, uptimeMillis() + delay.toLong())
+    postAtTime(runnable, token, uptimeMillis() + after.toLong())
     return CSRegistration(isActive = true) {
         isCanceled = true
         removeCallbacksAndMessages(token)
@@ -81,10 +81,10 @@ fun Handler.later(
 //}
 
 fun laterEach(
-    delay: Int, period: Int = delay, function: () -> Unit
-): CSRegistration = mainHandler.laterEach(delay, period, function)
+    after: Int, period: Int = after, function: () -> Unit
+): CSRegistration = mainHandler.laterEach(after, period, function)
 
-fun later(delay: Int, function: () -> Unit): CSRegistration =
-    mainHandler.later(delay, function)
+fun later(after: Int, function: () -> Unit): CSRegistration =
+    mainHandler.later(after, function)
 
 

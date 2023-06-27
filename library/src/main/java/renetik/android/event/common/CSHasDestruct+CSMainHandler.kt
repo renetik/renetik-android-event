@@ -1,16 +1,10 @@
 package renetik.android.event.common
 
 import renetik.android.core.java.lang.isThreadMain
-import renetik.android.core.lang.CSMainHandler
+import renetik.android.core.lang.CSMainHandler.postOnMain
 
-/**
- * Lightweight solution without event registration to prevent invocation after isDestructed
- */
-fun CSHasDestruct.postOnMain(function: () -> Unit) =
-    CSMainHandler.postOnMain { if (!isDestructed) function() }
-
-fun CSHasDestruct.postOnMain(delay: Int, function: () -> Unit) =
-    CSMainHandler.postOnMain(delay) { if (!isDestructed) function() }
+fun CSHasDestruct.onMain(after: Int, function: () -> Unit) =
+    postOnMain(after) { if (!isDestructed) function() }
 
 fun CSHasDestruct.onMain(function: () -> Unit) =
     if (isThreadMain) function() else postOnMain { if (!isDestructed) function() }
