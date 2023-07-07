@@ -123,6 +123,15 @@ fun <T, V> CSProperty<T>.computed(
     return property
 }
 
+fun <T, V> CSHasChangeValue<T>.computed(
+    parent: CSHasRegistrations? = null,
+    from: (T) -> V, onChange: ArgFunc<V>? = null
+): CSHasChangeValue<V> {
+    val property: CSProperty<V> = property(from(value), onChange)
+    onChange { property.value = from(value) }.also { parent?.register(it) }
+    return property
+}
+
 fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
