@@ -2,6 +2,7 @@ package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
 import renetik.android.core.lang.ArgFunc
+import renetik.android.core.lang.CSHasCancel
 import renetik.android.core.lang.Func
 import java.io.Closeable
 
