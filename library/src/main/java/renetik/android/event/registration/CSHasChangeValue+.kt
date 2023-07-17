@@ -12,16 +12,16 @@ inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     value: Value, crossinline onChange: () -> Unit
 ): CSRegistration = onChange { if (this.value == value) onChange() }
 
-fun <T, V> CSHasChangeValue<T>.computed(
+inline fun <T, V> CSHasChangeValue<T>.computed(
     parent: CSHasRegistrations? = null,
-    from: (T) -> V, onChange: ArgFunc<V>? = null
+    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null
 ): CSHasChangeValue<V> {
     val property: CSProperty<V> = property(from(value), onChange)
     onChange { property.value = from(value) }.also { parent?.register(it) }
     return property
 }
 
-fun <Value> CSHasChangeValue<Value>.ifValue(
+fun <Value> CSHasChangeValue<Value>.hasValue(
     parent: CSHasRegistrations? = null, value: Value,
 ): CSHasChangeValue<Boolean> = computed(parent, from = { it == value })
 
@@ -98,6 +98,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.actionNullabl
     })
 }
 
+//inline not possible
 fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item
 ): CSRegistration = action { value -> list.update(value, function) }

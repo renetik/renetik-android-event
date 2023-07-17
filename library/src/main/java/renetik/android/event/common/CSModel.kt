@@ -2,6 +2,7 @@ package renetik.android.event.common
 
 import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.className
+import renetik.android.core.kotlin.reflect.lazyValue
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.lang.lazy.CSLazyVal.Companion.lazyVal
@@ -17,11 +18,8 @@ open class CSModel(
 
     val associated by lazy(::CSAssociations)
 
-    private val registrationsLazyVal = lazyVal { CSRegistrationsMap(this) }
-    final override val registrations by registrationsLazyVal
-
-    private val eventDestructLazyVal = lazyVal { event<Unit>() }
-    final override val eventDestruct by eventDestructLazyVal
+    final override val registrations by lazyVal { CSRegistrationsMap(this) }
+    final override val eventDestruct by lazyVal { event<Unit>() }
 
     final override var isDestructed = false
         private set
@@ -36,8 +34,8 @@ open class CSModel(
             return
         }
         isDestructed = true
-        if (registrationsLazyVal.isInitialized) registrations.cancel()
-        if (eventDestructLazyVal.isInitialized) eventDestruct.fire().clear()
+        ::registrations.lazyValue?.cancel()
+        ::eventDestruct.lazyValue?.fire()?.clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
 }
