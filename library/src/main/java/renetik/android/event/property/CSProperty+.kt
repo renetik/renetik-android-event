@@ -15,6 +15,7 @@ import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
+import kotlin.properties.Delegates.notNull
 
 fun <T : CSProperty<*>> T.apply() = apply { fireChange() }
 
@@ -123,15 +124,6 @@ fun <T, V> CSProperty<T>.computed(
     return property
 }
 
-fun <T, V> CSHasChangeValue<T>.computed(
-    parent: CSHasRegistrations? = null,
-    from: (T) -> V, onChange: ArgFunc<V>? = null
-): CSHasChangeValue<V> {
-    val property: CSProperty<V> = property(from(value), onChange)
-    onChange { property.value = from(value) }.also { parent?.register(it) }
-    return property
-}
-
 fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     get: (T) -> V, set: (CSProperty<T>, V) -> void,
@@ -204,28 +196,6 @@ fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValueDelegate(
         )
     }
 }
-
-fun <T> CSProperty<T>.ifValue(
-    parent: CSHasRegistrations? = null,
-    from: (T) -> Boolean
-): CSHasChangeValue<Boolean> {
-    val self = this
-    return object : CSHasChangeValue<Boolean> {
-        override var value: Boolean = from(self.value) //TODO: Is this ok ?
-        override fun onChange(function: (Boolean) -> void): CSRegistration =
-            self.onChange {
-                val newValue = from(self.value)
-                if (value != newValue) {
-                    value = newValue
-                    function(newValue)
-                }
-            }.also { parent?.register(it) }
-    }
-}
-
-fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
-    list: MutableList<Item>, function: (index: Int) -> Item
-): CSRegistration = action { value -> list.update(value, function) }
 
 operator fun CSProperty<List<Int>>.set(index: Int, newValue: Int) {
     value = value.toMutableList().also { it[index] = newValue }
