@@ -8,16 +8,14 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
     private val id by lazy { "$parent" }
     override val registrations: CSRegistrations = this
     private val registrationList = mutableListOf<CSRegistration>()
-    override var isActive by variable(true) { onActiveChange(it) }
-    override var isCanceled = false
 
-    private fun onActiveChange(isActive: Boolean) {
-        if (isCanceled) {
-            logWarnTrace { "Already canceled:$id" }
-            return
-        }
-        registrationList.forEach { it.setActive(isActive) }
-    }
+    @get:Synchronized
+    override var isActive by variable(true, ::onActiveChange)
+        private set
+
+    @get:Synchronized
+    override var isCanceled: Boolean = false
+        private set
 
     @Synchronized
     @AnyThread
@@ -39,6 +37,15 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
         }
         if (isActive) isActive = false
         else logWarnTrace { "Already pause:$this" }
+    }
+
+    @Synchronized
+    private fun onActiveChange(isActive: Boolean) {
+        if (isCanceled) {
+            logWarnTrace { "Already canceled:$id" }
+            return
+        }
+        registrationList.forEach { it.setActive(isActive) }
     }
 
     @Synchronized

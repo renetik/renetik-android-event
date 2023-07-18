@@ -11,8 +11,14 @@ class CSRegistrationsMap(
 ) : CSRegistrations, CSHasRegistrations {
 
     override val registrations: CSRegistrationsMap = this
-    override var isActive: Boolean by variable(true, ::onActiveChange)
+
+    @get:Synchronized
+    override var isActive by variable(true, ::onActiveChange)
+        private set
+
+    @get:Synchronized
     override var isCanceled: Boolean = false
+        private set
 
     private val registrationMap: MutableMap<String, CSRegistration> = mutableMapOf()
     private var idCount: Int = 0

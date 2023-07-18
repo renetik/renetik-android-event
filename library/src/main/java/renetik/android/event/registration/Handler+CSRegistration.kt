@@ -2,7 +2,7 @@ package renetik.android.event.registration
 
 import android.os.Handler
 import android.os.SystemClock.uptimeMillis
-import renetik.android.core.lang.CSMainHandler.mainHandler
+import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 

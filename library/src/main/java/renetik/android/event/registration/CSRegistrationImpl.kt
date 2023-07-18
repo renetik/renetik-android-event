@@ -4,9 +4,15 @@ import androidx.annotation.AnyThread
 import renetik.android.core.logging.CSLog.logWarnTrace
 
 open class CSRegistrationImpl(
-    override var isActive: Boolean = false,
+    isActive: Boolean = false
 ) : CSRegistration {
-    override var isCanceled: Boolean = false
+    @get:Synchronized
+    final override var isActive: Boolean = isActive
+        private set
+
+    @get:Synchronized
+    final override var isCanceled: Boolean = false
+        private set
 
     @Synchronized
     @AnyThread

@@ -3,7 +3,7 @@ package renetik.android.event.registration
 import androidx.annotation.AnyThread
 import renetik.android.core.java.lang.CSThread.currentThread
 import renetik.android.core.java.lang.isMain
-import renetik.android.core.lang.CSMainHandler.mainHandler
+import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.event.registration.task.CSBackground.background
 
@@ -19,6 +19,7 @@ fun CSHasRegistrations.registerLater(
     return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }
 
+@Deprecated("Can we use instead later extension on HasDestroy ?")
 @AnyThread
 fun CSHasRegistrations.registerLater(
     function: () -> Unit,
