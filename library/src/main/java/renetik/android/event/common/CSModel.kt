@@ -16,6 +16,7 @@ open class CSModel(
     parent: CSHasDestruct? = null
 ) : CSHasRegistrationsHasDestruct {
 
+    @Deprecated("Just one use in project..")
     val associated by lazy(::CSAssociations)
 
     final override val registrations by lazyVal { CSRegistrationsMap(this) }
@@ -25,7 +26,7 @@ open class CSModel(
         private set
 
     init {
-        parent?.let(::parent)
+        parent?.let(::registerParent)
     }
 
     override fun onDestruct() {

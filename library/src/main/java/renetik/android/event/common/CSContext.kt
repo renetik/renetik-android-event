@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
 import renetik.android.core.kotlin.className
+import renetik.android.core.kotlin.reflect.lazyValue
 import renetik.android.core.kotlin.unexpected
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
@@ -18,28 +19,31 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     constructor(context: Context) : super(context)
 
     constructor(parent: CSContext) : this(parent.context) {
-        parent(parent)
+        registerParent(parent)
     }
 
     constructor(parent: CSHasContext) : this(parent.context) {
-        parent(parent)
+        registerParent(parent)
     }
 
     final override val context: Context get() = this
-    val associated by lazy { CSAssociations() }
+
+    @Deprecated("Just one use in project..")
+    val associated by lazy(::CSAssociations)
+
     final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestruct by lazy { event<Unit>() }
+
     final override var isDestructed = false
         private set
 
     override fun onDestruct() {
         if (isDestructed) unexpected("$className $this Already destroyed")
         isDestructed = true
-        registrations.cancel()
-        eventDestruct.fire().clear()
+        ::registrations.lazyValue?.cancel()
+        ::eventDestruct.lazyValue?.fire()?.clear()
         expectWeaklyReachable("CSContext $this onDestroy")
     }
-
 
     override fun unregisterReceiver(receiver: BroadcastReceiver) =
         catchAllWarn { super.unregisterReceiver(receiver) }
