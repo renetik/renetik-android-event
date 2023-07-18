@@ -40,13 +40,13 @@ fun CSHasRegistrations.registerLaterEach(
     return CSRegistration { cancel(registration) }
 }
 
-@AnyThread
-fun <T : CSHasRegistrations> T.registerOnMain(
-    function: (T).() -> Unit,
-): CSRegistration? = if (currentThread.isMain) {
-    function()
-    null
-} else registerLater { function(this) }
+//@AnyThread
+//fun <T : CSHasRegistrations> T.registerOnMain(
+//    function: (T).() -> Unit,
+//): CSRegistration? = if (currentThread.isMain) {
+//    function()
+//    null
+//} else registerLater { function(this) }
 
 @AnyThread
 fun CSHasRegistrations.registerBackground(

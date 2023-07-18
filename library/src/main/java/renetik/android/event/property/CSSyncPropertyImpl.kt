@@ -1,7 +1,7 @@
 package renetik.android.event.property
 
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.onMain
+import renetik.android.event.util.CSLater.onMain
 
 class CSSyncPropertyImpl<T>(
     parent: CSHasDestruct,

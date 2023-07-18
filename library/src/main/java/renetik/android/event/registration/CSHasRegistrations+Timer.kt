@@ -1,9 +1,6 @@
 package renetik.android.event.registration
 
-import renetik.android.core.java.util.CSTimer
-import renetik.android.core.java.util.concurrent.cancel
-import renetik.android.core.lang.Func
-import java.util.concurrent.ScheduledFuture
+//import renetik.android.core.java.util.CSTimer
 
 //inline fun CSTimer.schedule(
 //    interval: Long, delay: Long = interval,
