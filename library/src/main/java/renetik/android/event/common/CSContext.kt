@@ -3,13 +3,12 @@ package renetik.android.event.common
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
-import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.reflect.lazyValue
-import renetik.android.core.kotlin.unexpected
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.lang.catchAllWarn
+import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistrationsMap
@@ -38,7 +37,10 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         private set
 
     override fun onDestruct() {
-        if (isDestructed) unexpected("$className $this Already destroyed")
+        if (isDestructed) {
+            logWarnTrace { "Already destroyed: $this" }
+            return
+        }
         isDestructed = true
         ::registrations.lazyValue?.cancel()
         ::eventDestruct.lazyValue?.fire()?.clear()
