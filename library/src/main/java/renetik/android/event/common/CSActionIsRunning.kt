@@ -1,12 +1,11 @@
 package renetik.android.event.common
 
-
 import renetik.android.core.kotlin.collections.list
 import renetik.android.event.property.CSActionInterface
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSPropertyWrapper
-import renetik.android.event.property.action
+import renetik.android.event.registration.CSHasChangeValue.Companion.action
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.event.registration.cancel
@@ -31,7 +30,7 @@ class CSActionIsRunning(
             property.value(runningActions.size > 0)
         }
 
-        val actionOnChange = register(action.action { updateIsRunning(it) })
+        val actionOnChange = register(action.action(::updateIsRunning))
 
         return CSRegistration(onCancel = {
             cancel(actionOnChange)

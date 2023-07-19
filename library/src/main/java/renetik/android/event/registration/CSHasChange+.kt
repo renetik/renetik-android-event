@@ -4,8 +4,6 @@ import renetik.android.core.lang.Func
 import renetik.android.core.lang.void
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
 
-typealias HasChange = CSHasChange<Unit>
-
 inline fun <Argument> CSHasChange<Argument>.onChange(
     crossinline function: () -> Unit,
 ): CSRegistration = onChange { _ -> function() }

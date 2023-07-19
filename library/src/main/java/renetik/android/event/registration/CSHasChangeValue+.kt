@@ -1,12 +1,32 @@
 package renetik.android.event.registration
 
+import renetik.android.core.kotlin.primitives.isFalse
+import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.ArgFunc
+import renetik.android.core.lang.value.isFalse
+import renetik.android.core.lang.value.isTrue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.property.action
+import renetik.android.event.registration.CSHasChangeValue.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+
+fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
+    onChange { if (it.isFalse) function() }
+
+fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit) =
+    onChange { if (it.isTrue) function() }
+
+fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
+    if (isTrue()) function()
+    return onTrue(function)
+}
+
+fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
+    if (isFalse()) function()
+    return onFalse(function)
+}
 
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     value: Value, crossinline onChange: () -> Unit
@@ -27,12 +47,12 @@ fun <Value> CSHasChangeValue<Value>.hasValue(
 
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    crossinline onChange: (ChildValue) -> Unit
+    noinline onChange: (ChildValue) -> Unit
 ): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = onChange {
         childRegistration?.cancel()
-        childRegistration = child(value).action { onChange(it) }
+        childRegistration = child(value).action(onChange)
     }
     return CSRegistration(isActive = true, onCancel = {
         parentRegistration.cancel()
@@ -58,7 +78,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    crossinline onChange: (ChildValue) -> Unit
+    noinline onChange: (ChildValue) -> Unit
 ): CSRegistration {
     onChange(child(value).value)
     return onChange(child, onChange)
