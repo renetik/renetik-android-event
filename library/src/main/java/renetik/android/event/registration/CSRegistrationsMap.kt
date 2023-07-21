@@ -5,9 +5,10 @@ import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.event.common.CSHasDestruct
 
 class CSRegistrationsMap(
-    private val parent: Any,
+    private val parent: CSHasDestruct,
 ) : CSRegistrations, CSHasRegistrations {
 
     override val registrations: CSRegistrationsMap = this
@@ -17,10 +18,10 @@ class CSRegistrationsMap(
         private set
 
     @get:Synchronized
-    override var isCanceled: Boolean = false
+    override var isCanceled: Boolean = parent.isDestructed
         private set
 
-    private val registrationMap: MutableMap<String, CSRegistration> = mutableMapOf()
+    private val registrationMap: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
     private var idCount: Int = 0
     private fun createUniqueId() = "$idCount: $nanoTime".also { idCount++ }
 

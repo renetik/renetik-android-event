@@ -3,6 +3,8 @@ package renetik.android.event
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import renetik.android.core.logging.CSDummyLogger
 import renetik.android.core.logging.CSLog.init
 import renetik.android.event.CSEvent.Companion.event
@@ -10,9 +12,7 @@ import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.registration.register
 
-/**
- * Event unregister after owner nulled
- */
+@RunWith(RobolectricTestRunner::class)
 class EventOwnerEventTest {
 
     @Before
@@ -42,5 +42,4 @@ class EventOwnerEventTest {
         event.fire()
         assertEquals(0, count)
     }
-
 }
