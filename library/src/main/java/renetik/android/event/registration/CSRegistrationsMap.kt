@@ -6,6 +6,7 @@ import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.common.CSHasDestruct
+import java.util.concurrent.atomic.AtomicInteger
 
 class CSRegistrationsMap(
     private val parent: CSHasDestruct,
@@ -22,8 +23,8 @@ class CSRegistrationsMap(
         private set
 
     private val registrationMap: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
-    private var idCount: Int = 0
-    private fun createUniqueId() = "$idCount: $nanoTime".also { idCount++ }
+    private val counter = AtomicInteger(0)
+    private fun createUniqueId() = "${counter.incrementAndGet()}: $nanoTime"
 
     private fun onActiveChange(isActive: Boolean) {
         if (isCanceled) {
