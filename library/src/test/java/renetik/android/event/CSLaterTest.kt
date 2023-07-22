@@ -7,9 +7,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 import renetik.android.event.util.CSLater.later
 
-/**
- * Post function on main thread with registration support
- */
 @RunWith(RobolectricTestRunner::class)
 class CSLaterTest {
     @Test
