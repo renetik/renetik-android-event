@@ -6,6 +6,7 @@ import renetik.android.core.lang.CSHasCancel
 import renetik.android.core.lang.Func
 import java.io.Closeable
 
+//TODO: Implement CSRegistrationMap and List with weak values wrappers..
 interface CSRegistration : CSHasCancel, Closeable {
     val isActive: Boolean
     val isCanceled: Boolean
