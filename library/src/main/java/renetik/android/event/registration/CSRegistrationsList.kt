@@ -87,19 +87,13 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
     @Synchronized
     @AnyThread
     override fun cancel(registration: CSRegistration) {
-        if (registration.isCanceled) {
-            logWarnTrace { "Registration already canceled:$registration" }
-            registrationList.remove(registration)
-            return
-        }
+        val wasPresent = registrationList.remove(registration)
+        if (registration.isCanceled && !wasPresent) return
+        if (!wasPresent)
+            logWarnTrace { "Registration not found:$registration" }
+        if (registration.isCanceled) return
         registration.cancel()
-        if (!registrationList.remove(registration)) logWarnTrace {
-            "Registration not found"
-        }
-        if (isCanceled) {
-            logWarnTrace { "Already canceled:$id" }
-            return
-        }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
     }
 
     val size: Int get() = registrationList.size

@@ -115,15 +115,9 @@ class CSRegistrationsMap(
         if (registration.isCanceled && !wasPresent) return
         if (!wasPresent)
             logWarnTrace { "Registration not found:$registration" }
-        if (registration.isCanceled) {
-            logWarnTrace { "Registration already canceled but was present:$registration" }
-            return
-        }
+        if (registration.isCanceled) return
         registration.cancel()
-        if (isCanceled) {
-            logWarnTrace { "Already canceled:$this" }
-            return
-        }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
     }
 
     val size: Int get() = registrationMap.size
