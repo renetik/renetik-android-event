@@ -1,11 +1,10 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
-import renetik.android.core.java.lang.CSThread.currentThread
-import renetik.android.core.java.lang.isMain
 import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.event.registration.task.CSBackground.background
+import renetik.android.event.util.CSLater.later
 
 @AnyThread
 fun CSHasRegistrations.registerLater(
@@ -13,8 +12,8 @@ fun CSHasRegistrations.registerLater(
 ): CSRegistration {
     lateinit var registration: CSRegistration
     registration = register(later(if (delay < 10) 10 else delay) {
-        function()
         cancel(registration)
+        function()
     })
     return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }
@@ -26,8 +25,8 @@ fun CSHasRegistrations.registerLater(
 ): CSRegistration {
     lateinit var registration: CSRegistration
     registration = register(later(10) {
-        function()
         cancel(registration)
+        function()
     })
     return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }

@@ -2,7 +2,6 @@ package renetik.android.event.registration
 
 import android.os.Handler
 import android.os.SystemClock.uptimeMillis
-import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
@@ -10,8 +9,8 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
  * LeakCanary was reporting false positives for leaks because removeCallbacks
  * looks like doesn't remove runnable immediately
  */
-fun Handler.laterEach(
-    after: Int, period: Int = after, function: Func
+inline fun Handler.laterEach(
+    after: Int, period: Int = after, crossinline function: Func
 ): CSRegistration {
     val token = object {}
     var isCanceled = false
@@ -28,6 +27,10 @@ fun Handler.laterEach(
         removeCallbacksAndMessages(token)
     }
 }
+
+//fun laterEach(
+//    after: Int, period: Int = after, function: () -> Unit
+//): CSRegistration = mainHandler.laterEach(after, period, function)
 
 // Worked good:
 //fun Handler.repeat(
@@ -56,8 +59,8 @@ fun Handler.laterEach(
 //}
 
 //TODO: Why we have this another special later ?
-fun Handler.later(
-    after: Int, function: Func
+inline fun Handler.later(
+    after: Int, crossinline function: Func
 ): CSRegistration {
     val token = object {}
     var isCanceled = false
@@ -67,6 +70,9 @@ fun Handler.later(
         removeCallbacksAndMessages(token)
     }
 }
+
+//fun later(after: Int, function: () -> Unit): CSRegistration =
+//    mainHandler.later(after, function)
 
 //fun Handler.later(
 //    after: Int, function: Func
@@ -81,11 +87,6 @@ fun Handler.later(
 //    }
 //}
 
-fun laterEach(
-    after: Int, period: Int = after, function: () -> Unit
-): CSRegistration = mainHandler.laterEach(after, period, function)
 
-fun later(after: Int, function: () -> Unit): CSRegistration =
-    mainHandler.later(after, function)
 
 
