@@ -13,19 +13,21 @@ inline fun Handler.laterEach(
     after: Int, period: Int = after, crossinline function: Func
 ): CSRegistration {
     val token = object {}
-    var isCanceled = false
+    lateinit var registration: CSRegistration
     lateinit var runnable: Func
     runnable = {
-        if (!isCanceled) {
-            function()
-            if (!isCanceled) postAtTime(runnable, token, uptimeMillis() + period.toLong())
+        if (!registration.isCanceled) {
+            if (registration.isActive) function()
+            if (!registration.isCanceled) postAtTime(
+                runnable,
+                token,
+                uptimeMillis() + period.toLong()
+            )
         }
     }
     postAtTime(runnable, token, uptimeMillis() + after.toLong())
-    return CSRegistration(isActive = true) {
-        isCanceled = true
-        removeCallbacksAndMessages(token)
-    }
+    registration = CSRegistration(isActive = true) { removeCallbacksAndMessages(token) }
+    return registration
 }
 
 //fun laterEach(
