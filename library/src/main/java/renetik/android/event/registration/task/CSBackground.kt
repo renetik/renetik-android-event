@@ -62,15 +62,17 @@ object CSBackground {
         executor.background(after.toLong()) { if (!isDestructed) function() }
     }
 
+    // I was getting "lateinit property registration has not been initialized" this is fail safe..
     inline fun CSHasDestruct.backgroundRepeat(
         interval: Int, after: Int = interval,
         crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
-        lateinit var registration: CSRegistration
-        val task = executor.backgroundRepeat(interval.toLong(), after.toLong()) {
+        var task: ScheduledFuture<*>? = null
+        val registration = CSRegistration { task?.cancel(true) }
+        task = executor.backgroundRepeat(interval.toLong(), after.toLong()) {
             if (!isDestructed) function(registration)
         }
-        registration = CSRegistration { task.cancel(true) }
+        if (registration.isCanceled && !task.isCancelled) task.cancel(true)
         return registration
     }
 }
