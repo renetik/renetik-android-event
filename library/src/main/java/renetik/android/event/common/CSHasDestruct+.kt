@@ -1,4 +1,7 @@
 package renetik.android.event.common
 
-fun CSHasDestruct.destruct() = onDestruct()
+import renetik.android.core.java.util.concurrent.background
+import renetik.android.event.registration.task.CSBackground
+import renetik.android.event.registration.task.CSBackground.executor
 
+fun CSHasDestruct.destruct() = onDestruct()

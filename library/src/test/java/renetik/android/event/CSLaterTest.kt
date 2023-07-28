@@ -5,18 +5,20 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
-import renetik.android.event.util.CSLater.later
+import renetik.android.core.lang.CSHandler.main
+import renetik.android.core.lang.send
+import renetik.android.event.registration.later
 
 @RunWith(RobolectricTestRunner::class)
 class CSLaterTest {
     @Test
     fun testUnregisteredAfterNilled() {
         var count = 0
-        later { count++ }
+        main.send { count++ }
         runUiThreadTasksIncludingDelayedTasks()
         assertEquals(1, count)
 
-        val registration = later {
+        val registration = main.later {
             count++
         }
         registration.cancel()

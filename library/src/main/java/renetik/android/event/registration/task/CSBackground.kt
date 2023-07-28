@@ -1,10 +1,8 @@
 package renetik.android.event.registration.task
 
-import android.os.Handler
-import android.os.HandlerThread
 import androidx.annotation.WorkerThread
 import renetik.android.core.java.util.concurrent.background
-import renetik.android.core.java.util.concurrent.backgroundRepeat
+import renetik.android.core.java.util.concurrent.backgroundEach
 import renetik.android.core.java.util.concurrent.cancelNotInterrupt
 import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.common.CSHasDestruct
@@ -16,10 +14,6 @@ import java.util.concurrent.ScheduledFuture
 
 object CSBackground {
 
-    val handler: Handler by lazy {
-        HandlerThread("CSBackground handler").run { start(); Handler(looper) }
-    }
-
     var executor: ScheduledExecutorService = newScheduledThreadPool(3)
         private set
 
@@ -30,29 +24,32 @@ object CSBackground {
     fun restart() {
         shutdownBackground()
         executor = newScheduledThreadPool(3)
-//        executor = newSingleThreadScheduledExecutor()
     }
 
     inline fun background(
         after: Int = 0, @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
-        lateinit var task: ScheduledFuture<*>
-        val registration = CSRegistration(isActive = true) { task.cancelNotInterrupt() }
+        var task: ScheduledFuture<*>? = null
+        val registration = CSRegistration(isActive = true) { task?.cancelNotInterrupt() }
         task = executor.background(after.toLong()) {
             if (registration.isActive) function(registration)
         }
+        if (registration.isCanceled && !task.isCancelled) task.cancel(true)
         return CSRegistration(isActive = true) { task.cancelNotInterrupt() }
     }
 
-    inline fun backgroundRepeat(
-        interval: Int, delay: Int = interval, @WorkerThread crossinline function: () -> Unit,
-    ): ScheduledFuture<*> =
-        executor.backgroundRepeat(delay.toLong(), interval.toLong(), function)
-
-    inline fun backgroundRepeat(
-        interval: Int, @WorkerThread crossinline function: () -> Unit,
-    ): ScheduledFuture<*> =
-        executor.backgroundRepeat(interval.toLong(), function)
+    inline fun backgroundEach(
+        after: Int, period: Int = after,
+        crossinline function: (CSRegistration) -> Unit,
+    ): CSRegistration {
+        var task: ScheduledFuture<*>? = null
+        val registration = CSRegistration(isActive = true) { task?.cancelNotInterrupt() }
+        task = executor.backgroundEach(period.toLong(), after.toLong()) {
+            if (registration.isActive) function(registration)
+        }
+        if (registration.isCanceled && !task.isCancelled) task.cancel(true)
+        return registration
+    }
 
     inline fun CSHasDestruct.background(crossinline function: () -> Unit) {
         background(after = 0, function)
@@ -60,20 +57,6 @@ object CSBackground {
 
     inline fun CSHasDestruct.background(after: Int = 0, crossinline function: () -> Unit) {
         executor.background(after.toLong()) { if (!isDestructed) function() }
-    }
-
-    // I was getting "lateinit property registration has not been initialized" this is fail safe..
-    inline fun CSHasDestruct.backgroundRepeat(
-        interval: Int, after: Int = interval,
-        crossinline function: (CSRegistration) -> Unit,
-    ): CSRegistration {
-        var task: ScheduledFuture<*>? = null
-        val registration = CSRegistration { task?.cancel(true) }
-        task = executor.backgroundRepeat(interval.toLong(), after.toLong()) {
-            if (!isDestructed) function(registration)
-        }
-        if (registration.isCanceled && !task.isCancelled) task.cancel(true)
-        return registration
     }
 }
 
