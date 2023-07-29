@@ -3,10 +3,10 @@ package renetik.android.event.property
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.util.CSLater.onMain
 
-class CSSyncPropertyImpl<T>(
+class CSSafePropertyImpl<T>(
     parent: CSHasDestruct,
     value: T, onChange: ((value: T) -> Unit)? = null
-) : CSPropertyBase<T>(parent, onChange), CSSyncProperty<T> {
+) : CSPropertyBase<T>(parent, onChange), CSSafeProperty<T> {
 
     @get:Synchronized
     private var field: T = value
