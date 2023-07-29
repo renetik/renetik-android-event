@@ -15,6 +15,7 @@ fun <T> CSHasDestruct.safe(
     this, property.value, onChange
 ).apply { connect(property) }
 
-fun <T> CSProperty<T>.safe(
-    parent: CSHasDestruct
-): CSSafeProperty<T> = parent.safe(this)
+//@Deprecated("Use CSHasDestruct.safe")
+//fun <T> CSProperty<T>.safe(
+//    parent: CSHasDestruct
+//): CSSafeProperty<T> = parent.safe(this)
