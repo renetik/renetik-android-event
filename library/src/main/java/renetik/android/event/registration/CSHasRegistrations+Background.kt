@@ -17,10 +17,9 @@ inline fun CSHasRegistrations.registerBackground(
 inline fun CSHasRegistrations.registerBackground(
     after: Int, @WorkerThread crossinline function: () -> Unit,
 ): CSRegistration {
-    lateinit var registration: CSRegistration
-    registration = register(background(after) {
+    val registration = register(background(after) { //after.min(10)
         function()
-        cancel(registration)
+        cancel(it)
     })
     return CSRegistration { if (!registration.isCanceled) cancel(registration) }
 }

@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.SystemClock.uptimeMillis
 import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import kotlin.time.Duration
 
 /**
  * LeakCanary was reporting false positives for leaks because removeCallbacks
@@ -47,3 +48,10 @@ inline fun Handler.later(crossinline function: Func): CSRegistration {
         removeCallbacksAndMessages(token)
     }
 }
+
+inline fun Handler.laterEach(
+    after: Duration, period: Duration = after, crossinline function: Func
+) = laterEach(after.inWholeMilliseconds.toInt(), period.inWholeMilliseconds.toInt(), function)
+
+inline fun Handler.later(after: Duration, crossinline function: Func) =
+    later(after.inWholeMilliseconds.toInt(), function)

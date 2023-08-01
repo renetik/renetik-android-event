@@ -11,6 +11,7 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 import renetik.android.event.registration.cancel
 import renetik.android.event.registration.later
 import renetik.android.event.registration.register
+import kotlin.time.Duration
 
 object CSLater {
     //    TODO: Move to CSHasDestruct+MainHandler
@@ -32,4 +33,8 @@ object CSLater {
         })
         return CSRegistration { if (!registration.isCanceled) cancel(registration) }
     }
+
+    inline fun CSHasRegistrations.later(
+        after: Duration, crossinline function: () -> Unit
+    ) = later(after.inWholeMilliseconds.toInt(), function)
 }
