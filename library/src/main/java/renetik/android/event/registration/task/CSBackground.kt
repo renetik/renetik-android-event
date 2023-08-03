@@ -35,7 +35,7 @@ object CSBackground {
             if (registration.isActive) function(registration)
         }
         if (registration.isCanceled && !task.isCancelled) task.cancel(true)
-        return CSRegistration(isActive = true) { task.cancelNotInterrupt() }
+        return registration
     }
 
     inline fun backgroundEach(
@@ -49,14 +49,6 @@ object CSBackground {
         }
         if (registration.isCanceled && !task.isCancelled) task.cancel(true)
         return registration
-    }
-
-    inline fun CSHasDestruct.background(crossinline function: () -> Unit) {
-        background(after = 0, function)
-    }
-
-    inline fun CSHasDestruct.background(after: Int = 0, crossinline function: () -> Unit) {
-        executor.background(after.toLong()) { if (!isDestructed) function() }
     }
 }
 
