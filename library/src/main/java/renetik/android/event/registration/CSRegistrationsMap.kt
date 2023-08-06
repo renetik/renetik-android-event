@@ -1,16 +1,13 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
+import java.util.concurrent.atomic.AtomicInteger
 import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
-import renetik.android.event.common.CSHasDestruct
-import java.util.concurrent.atomic.AtomicInteger
 
-class CSRegistrationsMap(
-    private val parent: CSHasDestruct,
-) : CSRegistrations, CSHasRegistrations {
+class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegistrations {
 
     override val registrations: CSRegistrationsMap = this
 
@@ -19,7 +16,7 @@ class CSRegistrationsMap(
         private set
 
     @get:Synchronized
-    override var isCanceled: Boolean = parent.isDestructed
+    override var isCanceled: Boolean = false
         private set
 
     private val registrationMap: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)

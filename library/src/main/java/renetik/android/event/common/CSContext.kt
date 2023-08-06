@@ -3,7 +3,6 @@ package renetik.android.event.common
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
-import renetik.android.core.kotlin.reflect.lazyValue
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
@@ -30,8 +29,9 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     @Deprecated("Just one use in project..")
     val associated by lazy(::CSAssociations)
 
-    final override val registrations by lazy { CSRegistrationsMap(this) }
-    final override val eventDestruct by lazy { event<Unit>() }
+    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
+    final override val registrations by lazyRegistrations
+    final override val eventDestruct = event<Unit>()
 
     final override var isDestructed = false
         private set
@@ -42,8 +42,8 @@ abstract class CSContext : ContextWrapper, CSHasContext {
             return
         }
         isDestructed = true
-        ::registrations.lazyValue?.cancel()
-        ::eventDestruct.lazyValue?.fire()?.clear()
+        if (lazyRegistrations.isInitialized()) registrations.cancel()
+        eventDestruct.fire().clear()
         expectWeaklyReachable("CSContext $this onDestroy")
     }
 

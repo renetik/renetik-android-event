@@ -1,10 +1,8 @@
 package renetik.android.event.common
 
 import renetik.android.core.kotlin.className
-import renetik.android.core.kotlin.reflect.lazyValue
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
-import renetik.android.core.lang.lazy.CSLazyVal.Companion.lazyVal
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
@@ -17,8 +15,9 @@ open class CSModel(
     @Deprecated("Just one use in project..")
     val associated by lazy(::CSAssociations)
 
-    final override val registrations by lazyVal { CSRegistrationsMap(this) }
-    final override val eventDestruct by lazyVal { event<Unit>() }
+    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
+    final override val registrations by lazyRegistrations
+    final override val eventDestruct = event<Unit>()
 
     final override var isDestructed = false
         private set
@@ -33,8 +32,8 @@ open class CSModel(
             return
         }
         isDestructed = true
-        ::registrations.lazyValue?.cancel()
-        ::eventDestruct.lazyValue?.fire()?.clear()
+        if (lazyRegistrations.isInitialized()) registrations.cancel()
+        eventDestruct.fire().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
 }
