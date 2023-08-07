@@ -5,6 +5,7 @@ import renetik.android.event.common.CSHasDestruct
 
 interface CSSafeProperty<T> : CSSynchronizedVariable<T>, CSProperty<T>
 
+@Deprecated("use safe(prop..")
 fun <T> CSHasDestruct.safeProperty(
     value: T, onChange: ((value: T) -> Unit)? = null
 ): CSSafeProperty<T> = CSSafePropertyImpl(this, value, onChange)
@@ -14,8 +15,3 @@ fun <T> CSHasDestruct.safe(
 ): CSSafeProperty<T> = CSSafePropertyImpl(
     this, property.value, onChange
 ).apply { connect(property) }
-
-//@Deprecated("Use CSHasDestruct.safe")
-//fun <T> CSProperty<T>.safe(
-//    parent: CSHasDestruct
-//): CSSafeProperty<T> = parent.safe(this)

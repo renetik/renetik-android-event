@@ -1,7 +1,7 @@
 package renetik.android.event.process
 
 import renetik.android.core.kotlin.rootCause
-import renetik.android.core.lang.variable.CSSynchronizedProperty.Companion.synchronized
+import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
@@ -46,7 +46,7 @@ open class CSProcess<Data : Any>(
     var isSuccess = false
     var isFailed = false
     var isDone = false
-    var isCanceled by synchronized(false)
+    var isCanceled by atomic(false)
     var title: String? = null
     var failedMessage: String? = null
     var failedProcess: CSProcess<*>? = null
