@@ -1,5 +1,6 @@
 package renetik.android.event.property
 
+import java.util.concurrent.atomic.AtomicReference
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.util.CSLater.onMain
 
@@ -8,16 +9,14 @@ class CSSafePropertyImpl<T>(
     value: T, onChange: ((value: T) -> Unit)? = null
 ) : CSPropertyBase<T>(parent, onChange), CSSafeProperty<T> {
 
-    @get:Synchronized
-    private var field: T = value
+    private val field = AtomicReference(value)
 
-    override fun value(newValue: T, fire: Boolean): Unit = synchronized(this) {
-        if (field == newValue) return
-        field = newValue
-        onMain { onValueChanged(newValue) }
+    override fun value(newValue: T, fire: Boolean) {
+        if (field.getAndSet(newValue) != newValue)
+            onMain { onValueChanged(newValue, fire) }
     }
 
     override var value: T
-        get() = this.field
+        get() = this.field.get()
         set(value) = value(value)
 }
