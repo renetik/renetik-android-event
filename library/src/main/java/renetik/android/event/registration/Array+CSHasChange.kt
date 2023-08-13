@@ -12,6 +12,14 @@ inline fun <T : CSHasChange<*>> Array<T>.onChangeLater(
     return registrations
 }
 
+inline fun <T : CSHasChange<*>> Array<T>.onChange(
+    crossinline function: Func
+): CSRegistration {
+    val registrations = CSRegistrationsList(this)
+    forEach { registrations.register(it.onChange(function)) }
+    return registrations
+}
+
 inline fun <T : CSHasChange<*>> Array<T>.actionOnChangeLater(
     crossinline function: Func
 ): CSRegistration {

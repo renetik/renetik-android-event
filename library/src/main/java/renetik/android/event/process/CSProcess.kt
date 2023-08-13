@@ -9,6 +9,7 @@ import renetik.android.core.logging.CSLog.logWarn
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
+import renetik.android.event.common.destruct
 import renetik.android.event.util.CSLater.later
 
 open class CSProcess<Data : Any>(
@@ -130,7 +131,7 @@ open class CSProcess<Data : Any>(
         }
         isDone = true
         eventDone.fire(this)
-        onDestruct()
+        destruct()
     }
 
     override fun toString() = "${super.toString()} data:$data"
