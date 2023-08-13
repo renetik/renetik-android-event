@@ -12,8 +12,9 @@ class CSSafePropertyImpl<T>(
     private val field = AtomicReference(value)
 
     override fun value(newValue: T, fire: Boolean) {
-        if (field.getAndSet(newValue) != newValue)
-            onMain { onValueChanged(newValue, fire) }
+        if (field.getAndSet(newValue) != newValue) onMain {
+            onValueChanged(newValue, fire)
+        }
     }
 
     override var value: T
