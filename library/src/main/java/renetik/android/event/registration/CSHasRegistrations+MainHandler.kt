@@ -8,6 +8,6 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 fun CSHasRegistrations.registerLaterEach(
     after: Int, period: Int = after, function: () -> Unit,
 ): CSRegistration {
-    val registration = register(main.laterEach(after, period, function))
+    val registration = this + main.laterEach(after, period, function)
     return CSRegistration { cancel(registration) }
 }

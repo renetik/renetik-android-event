@@ -12,13 +12,13 @@ fun CSRegistration(vararg registrations: CSRegistration) = CSRegistration(
     onPause = { registrations.forEach { if (it.isActive) it.pause() } },
     onCancel = { registrations.forEach { it.cancel() } })
 
-fun List<CSRegistration>.paused(function: Func) {
+inline fun List<CSRegistration>.paused(function: Func) {
     onEach { it.pause() }
     function()
     onEach { it.resume() }
 }
 
-fun CSRegistration.paused(function: Func) {
+inline fun CSRegistration.paused(function: Func) {
     pause()
     function()
     if (!isCanceled) resume()

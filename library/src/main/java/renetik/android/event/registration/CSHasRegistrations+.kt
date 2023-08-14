@@ -6,8 +6,12 @@ operator fun <T : CSRegistration> CSHasRegistrations.plusAssign(registration: T)
     registrations.register(registration)
 }
 
-operator fun <T : CSRegistration> CSHasRegistrations.minusAssign(registration: T) =
-    registrations.cancel(registration)
+operator fun <T : CSRegistration> CSHasRegistrations.plus(registration: T): T =
+    registration.also { registrations.register(it) }
+
+operator fun <T : CSRegistration> CSHasRegistrations.minusAssign(registration: T?) {
+    registration?.let { registrations.cancel(it) }
+}
 
 @AnyThread
 fun <T : CSRegistration> CSHasRegistrations.register(registration: T): T =
