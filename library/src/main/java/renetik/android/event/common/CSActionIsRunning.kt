@@ -9,7 +9,7 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.action
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.event.registration.cancel
-import renetik.android.event.registration.register
+import renetik.android.event.registration.plus
 
 class CSActionIsRunning(
     parent: CSHasDestruct,
@@ -30,7 +30,7 @@ class CSActionIsRunning(
             property.value(runningActions.size > 0)
         }
 
-        val actionOnChange = register(action.action(::updateIsRunning))
+        val actionOnChange = this + action.action(::updateIsRunning)
 
         return CSRegistration(onCancel = {
             cancel(actionOnChange)

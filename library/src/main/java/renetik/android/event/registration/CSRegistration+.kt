@@ -4,8 +4,6 @@ import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.io.Closeable
 
-fun CSRegistration.parent(parent: CSHasRegistrations) = apply { parent.register(this) }
-
 fun CSRegistration(vararg registrations: CSRegistration) = CSRegistration(
     isActive = true,
     onResume = { registrations.forEach { it.resume() } },

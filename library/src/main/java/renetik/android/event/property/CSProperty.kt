@@ -4,6 +4,7 @@ import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.plus
 import renetik.android.event.registration.register
 
 interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
@@ -31,7 +32,7 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
             property: CSProperty<T>,
             onChange: ((value: T) -> Unit)? = null
         ): CSProperty<T> = lateProperty(onChange)
-            .apply { parent.register(connect(property)) }
+            .apply { parent + connect(property) }
 
         fun <T> propertyDelegate(
             property: CSProperty<T>,

@@ -3,10 +3,10 @@ package renetik.android.event.registration
 inline fun <T> CSHasRegistrations.onChangeOnce(
     event: CSHasChange<T>,
     crossinline listener: (argument: T) -> Unit
-) = register(event.onChange { registration, argument ->
+) = this + event.onChange { registration, argument ->
     cancel(registration)
     listener(argument)
-})
+}
 
 inline fun CSHasRegistrations.onChangeOnce(
     event: CSHasChange<*>,
@@ -16,9 +16,9 @@ inline fun CSHasRegistrations.onChangeOnce(
 inline fun CSHasRegistrations.listenUntilTrueOnce(
     hasChange: CSHasChange<Boolean>,
     crossinline listener: (argument: Boolean) -> Unit
-) = register(hasChange.onChange { registration, value ->
+) = this + hasChange.onChange { registration, value ->
     if (value) {
         cancel(registration)
         listener(true)
     }
-})
+}

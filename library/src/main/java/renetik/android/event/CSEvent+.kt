@@ -15,6 +15,12 @@ inline fun CSEvent<*>.action(crossinline function: () -> Unit): CSRegistration {
     return this.listen { _, _ -> function() }
 }
 
+inline fun CSEvent<*>.action(crossinline function: (CSRegistration) -> Unit): CSRegistration {
+    val registration = this.listen { registration, _ -> function(registration) }
+    function(registration)
+    return registration
+}
+
 inline fun <T> CSEvent<T>.listen(
     crossinline function: (registration: CSRegistration, argument: T) -> Unit
 ): CSRegistration {
