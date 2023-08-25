@@ -20,6 +20,12 @@ interface CSRegistration : CSHasCancel, Closeable {
     override fun cancel()
 
     companion object {
+        fun paused(registration: CSRegistration?, function: Func) {
+            registration?.pause()
+            function()
+            registration?.resume()
+        }
+
         fun paused(vararg registrations: CSRegistration, function: Func) {
             registrations.onEach { it.pause() }
             function()
