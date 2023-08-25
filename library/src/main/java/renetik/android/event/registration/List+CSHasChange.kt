@@ -11,20 +11,13 @@ inline fun <T : CSHasChange<*>> List<T>.onChange(
     return registrations
 }
 
-inline fun <T : CSHasChange<*>> List<T>.onChangeLater(
+inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
     crossinline function: Func
-): CSRegistration {
+): CSRegistrations {
     val registrations = CSRegistrationsList(this)
     val laterOnceFunction = registrations.laterOnce { function() }
     forEach { registrations.register(it.onChange { laterOnceFunction() }) }
     return registrations
-}
-
-inline fun <T : CSHasChange<*>> List<T>.actionOnChangeLater(
-    crossinline function: Func
-): CSRegistration {
-    function()
-    return onChangeLater(function)
 }
 
 inline fun <T : CSHasChange<*>> List<T>.action(
