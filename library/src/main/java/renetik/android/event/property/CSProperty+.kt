@@ -1,5 +1,8 @@
 package renetik.android.event.property
 
+import kotlin.math.roundToInt
+import renetik.android.core.kotlin.primitives.percentOf
+import renetik.android.core.kotlin.primitives.toPercentOf
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.core.lang.void
@@ -173,3 +176,10 @@ inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValueDelegate(
 operator fun CSProperty<List<Int>>.set(index: Int, newValue: Int) {
     value = value.toMutableList().also { it[index] = newValue }
 }
+
+fun CSProperty<Int>.computedAsPercentOf(
+    parent: CSHasRegistrations, max: Int = 100
+) = computed(
+    parent, from = { it.toPercentOf(max) },
+    to = { it.percentOf(max.toFloat()).roundToInt() }
+)
