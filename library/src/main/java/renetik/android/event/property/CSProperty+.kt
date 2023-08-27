@@ -49,8 +49,8 @@ fun <T> CSProperty<T?>.clear() = value(null)
 //    return registration
 //}
 
-fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
-    listener: (argument: Boolean) -> Unit
+inline fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
+    crossinline listener: (argument: Boolean) -> Unit
 ): CSRegistration {
     lateinit var registration: CSRegistration
     registration = onChange { argument: Boolean ->
@@ -65,10 +65,10 @@ fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
 fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
     property.action { this.value = it }
 
-fun <T> CSProperty<T>.propertyBoolean(
+inline fun <T> CSProperty<T>.propertyBoolean(
     parent: CSHasRegistrations? = null,
-    from: (T) -> Boolean, to: (Boolean) -> T,
-    onChange: ArgFunc<Boolean>? = null
+    crossinline from: (T) -> Boolean, crossinline to: (Boolean) -> T,
+    noinline onChange: ArgFunc<Boolean>? = null
 ): CSProperty<Boolean> {
     val property: CSProperty<Boolean> = property(from(value), onChange)
     lateinit var propertyOnChange: CSRegistration
@@ -81,10 +81,10 @@ fun <T> CSProperty<T>.propertyBoolean(
     return property
 }
 
-fun <T, V> CSProperty<T>.computed(
+inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
-    from: (T) -> V, to: (V) -> T,
-    onChange: ArgFunc<V>? = null
+    crossinline from: (T) -> V, crossinline to: (V) -> T,
+    noinline onChange: ArgFunc<V>? = null
 ): CSProperty<V> {
     val property: CSProperty<V> = property(from(value), onChange)
     lateinit var propertyOnChange: CSRegistration
@@ -97,10 +97,10 @@ fun <T, V> CSProperty<T>.computed(
     return property
 }
 
-fun <T, V> CSProperty<T>.computed(
+inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
-    get: (T) -> V, set: (CSProperty<T>, V) -> void,
-    onChange: ArgFunc<V>? = null
+    crossinline get: (T) -> V, crossinline set: (CSProperty<T>, V) -> void,
+    noinline onChange: ArgFunc<V>? = null
 ): CSProperty<V> {
     val property: CSProperty<V> = property(get(value), onChange)
     lateinit var propertyOnChange: CSRegistration
@@ -114,18 +114,18 @@ fun <T, V> CSProperty<T>.computed(
 }
 
 @Deprecated("Use hasChangeValueDelegate probably :)")
-fun <T, V> CSProperty<T>.hasChangeValue(
+inline fun <T, V> CSProperty<T>.hasChangeValue(
     parent: CSHasRegistrations? = null,
-    from: (T) -> V, onChange: ArgFunc<V>? = null
+    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null
 ): CSHasChangeValue<V> {
     val property: CSProperty<V> = property(from(value), onChange)
     onChange { property.value = from(value) }.also { parent?.register(it) }
     return property
 }
 
-fun <T, V> CSProperty<T>.hasChangeValueDelegate(
+inline fun <T, V> CSProperty<T>.hasChangeValueDelegate(
     parent: CSHasRegistrations? = null,
-    from: (T) -> V, onChange: ArgFunc<V>? = null
+    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null
 ): CSHasChangeValue<V> = this.let { property ->
     object : CSHasChangeValue<V> {
         override val value: V get() = from(property.value)
@@ -139,9 +139,9 @@ fun <T, V> CSProperty<T>.hasChangeValueDelegate(
 }
 
 @Deprecated("Use hasChangeValueDelegate probably :)")
-fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
+inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     parent: CSHasRegistrations? = null,
-    from: (T, V) -> X, onChange: ArgFunc<X>? = null
+    crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null
 ): CSHasChangeValue<X> {
     val property: CSProperty<X> = property(from(first.value, second.value), onChange)
     first.onChange { property.value = from(it, second.value) }.also { parent?.register(it) }
@@ -149,9 +149,9 @@ fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     return property
 }
 
-fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValueDelegate(
+inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValueDelegate(
     parent: CSHasRegistrations? = null,
-    from: (T, V) -> X, onChange: ArgFunc<X>? = null
+    crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null
 ): CSHasChangeValue<X> = this.let { properties ->
     object : CSHasChangeValue<X> {
         override val value: X get() = from(properties.first.value, properties.second.value)
