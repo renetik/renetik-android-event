@@ -1,7 +1,11 @@
 package renetik.android.event
 
 import renetik.android.core.lang.Func
+import renetik.android.event.property.CSProperty
+import renetik.android.event.registration.CSHasChangeValue
+import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
+import renetik.android.event.registration.plus
 
 fun CSEvent<Unit>.fire() = apply { fire(Unit) }
 
@@ -41,4 +45,12 @@ fun CSEvent<*>.paused(function: Func) {
     pause()
     function()
     resume()
+}
+
+fun <EventArg, PropertyType> CSEvent<EventArg>.computedProperty(
+    parent: CSHasRegistrations, from: () -> PropertyType
+): CSHasChangeValue<PropertyType> {
+    val property = CSProperty.property(from())
+    parent + listen { property.value = from() }
+    return property
 }
