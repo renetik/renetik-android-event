@@ -1,10 +1,13 @@
 package renetik.android.event.registration
 
+import java.io.Closeable
 import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import java.io.Closeable
 
-fun CSRegistration(vararg registrations: CSRegistration) = CSRegistration(
+fun CSRegistration(vararg registrations: CSRegistration) =
+    CSRegistration(registrations.asList())
+
+fun CSRegistration(registrations: List<CSRegistration>) = CSRegistration(
     isActive = true,
     onResume = { registrations.forEach { it.resume() } },
     onPause = { registrations.forEach { if (it.isActive) it.pause() } },
