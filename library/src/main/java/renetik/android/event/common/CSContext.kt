@@ -10,7 +10,7 @@ import renetik.android.core.extensions.content.unregister
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
-import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistrationsMap
@@ -41,7 +41,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
 
     override fun onDestruct() {
         if (isDestructed) {
-            logWarnTrace { "Already destroyed: $this" }
+            logErrorTrace { "Already destroyed: $this" }
             return
         }
         isDestructed = true
