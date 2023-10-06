@@ -65,8 +65,8 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
         replace: CSRegistration?,
         registration: CSRegistration?,
     ): CSRegistration? {
-        if (isCanceled) logWarnTrace { "Already canceled:$id" }
         replace?.let { cancel(it) }
+        if (isCanceled) logWarnTrace { "Already canceled:$id" }
         return registration?.let { add(it) }
     }
 
