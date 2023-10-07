@@ -23,7 +23,7 @@ inline fun CSHasRegistrations.registerBackground(
     }
     // For some magic reason background could execute already
     if (!registration.isCanceled) {
-        register(registration)
+        this + registration
         isRegisteredToParent = true
     }
     return CSRegistration { if (!registration.isCanceled) cancel(registration) }

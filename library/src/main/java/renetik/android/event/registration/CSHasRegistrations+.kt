@@ -5,6 +5,10 @@ import androidx.annotation.AnyThread
 operator fun <T : CSRegistration> CSHasRegistrations.plus(registration: T): T =
     registration.also { registrations.register(it) }
 
+@JvmName("plusNullable")
+operator fun <T : CSRegistration> CSHasRegistrations.plus(registration: T?): T? =
+    registration?.also { registrations.register(it) }
+
 operator fun <T : CSRegistration> CSHasRegistrations.minus(registration: T?) {
     cancel(registration)
 }
@@ -12,6 +16,10 @@ operator fun <T : CSRegistration> CSHasRegistrations.minus(registration: T?) {
 @AnyThread
 fun <T : CSRegistration> CSHasRegistrations.register(registration: T): T =
     registration.also { registrations.register(it) }
+
+@JvmName("registerNullable")
+fun CSHasRegistrations.register(registration: CSRegistration?): CSRegistration? =
+    registration?.let { registrations.register(it) }
 
 @JvmName("registerReplaceRegistrationNullable")
 fun CSHasRegistrations.register(
@@ -23,12 +31,6 @@ fun CSHasRegistrations.register(
     replace: CSRegistration?, registration: CSRegistration
 ): CSRegistration =
     registration.also { registrations.register(replace, it) }
-
-@JvmName("CSEventOwnerRegisterNullable")
-fun CSHasRegistrations.register(
-    registration: CSRegistration?
-): CSRegistration? =
-    registration?.let { registrations.register(it) }
 
 @JvmName("CSEventOwnerCancelNullable")
 fun CSHasRegistrations.cancel(registration: CSRegistration?) {

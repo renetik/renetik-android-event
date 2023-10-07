@@ -5,7 +5,7 @@ import org.junit.Test
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.registration.register
+import renetik.android.event.registration.plus
 
 /**
  * Event property unregister after owner nulled
@@ -15,7 +15,7 @@ class EventOwnerPropertyTest {
         val string = property("initial value")
 
         init {
-            register(parent?.string?.onChange { string.value = it })
+            this + parent?.string?.onChange { string.value = it }
         }
     }
 
