@@ -3,7 +3,7 @@ package renetik.android.event.util
 import kotlin.time.Duration
 import renetik.android.core.java.lang.isThreadMain
 import renetik.android.core.kotlin.primitives.min
-import renetik.android.core.lang.CSHandler.main
+import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.core.lang.send
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSHasRegistrations
@@ -16,18 +16,18 @@ import renetik.android.event.registration.plus
 object CSLater {
     //TODO: Move to CSHasDestruct+MainHandler
     inline fun CSHasDestruct.later(crossinline function: () -> Unit) =
-        main.send { if (!isDestructed) function() }
+        mainHandler.send { if (!isDestructed) function() }
 
     //TODO: Move to CSHasDestruct+MainHandler
     inline fun CSHasDestruct.onMain(crossinline function: () -> Unit) =
-        if (isThreadMain) function() else main.send { if (!isDestructed) function() }
+        if (isThreadMain) function() else mainHandler.send { if (!isDestructed) function() }
 
     //TODO: Move to CSHasRegistrations+MainHandler
     inline fun CSHasRegistrations.later(
         after: Int, crossinline function: () -> Unit
     ): CSRegistration {
         lateinit var registration: CSRegistration
-        registration = this + main.later(after.min(10)) { cancel(registration); function() }
+        registration = this + mainHandler.later(after.min(10)) { cancel(registration); function() }
         return CSRegistration { if (!registration.isCanceled) cancel(registration) }
     }
 
