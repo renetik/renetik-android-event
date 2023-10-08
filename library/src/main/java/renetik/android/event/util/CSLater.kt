@@ -14,15 +14,15 @@ import renetik.android.event.registration.later
 import renetik.android.event.registration.plus
 
 object CSLater {
-    //    TODO: Move to CSHasDestruct+MainHandler
+    //TODO: Move to CSHasDestruct+MainHandler
     inline fun CSHasDestruct.later(crossinline function: () -> Unit) =
         main.send { if (!isDestructed) function() }
 
-    //    TODO: Move to CSHasDestruct+MainHandler
+    //TODO: Move to CSHasDestruct+MainHandler
     inline fun CSHasDestruct.onMain(crossinline function: () -> Unit) =
         if (isThreadMain) function() else main.send { if (!isDestructed) function() }
 
-    //    TODO: Move to CSHasRegistrations+MainHandler
+    //TODO: Move to CSHasRegistrations+MainHandler
     inline fun CSHasRegistrations.later(
         after: Int, crossinline function: () -> Unit
     ): CSRegistration {
@@ -31,7 +31,7 @@ object CSLater {
         return CSRegistration { if (!registration.isCanceled) cancel(registration) }
     }
 
-    //    TODO: Move to CSHasRegistrations+MainHandler
+    //TODO: Move to CSHasRegistrations+MainHandler
     inline fun CSHasRegistrations.later(
         after: Duration, crossinline function: () -> Unit
     ) = later(after.inWholeMilliseconds.toInt(), function)
