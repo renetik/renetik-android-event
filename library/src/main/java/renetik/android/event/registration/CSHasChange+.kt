@@ -31,7 +31,7 @@ inline fun <Argument> CSHasChange<Argument>.onChange(
     return registration
 }
 
-inline fun <Argument> CSHasChange<Argument>.onChangeLater(
+inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     crossinline function: Func,
 ): CSRegistration {
     val registrations = CSRegistrationsList(this)
