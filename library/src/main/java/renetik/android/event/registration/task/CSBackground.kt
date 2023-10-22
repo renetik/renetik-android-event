@@ -17,12 +17,12 @@ object CSBackground {
     var executor: ScheduledExecutorService = createExecutor()
         private set
 
-    fun shutdownBackground() = executor.shutdownAndWait()
+    fun shutdown() = executor.shutdownAndWait()
 
-    val isBackgroundOff get() = executor.isShutdown
+    val isOff get() = executor.isShutdown
 
     fun restart() {
-        shutdownBackground()
+        shutdown()
         executor = createExecutor()
     }
 
