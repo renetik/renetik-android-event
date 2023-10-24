@@ -56,7 +56,7 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
             return
         }
         isCanceled = true
-        registrationList.onEach { it.cancel() }.clear()
+        registrationList.cancelRegistrations()
     }
 
     @Synchronized
