@@ -15,8 +15,7 @@ open class CSModel(
     @Deprecated("Just one use in project..")
     val associated by lazy(::CSAssociations)
 
-    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
-    final override val registrations by lazyRegistrations
+    final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestruct = event<Unit>()
 
     final override var isDestructed = false
@@ -32,7 +31,7 @@ open class CSModel(
             return
         }
         isDestructed = true
-        if (lazyRegistrations.isInitialized()) registrations.cancel()
+        registrations.cancel()
         eventDestruct.fire().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
