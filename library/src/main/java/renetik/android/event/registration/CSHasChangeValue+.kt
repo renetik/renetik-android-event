@@ -19,12 +19,12 @@ fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit) =
     onChange { if (it.isTrue) function() }
 
 fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
-    if (isTrue()) function()
+    if (isTrue) function()
     return onTrue(function)
 }
 
 fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
-    if (isFalse()) function()
+    if (isFalse) function()
     return onFalse(function)
 }
 
