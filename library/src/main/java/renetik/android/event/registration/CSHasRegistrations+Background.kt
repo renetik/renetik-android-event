@@ -5,7 +5,7 @@ import androidx.annotation.WorkerThread
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import renetik.android.event.registration.task.CSBackground.background
+import renetik.android.event.CSBackground.background
 
 @AnyThread
 inline fun CSHasRegistrations.registerBackground(
