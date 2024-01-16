@@ -3,6 +3,7 @@ package renetik.android.event.property
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
+import renetik.android.event.paused
 
 abstract class CSPropertyBase<T>(
     parent: CSHasDestruct? = null,
@@ -10,7 +11,7 @@ abstract class CSPropertyBase<T>(
 ) : CSModel(parent), CSProperty<T> {
 
     constructor(onChange: ((value: T) -> Unit)? = null)
-        : this(parent = null, onChange = onChange)
+            : this(parent = null, onChange = onChange)
 
     val eventChange by lazy { event<T>() }
 
@@ -24,6 +25,16 @@ abstract class CSPropertyBase<T>(
     }
 
     open fun onValueChanged(newValue: T, fire: Boolean = true) {
+        isChanged = true
         if (fire) fireChange()
+    }
+
+    private var isChanged = false
+
+    override fun paused(function: () -> Unit) = eventChange.paused {
+        isChanged = false
+        function()
+        if (isChanged) fireChange()
+        isChanged = false
     }
 }

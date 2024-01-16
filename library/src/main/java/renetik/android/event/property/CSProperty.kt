@@ -1,5 +1,6 @@
 package renetik.android.event.property
 
+import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSHasChangeValue
@@ -9,6 +10,7 @@ import renetik.android.event.registration.plus
 interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
     fun value(newValue: T, fire: Boolean = true)
     fun fireChange()
+    fun paused(function: () -> Unit): Unit = notImplemented()
 
     companion object {
         fun <T> property(
