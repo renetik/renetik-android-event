@@ -4,7 +4,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
+import renetik.android.event.CSBackground.background
 import renetik.android.testing.CSAssert.assert
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class CSBackgroundTest {
@@ -12,7 +14,7 @@ class CSBackgroundTest {
     @Test
     fun background() {
         var int by atomic(0)
-        CSBackground.background { int += 1 }
+        background { int += 1 }
         assert(expected = 0, actual = int)
         runBlocking { delay(1.seconds) }
         assert(expected = 1, actual = int)
@@ -21,7 +23,7 @@ class CSBackgroundTest {
     @Test
     fun backgroundCancel() {
         var int by atomic(0)
-        val registration = CSBackground.background { int += 1 }
+        val registration = background(after = 500.milliseconds) { int += 1 }
         assert(expected = 0, actual = int)
         registration.cancel()
         runBlocking { delay(1.seconds) }
@@ -31,9 +33,9 @@ class CSBackgroundTest {
     @Test
     fun backgroundCanceled() {
         var int by atomic(0)
-        val registration = CSBackground.background { int += 1; it.cancel() }
+        val registration = background(after = 500.milliseconds) { int += 1; it.cancel() }
         assert(expected = 0, actual = int)
-        runBlocking { delay(1.seconds) }
+        runBlocking { delay(2.seconds) }
         assert(expected = 1, actual = int)
         assert(registration.isCanceled)
     }
