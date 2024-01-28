@@ -5,7 +5,7 @@ import renetik.android.core.lang.void
 interface CSHasChange<Argument> {
     companion object {
         inline fun onChange(vararg hasChanges: CSHasChange<*>, crossinline function: () -> void)
-            : CSRegistration = CSRegistration(hasChanges.map { it.onChange(function) })
+                : CSRegistration = CSRegistration(hasChanges.map { it.onChange(function) })
 
         inline fun CSHasChange<*>.action(crossinline function: () -> Unit): CSRegistration {
             function()

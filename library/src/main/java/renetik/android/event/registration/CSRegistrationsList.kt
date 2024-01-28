@@ -56,7 +56,7 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
             return
         }
         isCanceled = true
-        registrationList.cancelRegistrations()
+        clear()
     }
 
     @Synchronized
@@ -95,6 +95,8 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
         registration.cancel()
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
     }
+
+    fun clear() = registrationList.cancelRegistrations()
 
     val size: Int get() = registrationList.size
 }
