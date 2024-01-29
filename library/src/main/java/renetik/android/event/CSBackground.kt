@@ -3,7 +3,7 @@ package renetik.android.event
 import androidx.annotation.WorkerThread
 import renetik.android.core.java.util.concurrent.background
 import renetik.android.core.java.util.concurrent.backgroundEach
-import renetik.android.core.java.util.concurrent.cancelNotInterrupt
+import renetik.android.core.java.util.concurrent.cancelInterrupt
 import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
@@ -34,14 +34,14 @@ object CSBackground {
     }
 
     inline fun background(
-        after: Duration, @WorkerThread crossinline function: (CSRegistration) -> Unit
+        after: Duration, @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration = background(after.inWholeMilliseconds.toInt(), function)
 
     inline fun background(
         after: Int = 0, @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         var task: ScheduledFuture<*> by notNull()
-        val registration = CSRegistration(isActive = true) { task.cancelNotInterrupt() }
+        val registration = CSRegistration(isActive = true) { task.cancelInterrupt() }
         task = executor.background(max(after.toLong(), 1)) {
             if (registration.isActive) function(registration)
         }
@@ -53,7 +53,7 @@ object CSBackground {
         crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         var task: ScheduledFuture<*> by notNull()
-        val registration = CSRegistration(isActive = true) { task.cancelNotInterrupt() }
+        val registration = CSRegistration(isActive = true) { task.cancelInterrupt() }
         task = executor.backgroundEach(period.toLong(), max(after.toLong(), 1)) {
             if (registration.isActive) function(registration)
         }
