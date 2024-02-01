@@ -9,3 +9,7 @@ fun <T> CSProperty<List<T>>.remove(item: T) {
 fun <T> CSProperty<List<T>>.add(item: T) {
     value(value.mutable().apply { add(item) })
 }
+
+operator fun <T> CSProperty<List<T>>.set(index: Int, newValue: T) {
+    value = value.mutable().also { it[index] = newValue }
+}

@@ -81,7 +81,7 @@ class EventPropertyTest {
     }
 
     @Test
-    fun testEventPause() {
+    fun testPropertyRegistrationPause() {
         var changeCount = 0
         val property: CSProperty<Int> = property(0)
         val registration = property.onChange { changeCount += it }
@@ -89,5 +89,19 @@ class EventPropertyTest {
         assertEquals(changeCount, 0)
         property.value = 2
         assertEquals(changeCount, 2)
+    }
+
+    @Test
+    fun testPropertyPause() {
+        var changeCount = 0
+        val property: CSProperty<Int> = property(0)
+        property.onChange { changeCount += 1 }
+        property.paused {
+            property.value = 2
+            assertEquals(0, changeCount)
+            assertEquals(2, property.value)
+        }
+        assertEquals(1, changeCount)
+        assertEquals(2, property.value)
     }
 }

@@ -31,9 +31,11 @@ abstract class CSPropertyBase<T>(
 
     private var isChanged = false
 
-    override fun paused(function: () -> Unit) = eventChange.paused {
-        isChanged = false
-        function()
+    override fun paused(function: () -> Unit) {
+        eventChange.paused {
+            isChanged = false
+            function()
+        }
         if (isChanged) fireChange()
         isChanged = false
     }
