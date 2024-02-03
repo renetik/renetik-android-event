@@ -50,7 +50,7 @@ inline fun Handler.later(crossinline function: Func): CSRegistration {
 }
 
 inline fun Handler.laterEach(
-    after: Duration, period: Duration = after, crossinline function: Func
+    after: Duration , period: Duration = after, crossinline function: Func
 ) = laterEach(after.inWholeMilliseconds.toInt(), period.inWholeMilliseconds.toInt(), function)
 
 inline fun Handler.later(after: Duration, crossinline function: Func) =
