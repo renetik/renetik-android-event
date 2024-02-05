@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import renetik.android.event.property.CSProperty.Companion.lateProperty
-import renetik.android.event.property.apply
+import renetik.android.event.property.fire
 
 /**
  * Simple event property use cases
@@ -28,7 +28,7 @@ class LateEventPropertyTest {
         val property = lateProperty<String> { count += 1 }
         property.value = "first"
         assertEquals(count, 1)
-        property.apply()
+        property.fire()
         assertEquals(count, 2)
         property.value = "second"
         assertEquals("second", property.value)

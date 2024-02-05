@@ -14,7 +14,7 @@ import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
 import kotlin.math.roundToInt
 
-fun <T : CSProperty<*>> T.apply() = apply { fireChange() }
+fun <T : CSProperty<*>> T.fire() = apply { fireChange() }
 
 fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     value = property.value

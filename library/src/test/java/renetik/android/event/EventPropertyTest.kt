@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.property.apply
+import renetik.android.event.property.fire
 import renetik.android.event.registration.onChange
 import renetik.android.event.registration.paused
 
@@ -26,7 +26,7 @@ class EventPropertyTest {
     @Test
     fun testOnApply() {
         var changeCount = 0
-        var value: String by property("initial") { changeCount += 1 }.apply()
+        var value: String by property("initial") { changeCount += 1 }.fire()
         value = "second"
         value = "third"
         assertEquals(changeCount, 3)
