@@ -116,6 +116,7 @@ inline fun <T, V> CSProperty<T>.computed(
     return property
 }
 
+//TODO: Rename and solve what is good to use when..
 @Deprecated("Use hasChangeValueDelegate probably :)")
 inline fun <T, V> CSProperty<T>.hasChangeValue(
     parent: CSHasRegistrations? = null,
@@ -126,6 +127,7 @@ inline fun <T, V> CSProperty<T>.hasChangeValue(
     return property
 }
 
+//TODO: Rename and solve what is good to use when..
 inline fun <T, V> CSProperty<T>.hasChangeValueDelegate(
     parent: CSHasRegistrations? = null,
     crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null
@@ -141,6 +143,7 @@ inline fun <T, V> CSProperty<T>.hasChangeValueDelegate(
     }
 }
 
+//TODO: Rename and solve what is good to use when..
 @Deprecated("Use hasChangeValueDelegate probably :)")
 inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     parent: CSHasRegistrations? = null,
