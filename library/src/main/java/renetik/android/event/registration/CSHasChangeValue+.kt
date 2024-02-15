@@ -12,6 +12,16 @@ import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
+fun <T> CSHasChangeValue<T>.onChangeFromTo(
+    function: (from: T, to: T) -> Unit,
+): CSRegistration {
+    var value = this.value
+    return onChange {
+        function(value, it)
+        value = it
+    }
+}
+
 fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
     onChange { if (it.isFalse) function() }
 
