@@ -10,6 +10,26 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             return onChange(function)
         }
 
+//        inline fun <Argument1, Argument2, T : Any> hasChangeValue(
+//            parent: CSHasRegistrations? = null,
+//            item1: CSHasChangeValue<Argument1>,
+//            item2: CSHasChangeValue<Argument2>,
+//            crossinline from: (Argument1, Argument2) -> T,
+//        ): CSHasChangeValue<T> {
+//            val property = CSProperty.property<T>()
+//            val sss = object : CSHasChangeValue<T> {
+//                override var value: T by notNull()
+//                override fun onChange(function: (T) -> void): CSRegistration {
+//                    TODO("Not yet implemented")
+//                }
+//
+//            }
+//            action(item1, item2) { arg1, arg2 ->
+//                property.value = from(arg1, arg2)
+//            }.also { parent?.register(it) }
+//            return property
+//        }
+
         inline fun <Argument1, Argument2> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
