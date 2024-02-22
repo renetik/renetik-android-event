@@ -2,6 +2,8 @@ package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.value.CSValue
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.property.CSProperty
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
@@ -44,6 +46,32 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             crossinline onAction: (Argument1, Argument2) -> Unit,
         ): CSRegistration = list(item1, item2).action {
             onAction(item1.value, item2.value)
+        }
+
+        inline fun <Argument1, Argument2, Argument3> hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            item1: CSHasChangeValue<Argument1>,
+            item2: CSHasChangeValue<Argument2>,
+            crossinline from: (Argument1, Argument2) -> Argument3,
+        ): CSHasChangeValue<Argument3> = object : CSProperty<Argument3> {
+            val event = event<Argument3>()
+            override var value: Argument3 = from(item1.value, item2.value)
+            override fun onChange(function: (Argument3) -> Unit) = event.listen { function(value) }
+
+            init {
+                onChange(item1, item2) { item1, item2 ->
+                    value = from(item1, item2)
+                    event.fire(value)
+                }.also { parent?.register(it) }
+            }
+
+            override fun value(newValue: Argument3, fire: Boolean) {
+                if (value == newValue) return
+                value = newValue
+                if (fire) fireChange()
+            }
+
+            override fun fireChange() = event.fire(value)
         }
 
         inline fun <Argument1, Argument2, Argument3> onChange(
