@@ -3,7 +3,6 @@ package renetik.android.event.property
 import renetik.android.core.kotlin.primitives.update
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.CSValue
-import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 
@@ -21,3 +20,4 @@ operator fun CSValue<Int>.times(value: Int): Int = this.value * value
 operator fun CSValue<Int>.div(value: Int): Int = this.value / value
 operator fun CSValue<Int>.plus(value: Int): Int = this.value + value
 operator fun CSValue<Int>.minus(value: Int): Int = this.value - value
+operator fun CSValue<Int>.minus(value: CSValue<Int>): Int = this.value - value.value
