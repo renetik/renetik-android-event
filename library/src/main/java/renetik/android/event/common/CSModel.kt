@@ -1,11 +1,13 @@
 package renetik.android.event.common
 
+import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.CSAssociations
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
+import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationsMap
 
 open class CSModel(
@@ -15,7 +17,14 @@ open class CSModel(
     @Deprecated("Just one use in project..")
     val associated by lazy(::CSAssociations)
 
-    final override val registrations by lazy { CSRegistrationsMap(this) }
+    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
+    final override val registrations by lazyRegistrations
+
+    @Synchronized
+    @AnyThread
+    fun register(key: String, registration: CSRegistration?): CSRegistration? =
+        registrations.register(key, registration)
+
     final override val eventDestruct = event<Unit>()
 
     final override var isDestructed = false
@@ -31,7 +40,7 @@ open class CSModel(
             return
         }
         isDestructed = true
-        registrations.cancel()
+        if (lazyRegistrations.isInitialized()) registrations.cancel()
         eventDestruct.fire().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
