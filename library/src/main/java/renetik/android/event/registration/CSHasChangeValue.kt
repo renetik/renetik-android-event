@@ -40,6 +40,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onChange(item1.value, item2.value)
         }
 
+        inline fun <Argument1, Argument2>
+                Pair<CSProperty<Argument1>, CSProperty<Argument2>>.onChange(
+            crossinline onChange: (Argument1, Argument2) -> Unit,
+        ): CSRegistration = onChange(first, second, onChange)
+
         inline fun <Argument1, Argument2> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
@@ -47,6 +52,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSRegistration = list(item1, item2).action {
             onAction(item1.value, item2.value)
         }
+
+        inline fun <Argument1, Argument2>
+                Pair<CSProperty<Argument1>, CSProperty<Argument2>>.action(
+            crossinline onAction: (Argument1, Argument2) -> Unit,
+        ): CSRegistration = action(first, second, onAction)
 
         inline fun <Argument1, Argument2, Argument3> hasChangeValue(
             parent: CSHasRegistrations? = null,
