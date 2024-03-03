@@ -7,6 +7,7 @@ import renetik.android.core.java.util.concurrent.cancelInterrupt
 import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.start
 import java.util.concurrent.Executors.defaultThreadFactory
 import java.util.concurrent.Executors.newScheduledThreadPool
 import java.util.concurrent.ScheduledExecutorService
@@ -48,15 +49,20 @@ object CSBackground {
         return registration
     }
 
+
     inline fun backgroundEach(
         after: Int, period: Int = after,
         crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         var task: ScheduledFuture<*> by notNull()
-        val registration = CSRegistration(isActive = true) { task.cancelInterrupt() }
-        task = executor.backgroundEach(period.toLong(), max(after.toLong(), 1)) {
-            if (registration.isActive) function(registration)
-        }
+        var registration: CSRegistration by notNull()
+        registration = CSRegistration(
+            onResume = {
+                task = executor.backgroundEach(period.toLong(), max(after.toLong(), 1)) {
+                    if (registration.isActive) function(registration)
+                }
+            }, onPause = { task.cancelInterrupt() }
+        ).start()
         return registration
     }
 }

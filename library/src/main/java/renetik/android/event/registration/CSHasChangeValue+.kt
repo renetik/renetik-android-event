@@ -16,22 +16,11 @@ fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
     return onChange(function)
 }
 
-//inline fun <T> CSHasChangeValue<T>.action(
-//    crossinline function: (CSRegistration, T) -> Unit,
-//): CSRegistration {
-//    lateinit var registration: CSRegistration
-//    registration = action { value -> function(registration, value) }
-//    return registration
-//}
-
 fun <T> CSHasChangeValue<T>.onChangeFromTo(
     function: (from: T, to: T) -> Unit,
 ): CSRegistration {
     var value = this.value
-    return onChange {
-        function(value, it)
-        value = it
-    }
+    return onChange { function(value, it); value = it }
 }
 
 fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
