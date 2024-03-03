@@ -116,19 +116,17 @@ inline fun <T, V> CSProperty<T>.computed(
     return property
 }
 
-//TODO: Rename and solve what is good to use when..
-@Deprecated("Use hasChangeValueDelegate probably :)")
-inline fun <T, V> CSProperty<T>.hasChangeValue(
-    parent: CSHasRegistrations? = null,
-    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null,
-): CSHasChangeValue<V> {
-    val property: CSProperty<V> = property(from(value), onChange)
-    onChange { property.value = from(value) }.also { parent?.register(it) }
-    return property
-}
+//@Deprecated("Use hasChangeValueDelegate probably :)")
+//inline fun <T, V> CSProperty<T>.hasChangeValue(
+//    parent: CSHasRegistrations? = null,
+//    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null,
+//): CSHasChangeValue<V> {
+//    val property: CSProperty<V> = property(from(value), onChange)
+//    onChange { property.value = from(value) }.also { parent?.register(it) }
+//    return property
+//}
 
-//TODO: Rename and solve what is good to use when..
-inline fun <T, V> CSProperty<T>.hasChangeValueDelegate(
+inline fun <T, V> CSProperty<T>.hasChangeValue(
     parent: CSHasRegistrations? = null,
     crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null,
 ): CSHasChangeValue<V> = this.let { property ->
@@ -143,19 +141,18 @@ inline fun <T, V> CSProperty<T>.hasChangeValueDelegate(
     }
 }
 
-//TODO: Rename and solve what is good to use when..
-@Deprecated("Use hasChangeValueDelegate probably :)")
-inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
-    parent: CSHasRegistrations? = null,
-    crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null,
-): CSHasChangeValue<X> {
-    val property: CSProperty<X> = property(from(first.value, second.value), onChange)
-    first.onChange { property.value = from(it, second.value) }.also { parent?.register(it) }
-    second.onChange { property.value = from(first.value, it) }.also { parent?.register(it) }
-    return property
-}
+//@Deprecated("Use hasChangeValueDelegate probably :)")
+//inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
+//    parent: CSHasRegistrations? = null,
+//    crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null,
+//): CSHasChangeValue<X> {
+//    val property: CSProperty<X> = property(from(first.value, second.value), onChange)
+//    first.onChange { property.value = from(it, second.value) }.also { parent?.register(it) }
+//    second.onChange { property.value = from(first.value, it) }.also { parent?.register(it) }
+//    return property
+//}
 
-inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValueDelegate(
+inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
     parent: CSHasRegistrations? = null,
     crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null,
 ): CSHasChangeValue<X> = this.let { properties ->
