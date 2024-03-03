@@ -21,3 +21,4 @@ operator fun CSValue<Int>.div(value: Int): Int = this.value / value
 operator fun CSValue<Int>.plus(value: Int): Int = this.value + value
 operator fun CSValue<Int>.minus(value: Int): Int = this.value - value
 operator fun CSValue<Int>.minus(value: CSValue<Int>): Int = this.value - value.value
+operator fun Int.minus(value: CSValue<Int>): Int = this - value.value
