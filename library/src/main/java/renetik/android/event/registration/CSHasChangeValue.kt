@@ -8,10 +8,8 @@ import renetik.android.event.property.CSProperty
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
-        fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
-            function(value)
-            return onChange(function)
-        }
+        //TODO: Move to CSHasChangeValue+
+
 
 //        inline fun <Argument1, Argument2, T : Any> hasChangeValue(
 //            parent: CSHasRegistrations? = null,

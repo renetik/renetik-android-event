@@ -9,8 +9,20 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.registration.CSHasChangeValue.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+
+fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
+    function(value)
+    return onChange(function)
+}
+
+//inline fun <T> CSHasChangeValue<T>.action(
+//    crossinline function: (CSRegistration, T) -> Unit,
+//): CSRegistration {
+//    lateinit var registration: CSRegistration
+//    registration = action { value -> function(registration, value) }
+//    return registration
+//}
 
 fun <T> CSHasChangeValue<T>.onChangeFromTo(
     function: (from: T, to: T) -> Unit,

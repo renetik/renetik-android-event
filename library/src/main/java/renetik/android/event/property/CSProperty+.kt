@@ -7,9 +7,9 @@ import renetik.android.core.lang.variable.CSVariable
 import renetik.android.core.lang.void
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue
-import renetik.android.event.registration.CSHasChangeValue.Companion.action
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
+import renetik.android.event.registration.action
 import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
 import kotlin.math.roundToInt
@@ -66,7 +66,7 @@ inline fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
 }
 
 fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
-    property.action { this.value = it }
+    property.action { value -> this.value = value }
 
 inline fun <T> CSProperty<T>.propertyBoolean(
     parent: CSHasRegistrations? = null,
