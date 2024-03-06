@@ -126,7 +126,7 @@ inline fun <T, V> CSProperty<T>.computed(
 //    return property
 //}
 
-inline fun <T, V> CSProperty<T>.hasChangeValue(
+inline fun <T, V> CSHasChangeValue<T>.hasChangeValue(
     parent: CSHasRegistrations? = null,
     crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null,
 ): CSHasChangeValue<V> = this.let { property ->
