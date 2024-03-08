@@ -24,8 +24,7 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
             logWarnTrace { "Already canceled:$this" }
             return
         }
-        if (isPaused) isActive = true
-        else logWarnTrace { "Already resume:$this" }
+        if (!isActive) isActive = true
     }
 
     @Synchronized
@@ -36,7 +35,6 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
             return
         }
         if (isActive) isActive = false
-        else logWarnTrace { "Already pause:$this" }
     }
 
     @Synchronized

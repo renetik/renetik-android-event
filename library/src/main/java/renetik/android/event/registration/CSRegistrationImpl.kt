@@ -21,10 +21,11 @@ open class CSRegistrationImpl(
             logWarnTrace { "Already canceled:$this" }
             return
         }
-        if (isPaused) {
+        if (!isActive) {
             isActive = true
             onResume()
-        } else logWarnTrace { "Already resume:$this" }
+        }
+//        else logWarnTrace { "Already resume:$this" }
     }
 
     open fun onResume() = Unit
@@ -39,8 +40,9 @@ open class CSRegistrationImpl(
         if (isActive) {
             isActive = false
             onPause()
-        } else
-            logWarnTrace { "Already pause:$this" }
+        }
+//        else
+//            logWarnTrace { "Already pause:$this" }
     }
 
     open fun onPause() = Unit

@@ -52,6 +52,7 @@ object CSBackground {
 
     inline fun backgroundEach(
         after: Int, period: Int = after,
+        start: Boolean = true,
         crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         var task: ScheduledFuture<*> by notNull()
@@ -62,7 +63,7 @@ object CSBackground {
                     if (registration.isActive) function(registration)
                 }
             }, onPause = { task.cancelInterrupt() }
-        ).start()
+        ).apply { if (start) start() }
         return registration
     }
 }

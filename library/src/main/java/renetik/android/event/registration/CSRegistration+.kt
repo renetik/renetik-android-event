@@ -1,8 +1,8 @@
 package renetik.android.event.registration
 
-import java.io.Closeable
 import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import java.io.Closeable
 
 fun CSRegistration(vararg registrations: CSRegistration) =
     CSRegistration(registrations.asList())
@@ -34,6 +34,4 @@ fun CSRegistration.paused(): Closeable {
     return Closeable { resume() }
 }
 
-val CSRegistration.isResumed get() = isActive
-val CSRegistration.isPaused get() = !isActive
 fun CSRegistration.start() = apply { resume() }
