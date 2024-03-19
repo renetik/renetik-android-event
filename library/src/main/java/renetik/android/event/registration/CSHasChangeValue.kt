@@ -1,6 +1,7 @@
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
+import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Quadruple
 import renetik.android.core.lang.Quintuple
 import renetik.android.core.lang.value.CSValue
@@ -9,28 +10,111 @@ import renetik.android.event.property.CSProperty
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
-        //TODO: Move to CSHasChangeValue+
+        inline fun <T, Return> CSHasChangeValue<T>.delegate(
+            parent: CSHasRegistrations? = null,
+            crossinline from: (T) -> Return, noinline onChange: ArgFunc<Return>? = null,
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSHasChangeValue<Return> {
+                override val value: Return get() = from(property.value)
+                override fun onChange(function: (Return) -> Unit) =
+                    property.onChange {
+                        val value = from(it)
+                        onChange?.invoke(value)
+                        function(value)
+                    }.also { parent?.register(it) }
+            }
+        }
 
+        inline fun <T, V, Return> Pair<CSHasChangeValue<T>, CSHasChangeValue<V>>.delegate(
+            parent: CSHasRegistrations? = null,
+            crossinline from: (T, V) -> Return,
+            noinline onChange: ArgFunc<Return>? = null,
+        ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+            override val value: Return get() = from(first.value, second.value)
+            override fun onChange(function: (Return) -> Unit) = CSRegistration(
+                first.onChange {
+                    val value = from(it, second.value)
+                    onChange?.invoke(value)
+                    function(value)
+                }.also { parent?.register(it) },
+                second.onChange {
+                    val value = from(first.value, it)
+                    onChange?.invoke(value)
+                    function(value)
+                }.also { parent?.register(it) }
+            )
+        }
 
-//        inline fun <Argument1, Argument2, T : Any> hasChangeValue(
-//            parent: CSHasRegistrations? = null,
-//            item1: CSHasChangeValue<Argument1>,
-//            item2: CSHasChangeValue<Argument2>,
-//            crossinline from: (Argument1, Argument2) -> T,
-//        ): CSHasChangeValue<T> {
-//            val property = CSProperty.property<T>()
-//            val sss = object : CSHasChangeValue<T> {
-//                override var value: T by notNull()
-//                override fun onChange(function: (T) -> void): CSRegistration {
-//                    TODO("Not yet implemented")
-//                }
-//
-//            }
-//            action(item1, item2) { arg1, arg2 ->
-//                property.value = from(arg1, arg2)
-//            }.also { parent?.register(it) }
-//            return property
-//        }
+        inline fun <Argument, Return>
+                CSHasChangeValue<Argument>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            crossinline from: (Argument) -> Return,
+            noinline onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSProperty<Return> {
+                val event = event<Return>()
+                override var value: Return = from(property.value)
+                override fun onChange(function: (Return) -> Unit) =
+                    event.listen { function(value) }
+
+                init {
+                    property.onChange { item1 ->
+                        value = from(item1)
+                        onChange?.invoke(value)
+                        event.fire(value)
+                    }.also { parent?.register(it) }
+                }
+
+                override fun value(newValue: Return, fire: Boolean) {
+                    if (value == newValue) return
+                    value = newValue
+                    if (fire) fireChange()
+                }
+
+                override fun fireChange() {
+                    onChange?.invoke(value)
+                    event.fire(value)
+                }
+            }
+        }
+
+        inline fun <Argument1, Argument2, Return> hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            item1: CSHasChangeValue<Argument1>,
+            item2: CSHasChangeValue<Argument2>,
+            crossinline from: (Argument1, Argument2) -> Return,
+            noinline onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> = object : CSProperty<Return> {
+            val event = event<Return>()
+            override var value: Return = from(item1.value, item2.value)
+            override fun onChange(function: (Return) -> Unit) = event.listen { function(value) }
+
+            init {
+                onChange(item1, item2) { item1, item2 ->
+                    value = from(item1, item2)
+                    onChange?.invoke(value)
+                    event.fire(value)
+                }.also { parent?.register(it) }
+            }
+
+            override fun value(newValue: Return, fire: Boolean) {
+                if (value == newValue) return
+                value = newValue
+                if (fire) fireChange()
+            }
+
+            override fun fireChange() {
+                onChange?.invoke(value)
+                event.fire(value)
+            }
+        }
+
+        inline fun <Argument1, Argument2, Return>
+                Pair<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            crossinline from: (Argument1, Argument2) -> Return,
+        ): CSHasChangeValue<Return> = hasChangeValue(parent, first, second, from)
 
         inline fun <Argument1, Argument2> onChange(
             item1: CSHasChangeValue<Argument1>,
@@ -53,36 +137,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onAction(item1.value, item2.value)
         }
 
+
         inline fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
             crossinline onAction: (Argument1, Argument2) -> Unit,
         ): CSRegistration = action(first, second, onAction)
-
-        inline fun <Argument1, Argument2, Argument3> hasChangeValue(
-            parent: CSHasRegistrations? = null,
-            item1: CSHasChangeValue<Argument1>,
-            item2: CSHasChangeValue<Argument2>,
-            crossinline from: (Argument1, Argument2) -> Argument3,
-        ): CSHasChangeValue<Argument3> = object : CSProperty<Argument3> {
-            val event = event<Argument3>()
-            override var value: Argument3 = from(item1.value, item2.value)
-            override fun onChange(function: (Argument3) -> Unit) = event.listen { function(value) }
-
-            init {
-                onChange(item1, item2) { item1, item2 ->
-                    value = from(item1, item2)
-                    event.fire(value)
-                }.also { parent?.register(it) }
-            }
-
-            override fun value(newValue: Argument3, fire: Boolean) {
-                if (value == newValue) return
-                value = newValue
-                if (fire) fireChange()
-            }
-
-            override fun fireChange() = event.fire(value)
-        }
 
         inline fun <Argument1, Argument2, Argument3> onChange(
             item1: CSHasChangeValue<Argument1>,
@@ -94,7 +153,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         inline fun <Argument1, Argument2, Argument3>
-                Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>>.onChange(
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.onChange(
             crossinline onChange: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = onChange(first, second, third, onChange)
 
@@ -108,7 +169,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         inline fun <Argument1, Argument2, Argument3>
-                Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>>.action(
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.action(
             crossinline onAction: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = action(first, second, third, onAction)
 

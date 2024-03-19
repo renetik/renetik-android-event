@@ -126,20 +126,7 @@ inline fun <T, V> CSProperty<T>.computed(
 //    return property
 //}
 
-inline fun <T, V> CSHasChangeValue<T>.hasChangeValue(
-    parent: CSHasRegistrations? = null,
-    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null,
-): CSHasChangeValue<V> = this.let { property ->
-    object : CSHasChangeValue<V> {
-        override val value: V get() = from(property.value)
-        override fun onChange(function: (V) -> void) =
-            property.onChange {
-                val value = from(it)
-                onChange?.invoke(value)
-                function(value)
-            }.also { parent?.register(it) }
-    }
-}
+
 
 //@Deprecated("Use hasChangeValueDelegate probably :)")
 //inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
@@ -151,27 +138,6 @@ inline fun <T, V> CSHasChangeValue<T>.hasChangeValue(
 //    second.onChange { property.value = from(first.value, it) }.also { parent?.register(it) }
 //    return property
 //}
-
-inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
-    parent: CSHasRegistrations? = null,
-    crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null,
-): CSHasChangeValue<X> = this.let { properties ->
-    object : CSHasChangeValue<X> {
-        override val value: X get() = from(properties.first.value, properties.second.value)
-        override fun onChange(function: (X) -> void) = CSRegistration(
-            first.onChange {
-                val value = from(it, second.value)
-                onChange?.invoke(value)
-                function(value)
-            }.also { parent?.register(it) },
-            second.onChange {
-                val value = from(first.value, it)
-                onChange?.invoke(value)
-                function(value)
-            }.also { parent?.register(it) }
-        )
-    }
-}
 
 operator fun CSProperty<Int>.rangeTo(
     other: CSProperty<Int>,
