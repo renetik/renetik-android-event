@@ -90,7 +90,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (Return) -> Unit) = event.listen { function(value) }
 
             init {
-                onChange(item1, item2) { item1, item2 ->
+                (item1 to item2).onChange { item1, item2 ->
                     value = from(item1, item2)
                     onChange?.invoke(value)
                     event.fire(value)
@@ -109,24 +109,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Argument1, Argument2, Return>
+        fun <Argument1, Argument2, Return>
                 Pair<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
-            crossinline from: (Argument1, Argument2) -> Return,
+            from: (Argument1, Argument2) -> Return,
         ): CSHasChangeValue<Return> = hasChangeValue(parent, first, second, from)
 
-        inline fun <Argument1, Argument2> onChange(
+        fun <Argument1, Argument2> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
-            crossinline onChange: (Argument1, Argument2) -> Unit,
+            onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration = list(item1, item2).onChange {
             onChange(item1.value, item2.value)
         }
 
-        inline fun <Argument1, Argument2>
+        fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
-            crossinline onChange: (Argument1, Argument2) -> Unit,
+            onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration = onChange(first, second, onChange)
 
         inline fun <Argument1, Argument2> action(
