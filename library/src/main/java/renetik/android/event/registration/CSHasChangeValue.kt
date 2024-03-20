@@ -45,11 +45,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
-        inline fun <Argument, Return>
+        fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasRegistrations? = null,
-            crossinline from: (Argument) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = let { property ->
             object : CSProperty<Return> {
                 val event = event<Return>()
