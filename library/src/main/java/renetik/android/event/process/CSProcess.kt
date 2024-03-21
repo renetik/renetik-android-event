@@ -107,15 +107,16 @@ open class CSProcess<Data : Any>(
         failedMessage = process.failedMessage
         process.throwable?.rootCause?.let { logWarn(it) }
         throwable = process.throwable ?: Throwable()
-        logError(throwable) { "$failedMessage" }
+        throwable?.let { logError(it) { "$failedMessage" } }
+            ?: logError { "$failedMessage" }
         eventFailed.fire(process)
     }
 
     open fun cancel() {
         logDebug {
             "cancel $this, isDestroyed:$isDestructed, " +
-                "isCanceled:$isCanceled, isDone:$isDone, " +
-                "isSuccess:$isSuccess, isFailed:$isFailed"
+                    "isCanceled:$isCanceled, isDone:$isDone, " +
+                    "isSuccess:$isSuccess, isFailed:$isFailed"
         }
         if (isDestructed || isCanceled || isDone || isSuccess || isFailed) return
         isCanceled = true
