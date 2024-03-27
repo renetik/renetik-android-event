@@ -5,6 +5,7 @@ import renetik.android.core.lang.void
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.util.CSLater.later
+import kotlin.time.Duration
 
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
@@ -13,6 +14,9 @@ class CSLaterOnceFunc(
 ) : CSFunc {
 
     companion object {
+        fun CSHasRegistrations.laterOnce(after: Duration, function: () -> void) =
+            CSLaterOnceFunc(this, function, after.inWholeMilliseconds.toInt())
+
         fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> void) =
             CSLaterOnceFunc(this, function, after)
     }
