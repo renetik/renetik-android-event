@@ -45,6 +45,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
+        //TODO: This and "computed" is same in essence just different implementation we need to choose one and use that.
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasRegistrations? = null,
@@ -136,7 +137,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSRegistration = list(item1, item2).action {
             onAction(item1.value, item2.value)
         }
-
 
         inline fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
