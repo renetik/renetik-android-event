@@ -1,6 +1,6 @@
 package renetik.android.event.property
 
-import renetik.android.core.lang.variable.isTrue
+import renetik.android.core.lang.value.isTrue
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
 import renetik.android.event.property.CSProperty.Companion.property
