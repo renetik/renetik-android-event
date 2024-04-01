@@ -1,6 +1,7 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
+import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
 
@@ -66,6 +67,10 @@ class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
         replace?.let { cancel(it) }
         if (isCanceled) logWarnTrace { "Already canceled:$id" }
         return registration?.let { add(it) }
+    }
+
+    override fun register(key: String, registration: CSRegistration?): CSRegistration? {
+        notImplemented()
     }
 
     @Synchronized

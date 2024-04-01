@@ -26,6 +26,18 @@ fun CSHasRegistrations.register(
     replace: CSRegistration?, registration: CSRegistration
 ): CSRegistration = registration.also { registrations.register(replace, it) }
 
+fun CSHasRegistrations.register(
+    key: String, registration: CSRegistration?
+): CSRegistration? = registrations.register(key, registration)
+
+operator fun CSHasRegistrations.plus(
+    registration: Pair<String, CSRegistration>
+): CSRegistration? = register(registration.first, registration.second)
+
+@JvmName("plusPairNullable")
+operator fun CSHasRegistrations.plus(
+    registration: Pair<String, CSRegistration?>
+): CSRegistration? = register(registration.first, registration.second)
 
 //Cancel
 @JvmName("CSEventOwnerCancelNullable")

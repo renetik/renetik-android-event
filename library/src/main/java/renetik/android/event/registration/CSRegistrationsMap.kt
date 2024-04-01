@@ -64,7 +64,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     @Synchronized
     @AnyThread
-    fun register(key: String, registration: CSRegistration?): CSRegistration? {
+    override fun register(key: String, registration: CSRegistration?): CSRegistration? {
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
         remove(key)
         return registration?.let { add(key, it) }

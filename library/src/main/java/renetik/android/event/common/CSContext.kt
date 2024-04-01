@@ -33,10 +33,10 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
     final override val registrations by lazyRegistrations
 
-    @Synchronized
-    @AnyThread
-    fun register(key: String, registration: CSRegistration?): CSRegistration? =
-        registrations.register(key, registration)
+//    @Synchronized
+//    @AnyThread
+//    fun register(key: String, registration: CSRegistration?): CSRegistration? =
+//        registrations.register(key, registration)
 
     final override val eventDestruct = event<Unit>()
 
