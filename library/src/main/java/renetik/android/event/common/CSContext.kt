@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.annotation.AnyThread
 import renetik.android.core.extensions.content.register
 import renetik.android.core.extensions.content.unregister
 import renetik.android.core.lang.CSEnvironment.app
@@ -13,7 +12,6 @@ import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
-import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationsMap
 
 abstract class CSContext : ContextWrapper, CSHasContext {
@@ -28,15 +26,15 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         registerParent(parent)
     }
 
-    final override val context: Context get() = this
+    constructor(parent: CSHasDestruct, context: Context) : this(context) {
+        registerParent(parent)
+    }
+
+    // Returning wrapped context as there is no use of this wrapped in child anywhere....
+    final override val context: Context get() = baseContext
 
     private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
     final override val registrations by lazyRegistrations
-
-//    @Synchronized
-//    @AnyThread
-//    fun register(key: String, registration: CSRegistration?): CSRegistration? =
-//        registrations.register(key, registration)
 
     final override val eventDestruct = event<Unit>()
 
