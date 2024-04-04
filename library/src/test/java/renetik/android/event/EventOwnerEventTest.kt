@@ -24,11 +24,11 @@ class EventOwnerEventTest {
         val event = event()
         var count = 0
         owner + event.listen { count += 1 }
-        event.fire()
-        event.fire()
+        event()
+        event()
         assertEquals(2, count)
         owner.destruct()
-        event.fire()
+        event()
         assertEquals(2, count)
     }
 
@@ -38,8 +38,8 @@ class EventOwnerEventTest {
         val event = event()
         var count = 0
         owner + event.listen { count += 1 }
-        event.fire()
-        event.fire()
+        event()
+        event()
         assertEquals(0, count)
     }
 }

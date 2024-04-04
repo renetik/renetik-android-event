@@ -9,6 +9,8 @@ import renetik.android.event.registration.plus
 
 fun CSEvent<Unit>.fire() = apply { fire(Unit) }
 
+operator fun CSEvent<Unit>.invoke() = apply { fire(Unit) }
+
 @JvmName("listenNoArg")
 fun CSEvent<*>.listen(function: Func): CSRegistration = listen { _, _ -> function() }
 

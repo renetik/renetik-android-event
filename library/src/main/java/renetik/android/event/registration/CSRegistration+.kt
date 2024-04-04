@@ -4,14 +4,14 @@ import renetik.android.core.lang.Func
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.io.Closeable
 
-fun CSRegistration(vararg registrations: CSRegistration) =
+fun CSRegistration(vararg registrations: CSRegistration?) =
     CSRegistration(registrations.asList())
 
-fun CSRegistration(registrations: List<CSRegistration>) = CSRegistration(
+fun CSRegistration(registrations: List<CSRegistration?>) = CSRegistration(
     isActive = true,
-    onResume = { registrations.forEach { it.resume() } },
-    onPause = { registrations.forEach { if (it.isActive) it.pause() } },
-    onCancel = { registrations.forEach { it.cancel() } })
+    onResume = { registrations.forEach { it?.resume() } },
+    onPause = { registrations.forEach { if (it?.isActive == true) it.pause() } },
+    onCancel = { registrations.forEach { it?.cancel() } })
 
 inline fun List<CSRegistration>.paused(function: Func) {
     onEach { it.pause() }

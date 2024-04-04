@@ -8,6 +8,7 @@ import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
+import renetik.android.event.invoke
 import renetik.android.event.registration.CSRegistrationsMap
 
 abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
@@ -30,7 +31,7 @@ abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
         }
         isDestructed = true
         if (lazyRegistrations.isInitialized()) registrations.cancel()
-        eventDestruct.fire().clear()
+        eventDestruct().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
 

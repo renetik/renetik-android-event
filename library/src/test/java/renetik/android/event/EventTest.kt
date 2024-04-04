@@ -15,8 +15,8 @@ class EventTest {
         val event = event()
         var count = 0
         event.listen { count += 1 }
-        event.fire()
-        event.fire()
+        event()
+        event()
         assertEquals(2, count)
     }
 
@@ -35,8 +35,8 @@ class EventTest {
         val event = event()
         var count = 0
         event.listenOnce { count += 1 }
-        event.fire()
-        event.fire()
+        event()
+        event()
         assertEquals(1, count)
     }
 
