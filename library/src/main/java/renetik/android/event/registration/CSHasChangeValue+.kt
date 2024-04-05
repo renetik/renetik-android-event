@@ -12,6 +12,7 @@ import renetik.android.event.common.destruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
@@ -42,6 +43,8 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
     if (isFalse) function()
     return onFalse(function)
 }
+
+operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
 
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     value: Value, crossinline onChange: () -> Unit

@@ -45,6 +45,33 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
+        inline fun <ParentValue, ChildValue>
+                CSHasChangeValue<ParentValue>.delegateNullableChild(
+            parent: CSHasRegistrations? = null,
+            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+            noinline onChange: ((ChildValue?) -> Unit)? = null
+        ): CSHasChangeValue<ChildValue?> = let { property ->
+            object : CSHasChangeValue<ChildValue?> {
+                override val value: ChildValue? get() = child(property.value)?.value
+                override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
+                    var childRegistration: CSRegistration? = null
+                    val parentRegistration = property.action { parentValue ->
+                        childRegistration?.cancel()
+                        childRegistration = child(parentValue)?.let {
+                            it.onChange { childValue ->
+                                onChange?.invoke(childValue)
+                                function(childValue)
+                            }
+                        }
+                    }
+                    return CSRegistration.CSRegistration(isActive = true, onCancel = {
+                        parentRegistration.cancel()
+                        childRegistration?.cancel()
+                    }).also { parent?.register(it) }
+                }
+            }
+        }
+
         //TODO: This and "computed" is same in essence just different implementation we need to choose one and use that.
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
@@ -76,6 +103,29 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     onChange?.invoke(value)
                     event.fire(value)
                 }
+            }
+        }
+
+        inline fun <ParentValue, ChildValue>
+                CSHasChangeValue<ParentValue>.hasChangeValueNullableChild(
+            parent: CSHasRegistrations? = null,
+            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+            noinline onChange: ((ChildValue?) -> Unit)? = null
+        ): CSHasChangeValue<ChildValue?> {
+            val event = event<ChildValue?>()
+            var value: ChildValue? = null
+            actionNullableChild(
+                child = { child(it) },
+                onChange = {
+                    value = it
+                    onChange?.invoke(value)
+                    event.fire(it)
+                }
+            ).also { parent?.register(it) }
+            return object : CSHasChangeValue<ChildValue?> {
+                override val value: ChildValue? get() = value
+                override fun onChange(function: (ChildValue?) -> Unit): CSRegistration =
+                    event.listen(function)
             }
         }
 
