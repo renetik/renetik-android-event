@@ -30,59 +30,8 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
 
 fun <T> CSProperty<T?>.clear() = value(null)
 
-//fun <T> CSHasChangeValue<T>.onChangeOnce(listener: (argument: T) -> Unit): CSRegistration {
-//    lateinit var registration: CSRegistration
-//    registration = onChange { argument: T ->
-//        registration.cancel()
-//        listener(argument)
-//    }
-//    return registration
-//}
-
-//fun CSHasChangeValue<Boolean>.listenUntilTrueOnce(
-//    listener: (argument: Boolean) -> Unit
-//): CSRegistration {
-//    lateinit var registration: CSRegistration
-//    registration = onChange { argument: Boolean ->
-//        if (argument) {
-//            registration.cancel()
-//            listener(true)
-//        }
-//    }
-//    return registration
-//}
-
-inline fun CSHasChangeValue<Boolean>.listenUntilFalseOnce(
-    crossinline listener: (argument: Boolean) -> Unit,
-): CSRegistration {
-    lateinit var registration: CSRegistration
-    registration = onChange { argument: Boolean ->
-        if (!argument) {
-            registration.cancel()
-            listener(false)
-        }
-    }
-    return registration
-}
-
-fun CSVariable<Boolean>.connect(property: CSProperty<Boolean>): CSRegistration =
+fun CSVariable<Boolean>.connect(property: CSHasChangeValue<Boolean>): CSRegistration =
     property.action { value -> this.value = value }
-
-inline fun <T> CSProperty<T>.propertyBoolean(
-    parent: CSHasRegistrations? = null,
-    crossinline from: (T) -> Boolean, crossinline to: (Boolean) -> T,
-    noinline onChange: ArgFunc<Boolean>? = null,
-): CSProperty<Boolean> {
-    val property: CSProperty<Boolean> = property(from(value), onChange)
-    lateinit var propertyOnChange: CSRegistration
-    val thisOnChange = onChange {
-        propertyOnChange.paused { property.value = from(value) }
-    }.also { parent?.register(it) }
-    propertyOnChange = property.onChange {
-        thisOnChange.paused { value = to(it) }
-    }
-    return property
-}
 
 inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
@@ -115,29 +64,6 @@ inline fun <T, V> CSProperty<T>.computed(
     }
     return property
 }
-
-//@Deprecated("Use hasChangeValueDelegate probably :)")
-//inline fun <T, V> CSProperty<T>.hasChangeValue(
-//    parent: CSHasRegistrations? = null,
-//    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null,
-//): CSHasChangeValue<V> {
-//    val property: CSProperty<V> = property(from(value), onChange)
-//    onChange { property.value = from(value) }.also { parent?.register(it) }
-//    return property
-//}
-
-
-
-//@Deprecated("Use hasChangeValueDelegate probably :)")
-//inline fun <T, V, X> Pair<CSProperty<T>, CSProperty<V>>.hasChangeValue(
-//    parent: CSHasRegistrations? = null,
-//    crossinline from: (T, V) -> X, noinline onChange: ArgFunc<X>? = null,
-//): CSHasChangeValue<X> {
-//    val property: CSProperty<X> = property(from(first.value, second.value), onChange)
-//    first.onChange { property.value = from(it, second.value) }.also { parent?.register(it) }
-//    second.onChange { property.value = from(first.value, it) }.also { parent?.register(it) }
-//    return property
-//}
 
 operator fun CSProperty<Int>.rangeTo(
     other: CSProperty<Int>,
