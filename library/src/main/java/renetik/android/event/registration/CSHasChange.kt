@@ -13,5 +13,5 @@ interface CSHasChange<Argument> {
         }
     }
 
-    fun onChange(function: (Argument) -> void): CSRegistration
+    fun onChange(function: (Argument) -> Unit): CSRegistration
 }

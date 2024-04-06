@@ -5,4 +5,5 @@ import renetik.android.event.registration.CSHasRegistrations
 
 interface CSHasRegistrationsHasDestruct : CSHasRegistrations, CSHasDestruct
 
+@Deprecated("Try to get rid of this.. ")
 interface CSHasRegistrationsHasDestructHasId : CSHasRegistrationsHasDestruct, CSHasId
