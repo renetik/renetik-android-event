@@ -119,14 +119,14 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChangeNulla
     })
 }
 
-inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.actionChild(
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.childAction(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    crossinline onChange: (ChildValue) -> Unit
+    crossinline action: (ChildValue) -> Unit
 ): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
-        childRegistration = child(parentValue).action { childValue -> onChange(childValue) }
+        childRegistration = child(parentValue).action { childValue -> action(childValue) }
     }
     return CSRegistration(isActive = true, onCancel = {
         parentRegistration.cancel()
