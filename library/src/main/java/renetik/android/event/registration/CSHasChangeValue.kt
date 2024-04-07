@@ -62,7 +62,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                                 onChange?.invoke(childValue)
                                 function(childValue)
                             }
-                        }
+                        } ?: null.also { onChange?.invoke(it); function(it); }
                     }
                     return CSRegistration.CSRegistration(isActive = true, onCancel = {
                         parentRegistration.cancel()
