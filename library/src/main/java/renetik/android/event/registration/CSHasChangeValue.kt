@@ -4,6 +4,7 @@ import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Quadruple
 import renetik.android.core.lang.Quintuple
+import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.property.CSProperty
@@ -293,5 +294,44 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument5>>.action(
             crossinline onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = action(first, second, third, fourth, fifth, onChange)
+
+        ///
+        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> onChange(
+            item1: CSHasChangeValue<Argument1>,
+            item2: CSHasChangeValue<Argument2>,
+            item3: CSHasChangeValue<Argument3>,
+            item4: CSHasChangeValue<Argument4>,
+            item5: CSHasChangeValue<Argument5>,
+            item6: CSHasChangeValue<Argument6>,
+            crossinline onAction: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
+        ): CSRegistration = list(item1, item2, item3, item4, item5, item6).onChange {
+            onAction(item1.value, item2.value, item3.value, item4.value, item5.value, item6.value)
+        }
+
+        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+                Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
+            crossinline onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
+        ): CSRegistration = onChange(first, second, third, fourth, fifth, sixth, onChange)
+
+        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> action(
+            item1: CSHasChangeValue<Argument1>,
+            item2: CSHasChangeValue<Argument2>,
+            item3: CSHasChangeValue<Argument3>,
+            item4: CSHasChangeValue<Argument4>,
+            item5: CSHasChangeValue<Argument5>,
+            item6: CSHasChangeValue<Argument6>,
+            crossinline onAction: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
+        ): CSRegistration = list(item1, item2, item3, item4, item5, item6).action {
+            onAction(item1.value, item2.value, item3.value, item4.value, item5.value, item6.value)
+        }
+
+        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+                Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.action(
+            crossinline onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
+        ): CSRegistration = action(first, second, third, fourth, fifth, sixth, onChange)
     }
 }
