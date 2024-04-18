@@ -1,10 +1,8 @@
 package renetik.android.event.registration
 
-import renetik.android.core.lang.void
-
 interface CSHasChange<Argument> {
     companion object {
-        inline fun onChange(vararg hasChanges: CSHasChange<*>, crossinline function: () -> void)
+        inline fun onChange(vararg hasChanges: CSHasChange<*>, crossinline function: () -> Unit)
                 : CSRegistration = CSRegistration(hasChanges.map { it.onChange(function) })
 
         inline fun CSHasChange<*>.action(crossinline function: () -> Unit): CSRegistration {

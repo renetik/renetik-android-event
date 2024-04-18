@@ -1,6 +1,5 @@
 package renetik.android.event
 
-import renetik.android.core.lang.Void
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSRegistration
 
@@ -10,7 +9,7 @@ interface CSEvent<T> : CSHasChange<T> {
         @JvmName("eventWithArgument")
         fun <T> event(): CSEvent<T> = CSEventImpl()
 
-        fun event(): CSEvent<Void> = CSEventImpl()
+        fun event(): CSEvent<Unit> = CSEventImpl()
     }
 
     fun pause()

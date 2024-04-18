@@ -1,7 +1,6 @@
 package renetik.android.event.common
 
 import renetik.android.core.lang.CSFunc
-import renetik.android.core.lang.void
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.util.CSLater.later
@@ -14,10 +13,10 @@ class CSLaterOnceFunc(
 ) : CSFunc {
 
     companion object {
-        fun CSHasRegistrations.laterOnce(after: Duration, function: () -> void) =
+        fun CSHasRegistrations.laterOnce(after: Duration, function: () -> Unit) =
             CSLaterOnceFunc(this, function, after.inWholeMilliseconds.toInt())
 
-        fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> void) =
+        fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> Unit) =
             CSLaterOnceFunc(this, function, after)
     }
 
@@ -35,7 +34,7 @@ class CSLaterOnceFunc(
 //) : CSFunc {
 //
 //    companion object {
-//        fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> void) =
+//        fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> Unit) =
 //            CSLaterOnceFunc(this, function, after)
 //    }
 //

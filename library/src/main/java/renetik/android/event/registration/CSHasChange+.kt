@@ -1,16 +1,13 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.Func
-import renetik.android.core.lang.void
-import renetik.android.event.CSEvent
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
-import renetik.android.event.listen
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
     crossinline function: () -> Unit,
 ): CSRegistration = onChange { _ -> function() }
 
-inline fun CSHasChange<void>.action(
+inline fun CSHasChange<Unit>.action(
     crossinline function: () -> Unit,
 ): CSRegistration {
     function()

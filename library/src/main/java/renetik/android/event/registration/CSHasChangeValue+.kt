@@ -6,7 +6,6 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
-import renetik.android.core.lang.void
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.common.update
@@ -202,7 +201,7 @@ fun <V, Instance> CSHasRegistrations.lazyHasChangeValue(
         }
         override val value: Instance get() = outputModelInstance1.value
 
-        override fun onChange(function: (Instance) -> void): CSRegistration =
+        override fun onChange(function: (Instance) -> Unit): CSRegistration =
             outputModelInstance1.onChange(function)
     }
 }
