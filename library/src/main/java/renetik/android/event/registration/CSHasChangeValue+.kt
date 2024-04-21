@@ -9,6 +9,7 @@ import renetik.android.core.lang.value.isTrue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.common.update
+import renetik.android.event.property.CSLateProperty
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
@@ -16,7 +17,12 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeVa
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
-    function(value)
+    val lateProperty = (this as? CSLateProperty<T>)
+    if (lateProperty != null) {
+        lateProperty.lateValue?.let(function)
+    } else {
+        function(value)
+    }
     return onChange(function)
 }
 
