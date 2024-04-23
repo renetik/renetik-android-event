@@ -107,8 +107,8 @@ open class CSProcess<Data : Any>(
         failedMessage = process.failedMessage
         process.throwable?.rootCause?.let { logWarn(it) }
         throwable = process.throwable ?: Throwable()
-        throwable?.let { logError(it) { "$failedMessage" } }
-            ?: logError { "$failedMessage" }
+        throwable?.let { logError(it, failedMessage) }
+            ?: logError(failedMessage)
         eventFailed.fire(process)
     }
 

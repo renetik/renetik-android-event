@@ -5,6 +5,7 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Quadruple
 import renetik.android.core.lang.Quintuple
 import renetik.android.core.lang.Sixtuple
+import renetik.android.core.lang.lazy.CSLazyVar.Companion.lazyVar
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.property.CSProperty
@@ -74,6 +75,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         //TODO: This and "computed" is same in essence just different implementation we need to choose one and use that.
+        // but this is probably more optimized.
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasRegistrations? = null,
@@ -82,7 +84,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = let { property ->
             object : CSProperty<Return> {
                 val event = event<Return>()
-                override var value: Return = from(property.value)
+                override var value: Return by lazyVar { from(property.value) }
                 override fun onChange(function: (Return) -> Unit) =
                     event.listen { function(value) }
 
