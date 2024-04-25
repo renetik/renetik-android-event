@@ -5,13 +5,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import renetik.android.core.lang.CSResult
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
 
 val mainScope = MainScope()
 
 fun CSHasRegistrations.launch(
-    dispatcher: CoroutineDispatcher = Dispatchers.Main, func: suspend () -> Unit
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    func: suspend () -> Unit,
 ) {
     val self = this
     var job: Job by notNull()
