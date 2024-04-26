@@ -16,13 +16,15 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
-fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
+
+fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
-    if (lateProperty != null) {
-        lateProperty.lateValue?.let(function)
-    } else {
-        function(value)
-    }
+    if (lateProperty != null) lateProperty.lateValue?.let(function)
+    else function(value)
+}
+
+fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
+    onValue(function)
     return onChange(function)
 }
 
