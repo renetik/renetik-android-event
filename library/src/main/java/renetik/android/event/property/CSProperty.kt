@@ -12,7 +12,8 @@ import renetik.android.event.registration.register
 interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
     fun value(newValue: T, fire: Boolean = true)
     fun fireChange()
-    fun paused(function: () -> Unit): Unit = notImplemented()
+    fun pause(): Unit = notImplemented()
+    fun resume(): Unit = notImplemented()
 
     companion object {
         fun <T> property(

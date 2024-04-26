@@ -3,7 +3,6 @@ package renetik.android.event.property
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
-import renetik.android.event.paused
 
 abstract class CSPropertyBase<T>(
     parent: CSHasDestruct? = null,
@@ -31,12 +30,14 @@ abstract class CSPropertyBase<T>(
 
     private var isChanged = false
 
-    override fun paused(function: () -> Unit) {
-        eventChange.paused {
-            isChanged = false
-            function()
-        }
+    override fun pause() {
+        eventChange.pause()
+        isChanged = false
+    }
+
+    override fun resume() {
         if (isChanged) fireChange()
         isChanged = false
+        eventChange.resume()
     }
 }
