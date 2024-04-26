@@ -108,6 +108,39 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        fun <Argument, Return>
+                CSHasChangeValue<Argument>.hasChangeValueFrom(
+            parent: CSHasRegistrations? = null,
+            from: (Return?, Argument) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSProperty<Return> {
+                val event = event<Return>()
+                override var value: Return = from(null, property.value)
+                override fun onChange(function: (Return) -> Unit) =
+                    event.listen { function(value) }
+
+                init {
+                    property.onChange { item1 ->
+                        value = from(value, item1)
+                        onChange?.invoke(value)
+                        event.fire(value)
+                    }.also { parent?.register(it) }
+                }
+
+                override fun value(newValue: Return, fire: Boolean) {
+                    if (value == newValue) return
+                    value = newValue
+                    if (fire) fireChange()
+                }
+
+                override fun fireChange() {
+                    onChange?.invoke(value)
+                    event.fire(value)
+                }
+            }
+        }
+
         inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.hasChangeValueNullableChild(
             parent: CSHasRegistrations? = null,
