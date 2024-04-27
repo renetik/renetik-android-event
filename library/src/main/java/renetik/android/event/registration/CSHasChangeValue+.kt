@@ -164,15 +164,17 @@ fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
 ): CSRegistration = action { value -> list.update(value, function) }
 
 fun <V, Instance> CSHasChangeValue<V>.lazyFactory(
+    parent: CSHasRegistrations? = null,
     createInstance: (V) -> Instance
-): CSValue<Instance> where Instance : CSHasDestruct = object : CSValue<Instance> {
+): CSValue<Instance>
+        where Instance : CSHasDestruct = object : CSValue<Instance> {
     var outputModelInstance: Instance? = null
     override val value: Instance
         get() {
             if (outputModelInstance == null) action {
                 outputModelInstance?.destruct()
                 outputModelInstance = createInstance(it)
-            }
+            }.also { parent?.register(it) }
             return outputModelInstance!!
         }
 }
