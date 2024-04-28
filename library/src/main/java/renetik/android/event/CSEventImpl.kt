@@ -4,6 +4,7 @@ import renetik.android.core.kotlin.collections.hasItems
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.CSList
+import renetik.android.core.logging.CSLog.logDebugTrace
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.registration.CSRegistration
@@ -26,7 +27,10 @@ class CSEventImpl<T> : CSEvent<T> {
     @Synchronized
     override fun fire(argument: T) {
         if (paused) return
-        if (firing) logWarnTrace { "Event fired while firing" }
+        if (firing) {
+            logDebugTrace { "Event fired while firing" }
+            return
+        }
         if (listeners.isEmpty()) return
 
         firing = true
