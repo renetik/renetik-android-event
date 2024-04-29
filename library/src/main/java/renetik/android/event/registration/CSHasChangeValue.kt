@@ -47,6 +47,33 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         inline fun <ParentValue, ChildValue>
+                CSHasChangeValue<ParentValue>.delegateChild(
+            parent: CSHasRegistrations? = null,
+            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
+            noinline onChange: ((ChildValue?) -> Unit)? = null
+        ): CSHasChangeValue<ChildValue> = let { property ->
+            object : CSHasChangeValue<ChildValue> {
+                override val value: ChildValue get() = child(property.value).value
+                override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
+                    var childRegistration: CSRegistration? = null
+                    val parentRegistration = property.action { parentValue ->
+                        childRegistration?.cancel()
+                        childRegistration = child(parentValue).let {
+                            it.onChange { childValue ->
+                                onChange?.invoke(childValue)
+                                function(childValue)
+                            }
+                        }
+                    }
+                    return CSRegistration.CSRegistration(isActive = true, onCancel = {
+                        parentRegistration.cancel()
+                        childRegistration?.cancel()
+                    }).also { parent?.register(it) }
+                }
+            }
+        }
+
+        inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegateNullableChild(
             parent: CSHasRegistrations? = null,
             crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
@@ -227,8 +254,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         inline fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
-            crossinline onAction: (Argument1, Argument2) -> Unit,
-        ): CSRegistration = action(first, second, onAction)
+            crossinline onAction: (Pair<Argument1, Argument2>) -> Unit,
+        ): CSRegistration = action(first, second) { first, second -> onAction(first to second) }
 
         inline fun <Argument1, Argument2, Argument3> onChange(
             item1: CSHasChangeValue<Argument1>,
