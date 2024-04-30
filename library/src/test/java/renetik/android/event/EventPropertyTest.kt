@@ -5,6 +5,7 @@ import org.junit.Test
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.fire
+import renetik.android.event.property.paused
 import renetik.android.event.registration.onChange
 import renetik.android.event.registration.paused
 

@@ -59,11 +59,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
-                        childRegistration = child(parentValue).let {
-                            it.onChange { childValue ->
-                                onChange?.invoke(childValue)
-                                function(childValue)
-                            }
+                        val childItem = child(parentValue)
+                        if (childRegistration != null) childItem.also {
+                            onChange?.invoke(it.value)
+                            function(it.value)
+                        }
+                        childRegistration = childItem.onChange { childValue ->
+                            onChange?.invoke(childValue)
+                            function(childValue)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -84,14 +87,19 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override val value: ChildValue? get() = child(property.value)?.value
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
                     var childRegistration: CSRegistration? = null
+                    var isInitialized = false
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
-                        childRegistration = child(parentValue)?.let {
-                            it.onChange { childValue ->
-                                onChange?.invoke(childValue)
-                                function(childValue)
-                            }
-                        } ?: null.also { onChange?.invoke(it); function(it); }
+                        val childItem = child(parentValue)
+                        if (isInitialized) childItem.also {
+                            onChange?.invoke(it?.value)
+                            function(it?.value)
+                        }
+                        isInitialized = true
+                        childRegistration = childItem?.onChange { childValue ->
+                            onChange?.invoke(childValue)
+                            function(childValue)
+                        }
                     }
                     return CSRegistration(isActive = true, onCancel = {
                         parentRegistration.cancel()
