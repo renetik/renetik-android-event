@@ -9,6 +9,7 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.property.CSProperty
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
@@ -47,8 +48,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
+        @JvmName("delegateChild")
         inline fun <ParentValue, ChildValue>
-                CSHasChangeValue<ParentValue>.delegateChild(
+                CSHasChangeValue<ParentValue>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
             noinline onChange: ((ChildValue?) -> Unit)? = null
@@ -77,8 +79,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        @JvmName("delegateNullable")
         inline fun <ParentValue, ChildValue>
-                CSHasChangeValue<ParentValue>.delegateNullableChild(
+                CSHasChangeValue<ParentValue>.delegateNullable(
             parent: CSHasRegistrations? = null,
             crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
             noinline onChange: ((ChildValue?) -> Unit)? = null
@@ -177,15 +180,39 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        @JvmName("hasChangeValueChild")
+        inline fun <ParentValue, ChildValue : Any>
+                CSHasChangeValue<ParentValue>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
+            noinline onChange: ((ChildValue) -> Unit)? = null
+        ): CSHasChangeValue<ChildValue> {
+            val event = event<ChildValue>()
+            var value: ChildValue by notNull()
+            action(
+                child = { child(it) },
+                action = {
+                    value = it
+                    onChange?.invoke(value)
+                    event.fire(it)
+                }
+            ).also { parent?.register(it) }
+            return object : CSHasChangeValue<ChildValue> {
+                override val value: ChildValue get() = value
+                override fun onChange(function: (ChildValue) -> Unit) =
+                    event.listen(function)
+            }
+        }
+
         inline fun <ParentValue, ChildValue>
-                CSHasChangeValue<ParentValue>.hasChangeValueNullableChild(
+                CSHasChangeValue<ParentValue>.hasChangeValueNullable(
             parent: CSHasRegistrations? = null,
             crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
             noinline onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue?> {
             val event = event<ChildValue?>()
             var value: ChildValue? = null
-            actionNullableChild(
+            actionNullable(
                 child = { child(it) },
                 onChange = {
                     value = it
@@ -195,7 +222,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             ).also { parent?.register(it) }
             return object : CSHasChangeValue<ChildValue?> {
                 override val value: ChildValue? get() = value
-                override fun onChange(function: (ChildValue?) -> Unit): CSRegistration =
+                override fun onChange(function: (ChildValue?) -> Unit) =
                     event.listen(function)
             }
         }
