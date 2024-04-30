@@ -8,6 +8,7 @@ import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.property.CSProperty
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
@@ -65,7 +66,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                             }
                         }
                     }
-                    return CSRegistration.CSRegistration(isActive = true, onCancel = {
+                    return CSRegistration(isActive = true, onCancel = {
                         parentRegistration.cancel()
                         childRegistration?.cancel()
                     }).also { parent?.register(it) }
@@ -92,7 +93,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                             }
                         } ?: null.also { onChange?.invoke(it); function(it); }
                     }
-                    return CSRegistration.CSRegistration(isActive = true, onCancel = {
+                    return CSRegistration(isActive = true, onCancel = {
                         parentRegistration.cancel()
                         childRegistration?.cancel()
                     }).also { parent?.register(it) }
@@ -243,6 +244,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
             onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration = onChange(first, second, onChange)
+
+        fun <Argument1, Argument2>
+                Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
+            onChange: () -> Unit,
+        ): CSRegistration = onChange(first, second) { _, _ -> onChange() }
 
         inline fun <Argument1, Argument2> action(
             item1: CSHasChangeValue<Argument1>,
