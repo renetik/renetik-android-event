@@ -46,6 +46,7 @@ fun <T> CSHasChangeValue<T>.actionFromTo(
 fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
     onChange { if (it.isFalse) function() }
 
+
 fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit) =
     onChange { if (it.isTrue) function() }
 
@@ -58,6 +59,18 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
     if (isFalse) function()
     return onFalse(function)
 }
+
+fun <T> CSHasChangeValue<T?>.onNull(function: () -> Unit) =
+    onChange { if (it == null) function() }
+
+fun <T> CSHasChangeValue<T?>.onNotNull(function: () -> Unit) =
+    onChange { if (it != null) function() }
+
+fun <T> CSHasChangeValue<T?>.actionNull(function: () -> Unit): CSRegistration =
+    action { if (it == null) function() }
+
+fun <T> CSHasChangeValue<T?>.actionNotNull(function: () -> Unit) =
+    action { if (it != null) function() }
 
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
 
