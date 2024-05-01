@@ -11,27 +11,30 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import kotlin.properties.Delegates.notNull
 
 val mainScope = MainScope()
 
 @OptIn(DelicateCoroutinesApi::class)
 val SingleThread: ExecutorCoroutineDispatcher = newSingleThreadContext("SingleThread")
 
+// TODO: move elsewhere
 suspend fun <T> CoroutineDispatcher.context(
     block: suspend CoroutineScope.() -> T
 ): T = withContext(this, block)
 
-fun CSHasRegistrations.launch(
+inline fun CSHasRegistrations.launch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    func: suspend () -> Unit,
+    crossinline func: suspend () -> Unit,
 ): CSRegistration {
     val self = this
-    var job: Job by notNull()
-    val registration = this + CSRegistration { job.cancel() }
+    var job: Job? = null
+    val registration = this + CSRegistration { job?.cancel() }
     job = mainScope.launch(dispatcher) {
-        func()
-        self.cancel(registration)
+        //Somehow registration was canceled when job was no initialised
+        if (!registration.isCanceled) {
+            func()
+            self.cancel(registration)
+        }
     }
     return registration
 }
