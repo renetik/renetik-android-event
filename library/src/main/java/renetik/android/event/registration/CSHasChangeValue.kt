@@ -7,7 +7,7 @@ import renetik.android.core.lang.Quintuple
 import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.property.CSProperty
+import renetik.android.event.property.CSPropertyBase
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
 
@@ -15,7 +15,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
         inline fun <T, Return> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
-            crossinline from: (T) -> Return, noinline onChange: ArgFunc<Return>? = null,
+            crossinline from: (T) -> Return,
+            noinline onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
@@ -59,22 +60,27 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override val value: ChildValue get() = child(property.value).value
                 override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
                     var childRegistration: CSRegistration? = null
+                    var isPaused = false
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
                         if (childRegistration != null) childItem.also {
-                            onChange?.invoke(it.value)
-                            function(it.value)
+                            if (!isPaused) {
+                                onChange?.invoke(it.value)
+                                function(it.value)
+                            }
                         }
                         childRegistration = childItem.onChange { childValue ->
-                            onChange?.invoke(childValue)
-                            function(childValue)
+                            if (!isPaused) {
+                                onChange?.invoke(childValue)
+                                function(childValue)
+                            }
                         }
                     }
-                    return CSRegistration(isActive = true, onCancel = {
-                        parentRegistration.cancel()
-                        childRegistration?.cancel()
-                    }).also { parent?.register(it) }
+                    return CSRegistration(isActive = true,
+                        onPause = { isPaused = true }, onResume = { isPaused = false },
+                        onCancel = { parentRegistration.cancel(); childRegistration?.cancel() })
+                        .also { parent?.register(it) }
                 }
             }
         }
@@ -91,23 +97,28 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
                     var childRegistration: CSRegistration? = null
                     var isInitialized = false
+                    var isPaused = false
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
                         if (isInitialized) childItem.also {
-                            onChange?.invoke(it?.value)
-                            function(it?.value)
+                            if (!isPaused) {
+                                onChange?.invoke(it?.value)
+                                function(it?.value)
+                            }
                         }
                         isInitialized = true
                         childRegistration = childItem?.onChange { childValue ->
-                            onChange?.invoke(childValue)
-                            function(childValue)
+                            if (!isPaused) {
+                                onChange?.invoke(childValue)
+                                function(childValue)
+                            }
                         }
                     }
-                    return CSRegistration(isActive = true, onCancel = {
-                        parentRegistration.cancel()
-                        childRegistration?.cancel()
-                    }).also { parent?.register(it) }
+                    return CSRegistration(isActive = true,
+                        onPause = { isPaused = true }, onResume = { isPaused = false },
+                        onCancel = { parentRegistration.cancel(); childRegistration?.cancel() })
+                        .also { parent?.register(it) }
                 }
             }
         }
@@ -120,29 +131,20 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             from: (Argument) -> Return,
             onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = let { property ->
-            object : CSProperty<Return> {
-                val event = event<Return>()
+            object : CSPropertyBase<Return>(onChange) {
                 override var value: Return = from(property.value)
-                override fun onChange(function: (Return) -> Unit) =
-                    event.listen { function(value) }
 
                 init {
                     property.onChange { item1 ->
                         value = from(item1)
-                        onChange?.invoke(value)
-                        event.fire(value)
+                        fireChange()
                     }.also { parent?.register(it) }
                 }
 
                 override fun value(newValue: Return, fire: Boolean) {
                     if (value == newValue) return
                     value = newValue
-                    if (fire) fireChange()
-                }
-
-                override fun fireChange() {
-                    onChange?.invoke(value)
-                    event.fire(value)
+                    onValueChanged(newValue, fire)
                 }
             }
         }
@@ -153,29 +155,20 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             from: (Return?, Argument) -> Return,
             onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = let { property ->
-            object : CSProperty<Return> {
-                val event = event<Return>()
+            object : CSPropertyBase<Return>(onChange) {
                 override var value: Return = from(null, property.value)
-                override fun onChange(function: (Return) -> Unit) =
-                    event.listen { function(value) }
 
                 init {
                     property.onChange { item1 ->
                         value = from(value, item1)
-                        onChange?.invoke(value)
-                        event.fire(value)
+                        fireChange()
                     }.also { parent?.register(it) }
                 }
 
                 override fun value(newValue: Return, fire: Boolean) {
                     if (value == newValue) return
                     value = newValue
-                    if (fire) fireChange()
-                }
-
-                override fun fireChange() {
-                    onChange?.invoke(value)
-                    event.fire(value)
+                    onValueChanged(newValue, fire)
                 }
             }
         }
@@ -233,28 +226,20 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item2: CSHasChangeValue<Argument2>,
             crossinline from: (Argument1, Argument2) -> Return,
             noinline onChange: ArgFunc<Return>? = null
-        ): CSHasChangeValue<Return> = object : CSProperty<Return> {
-            val event = event<Return>()
+        ): CSHasChangeValue<Return> = object : CSPropertyBase<Return>(onChange) {
             override var value: Return = from(item1.value, item2.value)
-            override fun onChange(function: (Return) -> Unit) = event.listen { function(value) }
 
             init {
                 (item1 to item2).onChange { item1, item2 ->
                     value = from(item1, item2)
-                    onChange?.invoke(value)
-                    event.fire(value)
+                    fireChange()
                 }.also { parent?.register(it) }
             }
 
             override fun value(newValue: Return, fire: Boolean) {
                 if (value == newValue) return
                 value = newValue
-                if (fire) fireChange()
-            }
-
-            override fun fireChange() {
-                onChange?.invoke(value)
-                event.fire(value)
+                onValueChanged(newValue, fire)
             }
         }
 
