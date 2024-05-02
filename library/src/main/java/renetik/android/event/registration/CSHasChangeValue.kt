@@ -5,6 +5,7 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Quadruple
 import renetik.android.core.lang.Quintuple
 import renetik.android.core.lang.Sixtuple
+import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.property.CSPropertyBase
@@ -136,8 +137,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
                 init {
                     property.onChange { item1 ->
-                        value = from(item1)
-                        fireChange()
+                        value(from(item1))
                     }.also { parent?.register(it) }
                 }
 
@@ -159,10 +159,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override var value: Return = from(null, property.value)
 
                 init {
-                    property.onChange { item1 ->
-                        value = from(value, item1)
-                        fireChange()
-                    }.also { parent?.register(it) }
+                    property.onChange { item1 -> value(from(value, item1)) }
+                        .also { parent?.register(it) }
                 }
 
                 override fun value(newValue: Return, fire: Boolean) {
@@ -231,8 +229,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
             init {
                 (item1 to item2).onChange { item1, item2 ->
-                    value = from(item1, item2)
-                    fireChange()
+                    value(from(item1, item2))
                 }.also { parent?.register(it) }
             }
 
@@ -251,6 +248,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> =
             hasChangeValue(parent, first, second, from, onChange)
+
 
         fun <Argument1, Argument2> onChange(
             item1: CSHasChangeValue<Argument1>,
@@ -282,6 +280,58 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
             crossinline onAction: (Pair<Argument1, Argument2>) -> Unit,
         ): CSRegistration = action(first, second) { first, second -> onAction(first to second) }
+
+
+        fun <Argument1, Argument2, Argument3, Return>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument1, Argument2, Argument3) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> =
+            object : CSPropertyBase<Return>(onChange) {
+                override var value: Return = from(first.value, second.value, third.value)
+
+                init {
+                    (first to second to third).onChange { item1, item2, item3 ->
+                        value(from(item1, item2, item3))
+                    }.also { parent?.register(it) }
+                }
+
+                override fun value(newValue: Return, fire: Boolean) {
+                    if (value == newValue) return
+                    value = newValue
+                    onValueChanged(newValue, fire)
+                }
+            }
+
+        fun <Argument1, Argument2, Argument3, Argument4, Return>
+                Quadruple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>,
+                        CSHasChangeValue<Argument4>>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument1, Argument2, Argument3, Argument4) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> =
+            object : CSPropertyBase<Return>(onChange) {
+                override var value: Return = from(
+                    first.value, second.value, third.value, fourth.value
+                )
+
+                init {
+                    (first to second to third to fourth).onChange { item1, item2, item3, item4 ->
+                        value(from(item1, item2, item3, item4))
+                    }.also { parent?.register(it) }
+                }
+
+                override fun value(newValue: Return, fire: Boolean) {
+                    if (value == newValue) return
+                    value = newValue
+                    onValueChanged(newValue, fire)
+                }
+            }
 
         inline fun <Argument1, Argument2, Argument3> onChange(
             item1: CSHasChangeValue<Argument1>,
