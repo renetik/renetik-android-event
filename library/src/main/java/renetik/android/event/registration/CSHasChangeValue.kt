@@ -350,6 +350,13 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             crossinline onChange: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = onChange(first, second, third, onChange)
 
+        inline fun <Argument1, Argument2, Argument3>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.onChange(
+            crossinline onChange: () -> Unit,
+        ): CSRegistration = onChange(first, second, third) { _, _, _ -> onChange() }
+
         inline fun <Argument1, Argument2, Argument3> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
