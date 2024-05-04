@@ -48,6 +48,7 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
             onChange: ((value: T?) -> Unit)? = null,
         ): CSProperty<T?> = CSPropertyImpl(null, onChange)
 
+        @Deprecated("Use Pair")
         inline fun <Argument1, Argument2, Argument3> property(
             parent: CSHasRegistrations? = null,
             item1: CSHasChangeValue<Argument1>,
@@ -60,6 +61,12 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
             }.also { parent?.register(it) }
             return property
         }
+
+        inline fun <Argument1, Argument2, Argument3>
+                Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.property(
+            parent: CSHasRegistrations? = null,
+            crossinline from: (Argument1, Argument2) -> Argument3,
+        ): CSProperty<Argument3> = property(parent, first, second, from)
 
         inline fun <Argument1, Argument2, Argument3, Argument4> property(
             parent: CSHasRegistrations? = null,
