@@ -1,7 +1,9 @@
 package renetik.android.event
 
+import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
 import renetik.android.event.property.CSProperty
+import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration

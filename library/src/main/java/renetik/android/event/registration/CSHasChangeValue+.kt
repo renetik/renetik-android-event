@@ -1,5 +1,6 @@
 package renetik.android.event.registration
 
+import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.ArgFunc
@@ -15,7 +16,34 @@ import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import kotlin.Result.Companion.success
 
+suspend fun CSHasChangeValue<Boolean>.waitIsTrue(): Unit = suspendCancellableCoroutine {
+    if (isTrue) it.resumeWith(success(Unit))
+    else {
+        var registration: CSRegistration? = null
+        registration = onTrue {
+            registration?.cancel()
+            registration = null
+            it.resumeWith(success(Unit))
+        }
+        it.invokeOnCancellation { registration?.cancel() }
+    }
+}
+
+suspend fun CSHasChangeValue<Boolean>.waitIsFalse(): Unit = suspendCancellableCoroutine {
+    if (isFalse) it.resumeWith(success(Unit))
+    else {
+        var registration: CSRegistration? = null
+        registration = onFalse {
+            registration?.cancel()
+            registration = null
+            it.resumeWith(success(Unit))
+        }
+        it.invokeOnCancellation { registration?.cancel() }
+    }
+
+}
 
 fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
