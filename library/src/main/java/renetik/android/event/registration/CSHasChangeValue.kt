@@ -15,6 +15,11 @@ import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
+        inline fun <T> CSHasChangeValue<T>.delegate(
+            parent: CSHasRegistrations? = null,
+            noinline onChange: ArgFunc<T>? = null,
+        ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
+
         inline fun <T, Return> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: (T) -> Return,
