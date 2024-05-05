@@ -209,8 +209,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<ChildValue?> {
             val event = event<ChildValue?>()
             var value: ChildValue? = null
-            actionNullable(
-                child = { child(it) },
+            action(
+                optionalChild = { child(it) },
                 onChange = {
                     value = it
                     onChange?.invoke(value)
