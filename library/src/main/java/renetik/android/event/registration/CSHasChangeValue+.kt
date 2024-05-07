@@ -14,7 +14,6 @@ import renetik.android.event.property.CSLateProperty
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 
@@ -204,60 +203,68 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     })
 }
 
-//inline not possible
+//Inline not possible, don't try again :)
 fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
     list: MutableList<Item>, function: (index: Int) -> Item
 ): CSRegistration = action { value -> list.update(value, function) }
 
-fun <V, Instance> CSHasChangeValue<V>.lazyFactory(
+fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
     parent: CSHasRegistrations? = null,
     createInstance: (V) -> Instance
 ): CSValue<Instance>
         where Instance : CSHasDestruct = object : CSValue<Instance> {
-    var outputModelInstance: Instance? = null
+    var instance: Instance? = null
     override val value: Instance
         get() {
-            if (outputModelInstance == null) action {
-                outputModelInstance?.destruct()
-                outputModelInstance = createInstance(it)
+            if (instance == null) action {
+                instance?.destruct()
+                instance = createInstance(it)
             }.also { parent?.register(it) }
-            return outputModelInstance!!
+            return instance!!
         }
 }
+
+fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
+    property: () -> CSHasChangeValue<V>,
+    createInstance: (V) -> Instance
+): CSValue<Instance> where Instance : CSHasDestruct =
+    lazyFactory(property) { previousInstance, param ->
+        previousInstance?.onDestruct()
+        createInstance(param)
+    }
 
 fun <V, Instance> CSHasRegistrations.lazyFactory(
     property: () -> CSHasChangeValue<V>,
-    createInstance: (V) -> Instance
+    createInstance: (Instance?, V) -> Instance
 ): CSValue<Instance> where Instance : CSHasDestruct = object : CSValue<Instance> {
-    var outputModelInstance: Instance? = null
+    var instance: Instance? = null
     override val value: Instance
         get() {
-            if (outputModelInstance == null)
-                this@lazyFactory + property().action {
-                    outputModelInstance?.destruct()
-                    outputModelInstance = createInstance(it)
-                }
-            return outputModelInstance!!
+            if (instance == null) this@lazyFactory + property().action {
+                instance = createInstance(instance, it)
+            }
+            return instance!!
         }
 }
 
-fun <V, Instance> CSHasRegistrations.lazyHasChangeValue(
-    property: () -> CSHasChangeValue<V>,
-    createInstance: (V) -> Instance
-): CSHasChangeValue<Instance> where Instance : CSHasDestruct {
-    var outputModelInstance: Instance? = null
-    return object : CSHasChangeValue<Instance> {
-        val outputModelInstance1: CSHasChangeValue<Instance> by lazy {
-            property().hasChangeValue(this@lazyHasChangeValue, from = {
-                createInstance(it).also {
-                    outputModelInstance?.destruct()
-                    outputModelInstance = it
-                }
-            })
-        }
-        override val value: Instance get() = outputModelInstance1.value
-
-        override fun onChange(function: (Instance) -> Unit): CSRegistration =
-            outputModelInstance1.onChange(function)
-    }
-}
+// I don't even understand this now... and not used.
+//fun <V, Instance> CSHasRegistrations.lazyHasChangeValue(
+//    property: () -> CSHasChangeValue<V>,
+//    createInstance: (V) -> Instance
+//): CSHasChangeValue<Instance> where Instance : CSHasDestruct {
+//    var instance: Instance? = null
+//    return object : CSHasChangeValue<Instance> {
+//        val outputModelInstance1: CSHasChangeValue<Instance> by lazy {
+//            property().hasChangeValue(this@lazyHasChangeValue, from = {
+//                createInstance(it).also {
+//                    instance?.destruct()
+//                    instance = it
+//                }
+//            })
+//        }
+//        override val value: Instance get() = outputModelInstance1.value
+//
+//        override fun onChange(function: (Instance) -> Unit): CSRegistration =
+//            outputModelInstance1.onChange(function)
+//    }
+//}
