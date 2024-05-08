@@ -10,7 +10,7 @@ abstract class CSPropertyWrapper<T>(
     override fun onChange(function: (T) -> Unit) = property.onChange(function)
     override var value: T
         get() = property.value
-        set(value) = property.value(value)
+        set(value) = value(value)
 
     override fun fireChange() = property.fireChange()
 }
