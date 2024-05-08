@@ -35,9 +35,9 @@ abstract class CSPropertyBase<T>(
         isChanged = false
     }
 
-    override fun resume() {
+    override fun resume(fireChange: Boolean) {
         eventChange.resume()
-        if (isChanged) fireChange()
+        if (isChanged && fireChange) fireChange()
         isChanged = false
     }
 }

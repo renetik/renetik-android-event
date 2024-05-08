@@ -14,10 +14,12 @@ import renetik.android.event.registration.register
 import kotlin.math.roundToInt
 
 fun <T : CSProperty<*>> T.fire() = apply { fireChange() }
-fun <T : CSProperty<*>> T.paused(function: (T).() -> Unit) = apply {
+fun <T : CSProperty<*>> T.paused(
+    fire: Boolean = true, function: (T).() -> Unit
+) = apply {
     pause()
     function(this)
-    resume()
+    resume(fire)
 }
 
 

@@ -13,7 +13,7 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
     fun value(newValue: T, fire: Boolean = true)
     fun fireChange()
     fun pause(): Unit = notImplemented()
-    fun resume(): Unit = notImplemented()
+    fun resume(fireChange: Boolean = true): Unit = notImplemented()
 
     companion object {
         fun <T> property(
