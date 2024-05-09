@@ -34,10 +34,9 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     final override val context: Context get() = baseContext
 
     private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
-    final override val registrations by lazyRegistrations
+    final override val registrations: CSRegistrationsMap by lazyRegistrations
 
     final override val eventDestruct = event<Unit>()
-
     final override var isDestructed = false
         private set
 
