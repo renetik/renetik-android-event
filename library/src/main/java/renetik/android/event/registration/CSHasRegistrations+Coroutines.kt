@@ -69,3 +69,12 @@ inline fun CSContext.launchIfNotRunning(
     if (registrations.isActive(key)) return null
     return launch(key, dispatcher, func)
 }
+
+inline fun CSContext.reLaunchIfRunning(
+    key: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration? {
+    registrations.cancel(key)
+    return launch(key, dispatcher, func)
+}
