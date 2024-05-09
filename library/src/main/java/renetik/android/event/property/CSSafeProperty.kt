@@ -1,9 +1,9 @@
 package renetik.android.event.property
 
-import renetik.android.core.lang.variable.CSSynchronizedVariable
+import renetik.android.core.lang.variable.CSSafeVariable
 import renetik.android.event.common.CSHasDestruct
 
-interface CSSafeProperty<T> : CSSynchronizedVariable<T>, CSProperty<T>
+interface CSSafeProperty<T> : CSSafeHasChangeValue<T>, CSSafeVariable<T>, CSProperty<T>
 
 fun <T> CSHasDestruct.safe(
     property: CSProperty<T>, onChange: ((value: T) -> Unit)? = null
