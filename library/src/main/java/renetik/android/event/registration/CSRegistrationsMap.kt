@@ -3,6 +3,7 @@ package renetik.android.event.registration
 import androidx.annotation.AnyThread
 import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.collections.removeValue
+import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
 import java.util.concurrent.atomic.AtomicInteger
@@ -80,6 +81,8 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         replace?.let { cancel(it) }
         return registration?.let { add(createUniqueId(), it) }
     }
+
+    fun isActive(key: String): Boolean = registrationMap[key]?.isActive.isTrue
 
     @Synchronized
     @AnyThread

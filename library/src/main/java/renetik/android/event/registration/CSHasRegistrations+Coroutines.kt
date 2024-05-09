@@ -8,6 +8,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import renetik.android.event.common.CSContext
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 val mainScope = MainScope()
@@ -40,4 +41,31 @@ inline fun CSHasRegistrations.launch(
         }
     }
     return registration
+}
+
+inline fun CSHasRegistrations.launch(
+    key: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration {
+    val self = this
+    var job: Job? = null
+    val registration = this + (key to CSRegistration { job?.cancel() })
+    job = mainScope.launch(dispatcher) {
+        //Somehow registration was canceled when job was no initialised
+        if (!registration.isCanceled) {
+            func(registration)
+            self.cancel(registration)
+        }
+    }
+    return registration
+}
+
+inline fun CSContext.launchIfNotRunning(
+    key: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration? {
+    if (registrations.isActive(key)) return null
+    return launch(key, dispatcher, func)
 }

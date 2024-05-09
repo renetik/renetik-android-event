@@ -26,13 +26,18 @@ fun CSHasRegistrations.register(
     replace: CSRegistration?, registration: CSRegistration
 ): CSRegistration = registration.also { registrations.register(replace, it) }
 
+@JvmName("registerKeyRegistrationNullable")
 fun CSHasRegistrations.register(
     key: String, registration: CSRegistration?
 ): CSRegistration? = registrations.register(key, registration)
 
+fun CSHasRegistrations.register(
+    key: String, registration: CSRegistration
+): CSRegistration = registration.also { registrations.register(key, it) }
+
 operator fun CSHasRegistrations.plus(
     registration: Pair<String, CSRegistration>
-): CSRegistration? = register(registration.first, registration.second)
+): CSRegistration = register(registration.first, registration.second)
 
 @JvmName("plusPairNullable")
 operator fun CSHasRegistrations.plus(
