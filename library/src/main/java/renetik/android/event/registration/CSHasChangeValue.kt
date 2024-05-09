@@ -56,6 +56,31 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
+        inline fun <T, V, K, Return> Triple<CSHasChangeValue<T>, CSHasChangeValue<V>, CSHasChangeValue<K>>.delegate(
+            parent: CSHasRegistrations? = null,
+            crossinline from: (T, V, K) -> Return,
+            noinline onChange: ArgFunc<Return>? = null,
+        ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+            override val value: Return get() = from(first.value, second.value, third.value)
+            override fun onChange(function: (Return) -> Unit) = CSRegistration(
+                first.onChange {
+                    val value = from(it, second.value, third.value)
+                    onChange?.invoke(value)
+                    function(value)
+                }.also { parent?.register(it) },
+                second.onChange {
+                    val value = from(first.value, it, third.value)
+                    onChange?.invoke(value)
+                    function(value)
+                }.also { parent?.register(it) },
+                third.onChange {
+                    val value = from(first.value, second.value, it)
+                    onChange?.invoke(value)
+                    function(value)
+                }.also { parent?.register(it) }
+            )
+        }
+
         @JvmName("delegateChild")
         inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegate(

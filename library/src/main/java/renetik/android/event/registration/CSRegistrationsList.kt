@@ -5,9 +5,8 @@ import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
 
-class CSRegistrationsList(parent: Any) : CSRegistrations, CSHasRegistrations {
+class CSRegistrationsList(parent: Any) : CSRegistrations {
     private val id by lazy { "$parent" }
-    override val registrations: CSRegistrations = this
     private val registrationList = mutableListOf<CSRegistration>()
 
     @get:Synchronized

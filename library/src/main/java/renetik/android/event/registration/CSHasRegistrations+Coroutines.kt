@@ -61,7 +61,7 @@ inline fun CSHasRegistrations.launch(
     return registration
 }
 
-inline fun CSContext.launchIfNotRunning(
+inline fun CSHasRegistrations.launchIfNot(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline func: suspend (CSRegistration) -> Unit,
@@ -70,7 +70,7 @@ inline fun CSContext.launchIfNotRunning(
     return launch(key, dispatcher, func)
 }
 
-inline fun CSContext.reLaunchIfRunning(
+inline fun CSHasRegistrations.reLaunch(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline func: suspend (CSRegistration) -> Unit,

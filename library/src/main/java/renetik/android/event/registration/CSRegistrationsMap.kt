@@ -123,6 +123,8 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     val size: Int get() = registrationMap.size
 
+    fun clear() = registrationMap.cancelRegistrations()
+
     override fun toString(): String = "${super.toString()} parent:$parent " +
             "size:$size isActive:$isActive isCanceled:$isCanceled"
 }

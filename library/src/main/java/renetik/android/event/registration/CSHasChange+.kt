@@ -44,7 +44,7 @@ inline fun <Argument> CSHasChange<Argument>.onChange(
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     crossinline function: Func,
 ): CSRegistration {
-    val registrations = CSRegistrationsList(this)
+    val registrations = CSRegistrationsMap(this)
     val laterOnceFunction = registrations.laterOnce { function() }
     registrations.register(onChange { laterOnceFunction() })
     return registrations
