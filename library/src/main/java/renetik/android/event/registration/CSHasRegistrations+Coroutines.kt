@@ -32,7 +32,7 @@ inline fun CSHasRegistrations.launch(
 ): CSRegistration {
     val self = this
     var job: Job? = null
-    val registration = this + CSRegistration { job?.cancel() }
+    val registration = this + CSRegistration(isActive = true) { job?.cancel() }
     job = mainScope.launch(dispatcher) {
         //Somehow registration was canceled when job was no initialised
         if (!registration.isCanceled) {
@@ -50,7 +50,7 @@ inline fun CSHasRegistrations.launch(
 ): CSRegistration {
     val self = this
     var job: Job? = null
-    val registration = this + (key to CSRegistration { job?.cancel() })
+    val registration = this + (key to CSRegistration(isActive = true) { job?.cancel() })
     job = mainScope.launch(dispatcher) {
         //Somehow registration was canceled when job was no initialised
         if (!registration.isCanceled) {
@@ -74,7 +74,7 @@ inline fun CSHasRegistrations.reLaunch(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline func: suspend (CSRegistration) -> Unit,
-): CSRegistration? {
+): CSRegistration {
     registrations.cancel(key)
     return launch(key, dispatcher, func)
 }
