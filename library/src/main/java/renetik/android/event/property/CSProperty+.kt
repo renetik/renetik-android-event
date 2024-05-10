@@ -22,7 +22,6 @@ fun <T : CSProperty<*>> T.paused(
     resume(fire)
 }
 
-
 fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     value = property.value
     lateinit var propertyOnChange: CSRegistration
