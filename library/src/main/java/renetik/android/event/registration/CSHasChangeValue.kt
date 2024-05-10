@@ -181,7 +181,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         fun <Argument, Return>
-                CSHasChangeValue<Argument>.hasChangeValueFrom(
+                CSHasChangeValue<Argument>.hasChangeValueWithPrevious(
             parent: CSHasRegistrations? = null,
             from: (Return?, Argument) -> Return,
             onChange: ArgFunc<Return>? = null
