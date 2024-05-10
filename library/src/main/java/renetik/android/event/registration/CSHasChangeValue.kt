@@ -9,6 +9,8 @@ import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.common.CSHasDestruct
+import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
@@ -179,6 +181,18 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
         }
+
+
+        fun <Argument, Return>
+                CSHasChangeValue<Argument>.hasChangeValueDestruct(
+            parent: CSHasRegistrations? = null,
+            from: (Argument) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> where Return : CSHasDestruct =
+            hasChangeValueWithPrevious(parent, from = { previous, to ->
+                previous?.destruct()
+                from(to)
+            }, onChange)
 
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValueWithPrevious(
