@@ -12,11 +12,11 @@ import renetik.android.event.registration.paused
 class EventTest {
     @Test
     fun testListen() {
-        val event = event()
+        val testEvent = event()
         var count = 0
-        event.listen { count += 1 }
-        event()
-        event()
+        testEvent.listen { count += 1 }
+        testEvent()
+        testEvent()
         assertEquals(2, count)
     }
 
@@ -32,11 +32,11 @@ class EventTest {
 
     @Test
     fun testListenOnce() {
-        val event = event()
+        val testEvent = event()
         var count = 0
-        event.listenOnce { count += 1 }
-        event()
-        event()
+        testEvent.listenOnce { count += 1 }
+        testEvent()
+        testEvent()
         assertEquals(1, count)
     }
 

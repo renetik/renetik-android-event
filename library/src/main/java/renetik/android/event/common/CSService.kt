@@ -19,8 +19,7 @@ abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
 
     override fun onBind(intent: Intent) = CSServiceBinder()
 
-    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
-    final override val registrations by lazyRegistrations
+    final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestruct = event<Unit>()
     final override var isDestructed by atomic(false)
         private set
@@ -30,7 +29,7 @@ abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
             logWarnTrace { "Already destroyed: $this" }; return
         }
         isDestructed = true
-        if (lazyRegistrations.isInitialized()) registrations.cancel()
+        registrations.cancel()
         eventDestruct().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }

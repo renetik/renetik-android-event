@@ -33,8 +33,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     // Returning wrapped context as there is no use of this wrapped in child anywhere....
     final override val context: Context get() = baseContext
 
-    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
-    final override val registrations: CSRegistrationsMap by lazyRegistrations
+    final override val registrations by lazy { CSRegistrationsMap(this) }
 
     final override val eventDestruct = event<Unit>()
     final override var isDestructed = false
@@ -46,7 +45,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
             return
         }
         isDestructed = true
-        if (lazyRegistrations.isInitialized()) registrations.cancel()
+        registrations.cancel()
         eventDestruct().clear()
         expectWeaklyReachable("CSContext $this onDestroy")
     }

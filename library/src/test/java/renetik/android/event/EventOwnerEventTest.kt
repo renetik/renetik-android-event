@@ -11,6 +11,8 @@ import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.registration.plus
+import renetik.android.testing.CSAssert
+import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)
 class EventOwnerEventTest {
@@ -21,25 +23,27 @@ class EventOwnerEventTest {
     @Test
     fun testUnregisteredAfterNilled() {
         val owner = CSModel()
-        val event = event()
+        val testEvent = event()
         var count = 0
-        owner + event.listen { count += 1 }
-        event()
-        event()
+        owner + testEvent.listen { count += 1 }
+        testEvent()
+        testEvent()
         assertEquals(2, count)
         owner.destruct()
-        event()
+        testEvent()
         assertEquals(2, count)
     }
 
     @Test
     fun testOwnerDestroyed() {
-        val owner = CSModel().apply { destruct() }
-        val event = event()
+        val owner = CSModel().destruct()
+        assert(expected = true, owner.registrations.isCanceled)
+        val testEvent = event()
         var count = 0
-        owner + event.listen { count += 1 }
-        event()
-        event()
-        assertEquals(0, count)
+        val registration = owner + testEvent.listen { count += 1 }
+        assert(expected = true, registration.isCanceled)
+        testEvent()
+        testEvent()
+        assert(expected = 0, count)
     }
 }

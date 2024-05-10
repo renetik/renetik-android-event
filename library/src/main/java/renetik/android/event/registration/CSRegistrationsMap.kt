@@ -92,8 +92,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
     @Synchronized
     @AnyThread
     private fun add(key: String, registration: CSRegistration): CSRegistration {
-        if (isCanceled)
-            logWarnTrace { "Already canceled:$this" }
+        if (isCanceled) logWarnTrace { "Already canceled:$this" }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationMap[key] = registration

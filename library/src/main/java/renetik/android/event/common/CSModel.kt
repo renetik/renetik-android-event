@@ -14,8 +14,7 @@ open class CSModel(
     parent: CSHasDestruct? = null
 ) : CSHasRegistrationsHasDestruct {
 
-    private val lazyRegistrations = lazy { CSRegistrationsMap(this) }
-    final override val registrations: CSRegistrationsMap by lazyRegistrations
+    final override val registrations by lazy { CSRegistrationsMap(this) }
 
     @Synchronized
     @AnyThread
@@ -37,7 +36,7 @@ open class CSModel(
             return
         }
         isDestructed = true
-        if (lazyRegistrations.isInitialized()) registrations.cancel()
+        registrations.cancel()
         eventDestruct().clear()
         expectWeaklyReachable("$className $this onDestroy")
     }
