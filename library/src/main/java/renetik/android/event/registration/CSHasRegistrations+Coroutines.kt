@@ -5,7 +5,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import renetik.android.event.common.CSContext
@@ -25,6 +28,17 @@ suspend fun currentDispatcher(): CoroutineDispatcher? =
 suspend fun <T> CoroutineDispatcher.context(
     block: suspend CoroutineScope.() -> T
 ): T = withContext(this, block)
+
+suspend fun Job.cancelIfNotActive(scope: CoroutineScope, onCancel: () -> Unit) {
+    while (isActive) {
+        delay(500)
+        if (!scope.isActive) {
+            onCancel()
+            cancelAndJoin()
+        }
+    }
+    join()
+}
 
 inline fun CSHasRegistrations.launch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
