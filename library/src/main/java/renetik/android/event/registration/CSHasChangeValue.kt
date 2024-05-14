@@ -17,9 +17,8 @@ import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
-        inline fun <T> CSHasChangeValue<T>.delegate(
-            parent: CSHasRegistrations? = null,
-            noinline onChange: ArgFunc<T>? = null,
+        fun <T> CSHasChangeValue<T>.delegate(
+            parent: CSHasRegistrations? = null, onChange: ArgFunc<T>? = null,
         ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
 
         inline fun <T, Return> CSHasChangeValue<T>.delegate(
@@ -29,12 +28,16 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
-                override fun onChange(function: (Return) -> Unit) =
-                    property.onChange {
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    val registration = property.onChange {
                         val value = from(it)
                         onChange?.invoke(value)
                         function(value)
                     }.also { parent?.register(it) }
+                    return CSRegistration { // TODO: This seem to be necessary also elsewhere
+                        parent?.cancel(registration) ?: registration.cancel()
+                    }
+                }
             }
         }
 
@@ -58,7 +61,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
-        inline fun <T, V, K, Return> Triple<CSHasChangeValue<T>, CSHasChangeValue<V>, CSHasChangeValue<K>>.delegate(
+        inline fun <T, V, K, Return>
+                Triple<CSHasChangeValue<T>,
+                        CSHasChangeValue<V>,
+                        CSHasChangeValue<K>>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: (T, V, K) -> Return,
             noinline onChange: ArgFunc<Return>? = null,
