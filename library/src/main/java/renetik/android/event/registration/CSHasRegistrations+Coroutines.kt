@@ -11,7 +11,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import renetik.android.event.common.CSContext
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 val mainScope = MainScope()
@@ -40,40 +39,40 @@ suspend fun Job.cancelIfNotActive(scope: CoroutineScope, onCancel: () -> Unit) {
     join()
 }
 
-inline fun CSHasRegistrations.launch(
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+inline fun CoroutineDispatcher.launch(
     crossinline func: suspend (CSRegistration) -> Unit,
 ): CSRegistration {
-    val self = this
     var job: Job? = null
-    val registration = this + CSRegistration(isActive = true) { job?.cancel() }
-    job = mainScope.launch(dispatcher) {
+    val registration = CSRegistration(isActive = true) { job?.cancel() }
+    job = mainScope.launch(this) {
         //Somehow registration was canceled when job was no initialised
         if (!registration.isCanceled) {
             func(registration)
-            self.cancel(registration)
         }
     }
     return registration
 }
 
 inline fun CSHasRegistrations.launch(
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration = this + dispatcher.launch {
+    if (!it.isCanceled) {
+        func(it)
+        cancel(it)
+    }
+}
+
+inline fun CSHasRegistrations.launch(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline func: suspend (CSRegistration) -> Unit,
-): CSRegistration {
-    val self = this
-    var job: Job? = null
-    val registration = this + (key to CSRegistration(isActive = true) { job?.cancel() })
-    job = mainScope.launch(dispatcher) {
-        //Somehow registration was canceled when job was no initialised
-        if (!registration.isCanceled) {
-            func(registration)
-            self.cancel(registration)
-        }
+): CSRegistration = this + (key to dispatcher.launch {
+    if (!it.isCanceled) {
+        func(it)
+        cancel(it)
     }
-    return registration
-}
+})
 
 inline fun CSHasRegistrations.launchIfNot(
     key: String,
