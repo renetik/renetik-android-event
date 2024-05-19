@@ -57,10 +57,7 @@ inline fun CSHasRegistrations.launch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline func: suspend (CSRegistration) -> Unit,
 ): CSRegistration = this + dispatcher.launch {
-    if (!it.isCanceled) {
-        func(it)
-        cancel(it)
-    }
+    if (!it.isCanceled) func(it)
 }
 
 inline fun CSHasRegistrations.launch(
@@ -68,10 +65,7 @@ inline fun CSHasRegistrations.launch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline func: suspend (CSRegistration) -> Unit,
 ): CSRegistration = this + (key to dispatcher.launch {
-    if (!it.isCanceled) {
-        func(it)
-        cancel(it)
-    }
+    if (!it.isCanceled) func(it)
 })
 
 inline fun CSHasRegistrations.launchIfNot(

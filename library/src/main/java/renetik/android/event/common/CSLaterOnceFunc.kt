@@ -4,7 +4,6 @@ import kotlinx.coroutines.delay
 import renetik.android.core.lang.CSFunc
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
-import renetik.android.event.registration.cancel
 import renetik.android.event.registration.launch
 import kotlin.time.Duration
 
@@ -24,7 +23,7 @@ class CSLaterOnceFunc(
 
     var registration: CSRegistration? = null
     override operator fun invoke() {
-        parent.cancel(registration)
+        registration?.cancel()
         registration = parent.launch { delay(after.toLong()); function() }
     }
 }

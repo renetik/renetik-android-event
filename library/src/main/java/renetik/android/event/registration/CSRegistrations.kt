@@ -16,6 +16,6 @@ interface CSRegistrations : CSRegistration {
     @AnyThread
     fun register(key: String, registration: CSRegistration?): CSRegistration?
 
-    @AnyThread
-    fun cancel(registration: CSRegistration)
+//    @AnyThread
+//    fun cancel(registration: CSRegistration)
 }

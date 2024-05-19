@@ -6,6 +6,7 @@ import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.atomic.AtomicInteger
 
 class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegistrations {
@@ -15,6 +16,8 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
     @get:Synchronized
     override var isActive by variable(true, ::onActiveChange)
         private set
+
+    private var isCancelling: Boolean = false
 
     @get:Synchronized
     override var isCanceled: Boolean = false
@@ -55,12 +58,18 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
     @Synchronized
     @AnyThread
     override fun cancel() {
+        if (isCancelling) {
+            logWarnTrace { "Already cancelling:$this" }
+            return
+        }
+        isCancelling = true
+
         if (isCanceled) {
             logWarnTrace { "Already canceled:$this" }
             return
         }
-        isCanceled = true
         registrationMap.onEach { it.value.cancel() }.clear()
+        isCanceled = true
     }
 
     @Synchronized
@@ -78,7 +87,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         registration: CSRegistration?,
     ): CSRegistration? {
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
-        replace?.let { cancel(it) }
+        replace?.cancel()
         return registration?.let { add(createUniqueId(), it) }
     }
 
@@ -96,7 +105,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationMap[key] = registration
-        return registration
+        return CSRegistration(isActive = true) { cancel(registration) }
     }
 
     @Synchronized
@@ -110,11 +119,14 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     @Synchronized
     @AnyThread
-    override fun cancel(registration: CSRegistration) {
+    private fun cancel(registration: CSRegistration) {
+        if (isCancelling && !isCanceled) {
+            registration.cancel()
+            return
+        }
         val wasPresent = registrationMap.removeValue(registration)
         if (registration.isCanceled && !wasPresent) return
-        if (!wasPresent)
-            logWarnTrace { "Registration not found:$registration" }
+        if (!wasPresent) logWarnTrace { "Registration not found:$registration" }
         if (registration.isCanceled) return
         registration.cancel()
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
@@ -124,6 +136,6 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     fun clear() = registrationMap.cancelRegistrations()
 
-    override fun toString(): String = "${super.toString()} parent:$parent " +
-            "size:$size isActive:$isActive isCanceled:$isCanceled"
+    override fun toString(): String =
+        "${super.toString()} parent:$parent " + "size:$size isActive:$isActive isCanceled:$isCanceled"
 }

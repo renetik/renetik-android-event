@@ -4,6 +4,7 @@ import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 class CSRegistrationsList(parent: Any) : CSRegistrations {
     private val id by lazy { "$parent" }
@@ -63,7 +64,7 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
         replace: CSRegistration?,
         registration: CSRegistration?,
     ): CSRegistration? {
-        replace?.let { cancel(it) }
+        replace?.cancel()
         if (isCanceled) logWarnTrace { "Already canceled:$id" }
         return registration?.let { add(it) }
     }
@@ -83,12 +84,12 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationList.add(registration)
-        return registration
+        return CSRegistration(isActive = true) { cancel(registration) }
     }
 
     @Synchronized
     @AnyThread
-    override fun cancel(registration: CSRegistration) {
+    private fun cancel(registration: CSRegistration) {
         val wasPresent = registrationList.remove(registration)
         if (registration.isCanceled && !wasPresent) return
         if (!wasPresent)

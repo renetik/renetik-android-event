@@ -8,7 +8,6 @@ import renetik.android.event.property.CSPropertyWrapper
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.event.registration.action
-import renetik.android.event.registration.cancel
 import renetik.android.event.registration.plus
 
 class CSActionIsRunning(
@@ -33,7 +32,7 @@ class CSActionIsRunning(
         val actionOnChange = this + action.action(::updateIsRunning)
 
         return CSRegistration(onCancel = {
-            cancel(actionOnChange)
+            actionOnChange.cancel()
             runningActions.remove(action)
         })
     }

@@ -8,7 +8,6 @@ import renetik.android.core.lang.Seventuple
 import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
-import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
@@ -28,16 +27,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
-                override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val registration = property.onChange {
+                override fun onChange(function: (Return) -> Unit): CSRegistration =
+                    property.onChange {
                         val value = from(it)
                         onChange?.invoke(value)
                         function(value)
-                    }.also { parent?.register(it) }
-                    return CSRegistration { // TODO: This seem to be necessary also elsewhere
-                        parent?.cancel(registration) ?: registration.cancel()
-                    }
-                }
+                    }.registerTo(parent)
             }
         }
 
@@ -52,12 +47,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val value = from(it, second.value)
                     onChange?.invoke(value)
                     function(value)
-                }.also { parent?.register(it) },
+                }.registerTo(parent),
                 second.onChange {
                     val value = from(first.value, it)
                     onChange?.invoke(value)
                     function(value)
-                }.also { parent?.register(it) }
+                }.registerTo(parent)
             )
         }
 
@@ -75,17 +70,17 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val value = from(it, second.value, third.value)
                     onChange?.invoke(value)
                     function(value)
-                }.also { parent?.register(it) },
+                }.registerTo(parent),
                 second.onChange {
                     val value = from(first.value, it, third.value)
                     onChange?.invoke(value)
                     function(value)
-                }.also { parent?.register(it) },
+                }.registerTo(parent),
                 third.onChange {
                     val value = from(first.value, second.value, it)
                     onChange?.invoke(value)
                     function(value)
-                }.also { parent?.register(it) }
+                }.registerTo(parent)
             )
         }
 
@@ -120,7 +115,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     return CSRegistration(isActive = true,
                         onPause = { isPaused = true }, onResume = { isPaused = false },
                         onCancel = { parentRegistration.cancel(); childRegistration?.cancel() })
-                        .also { parent?.register(it) }
+                        .registerTo(parent)
                 }
             }
         }
@@ -158,7 +153,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     return CSRegistration(isActive = true,
                         onPause = { isPaused = true }, onResume = { isPaused = false },
                         onCancel = { parentRegistration.cancel(); childRegistration?.cancel() })
-                        .also { parent?.register(it) }
+                        .registerTo(parent)
                 }
             }
         }
