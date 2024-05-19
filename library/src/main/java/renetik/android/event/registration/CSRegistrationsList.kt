@@ -84,7 +84,11 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationList.add(registration)
-        return CSRegistration(isActive = true) { cancel(registration) }
+        return CSRegistration(
+            isActive = registration.isActive,
+            onResume = { registration.resume() },
+            onPause = { registration.pause() },
+            onCancel = { cancel(registration) })
     }
 
     @Synchronized
@@ -92,8 +96,7 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
     private fun cancel(registration: CSRegistration) {
         val wasPresent = registrationList.remove(registration)
         if (registration.isCanceled && !wasPresent) return
-        if (!wasPresent)
-            logWarnTrace { "Registration not found:$registration" }
+        if (!wasPresent) logWarnTrace { "Registration not found:$registration" }
         if (registration.isCanceled) return
         registration.cancel()
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
