@@ -21,6 +21,12 @@ abstract class CSPropertyBase<T>(
         eventChange.fire(it)
     }
 
+    override fun value(newValue: T, fire: Boolean) {
+        if (value == newValue) return
+        value = newValue
+        onValueChanged(newValue, fire)
+    }
+
     open fun onValueChanged(newValue: T, fire: Boolean = true) {
         isChanged = true
         if (fire) fireChange()
