@@ -2,6 +2,8 @@ package renetik.android.event
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.property
@@ -10,6 +12,7 @@ import renetik.android.event.registration.plus
 /**
  * Event property unregister after owner nulled
  */
+@RunWith(RobolectricTestRunner::class)
 class EventOwnerPropertyTest {
     class SomeClass(parent: SomeClass? = null) : CSModel(parent) {
         val string = property("initial value")

@@ -6,7 +6,6 @@ import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.atomic.AtomicInteger
 
 class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegistrations {
@@ -105,17 +104,25 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationMap[key] = registration
-        return CSRegistration(
-            isActive = registration.isActive,
-            onResume = { registration.resume() },
-            onPause = { registration.pause() },
-            onCancel = { cancel(registration) })
+        return object : CSRegistration {
+            override val isActive: Boolean get() = registration.isActive
+            override val isCanceled: Boolean get() = registration.isCanceled
+            override fun resume() = registration.resume()
+            override fun pause() = registration.pause()
+            override fun cancel() = cancel(registration)
+        }
+//        return CSRegistration(
+//            isActive = registration.isActive,
+//            onResume = { registration.resume() },
+//            onPause = { registration.pause() },
+//            onCancel = { cancel(registration) })
     }
 
     @Synchronized
     @AnyThread
     fun cancel(key: String) {
-        if (isCanceled) logWarnTrace { "Already canceled:$this" }
+        if (isCanceled)
+            logWarnTrace { "Already canceled:$this" }
         remove(key)
     }
 

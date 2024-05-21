@@ -4,7 +4,6 @@ import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 class CSRegistrationsList(parent: Any) : CSRegistrations {
     private val id by lazy { "$parent" }
@@ -84,11 +83,18 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
         registrationList.add(registration)
-        return CSRegistration(
-            isActive = registration.isActive,
-            onResume = { registration.resume() },
-            onPause = { registration.pause() },
-            onCancel = { cancel(registration) })
+        return object : CSRegistration {
+            override val isActive: Boolean get() = registration.isActive
+            override val isCanceled: Boolean get() = registration.isCanceled
+            override fun resume() = registration.resume()
+            override fun pause() = registration.pause()
+            override fun cancel() = cancel(registration)
+        }
+//        return CSRegistration(
+//            isActive = registration.isActive,
+//            onResume = { registration.resume() },
+//            onPause = { registration.pause() },
+//            onCancel = { cancel(registration) })
     }
 
     @Synchronized
