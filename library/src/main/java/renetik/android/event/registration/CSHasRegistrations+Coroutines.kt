@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package renetik.android.event.registration
 
 import kotlinx.coroutines.CompletableDeferred
@@ -13,9 +15,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.coroutines.CoroutineContext
 
-val mainScope = MainScope()
+val mainScope: CoroutineScope = MainScope()
 
 //@OptIn(DelicateCoroutinesApi::class)
 //val SingleThread: ExecutorCoroutineDispatcher = newSingleThreadContext("SingleThread")
@@ -41,45 +44,54 @@ suspend fun Job.cancelIfNotActive(scope: CoroutineScope, onCancel: () -> Unit) {
     join()
 }
 
-class JobRegistration(
-    val job: Job
-) : CSRegistrationImpl(isActive = true) {
-    override fun onCancel() {
-        super.onCancel()
-        job.cancel()
+inline fun CoroutineDispatcher.launch(
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration {
+    var job: Job? = null
+    val registration = CSRegistration(isActive = true) { job?.cancel() }
+    job = mainScope.launch(this) {
+        if (isActive && registration.isActive) func(registration)
     }
+    return registration
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
-inline fun CoroutineDispatcher.launch(
-    crossinline func: suspend (JobRegistration) -> Unit,
-): JobRegistration {
-    val registration = CompletableDeferred<JobRegistration>()
-    registration.complete(JobRegistration(mainScope.launch(this) {
-        if (isActive) func(registration.await())
-    }))
+inline fun CSHasRegistrations.launch(
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration {
+    val registration = CompletableDeferred<CSRegistration>()
+    registration.complete(this + dispatcher.launch {
+        registration.await().also {
+            if (!it.isCanceled) {
+                func(it)
+                it.cancel()
+            }
+        }
+    })
     return registration.getCompleted()
 }
 
 inline fun CSHasRegistrations.launch(
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    crossinline func: suspend (JobRegistration) -> Unit,
-): CSRegistration = this + dispatcher.launch {
-    if (!it.isCanceled) func(it)
-}
-
-inline fun CSHasRegistrations.launch(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    crossinline func: suspend (JobRegistration) -> Unit,
-): CSRegistration = this + (key to dispatcher.launch {
-    if (!it.isCanceled) func(it)
-})
+    crossinline func: suspend (CSRegistration) -> Unit,
+): CSRegistration {
+    val registration = CompletableDeferred<CSRegistration>()
+    registration.complete(this + (key to dispatcher.launch {
+        registration.await().also {
+            if (!it.isCanceled) {
+                func(it)
+                it.cancel()
+            }
+        }
+    }))
+    return registration.getCompleted()
+}
 
 inline fun CSHasRegistrations.launchIfNot(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    crossinline func: suspend (JobRegistration) -> Unit,
+    crossinline func: suspend (CSRegistration) -> Unit,
 ): CSRegistration? {
     if (registrations.isActive(key)) return null
     return launch(key, dispatcher, func)
