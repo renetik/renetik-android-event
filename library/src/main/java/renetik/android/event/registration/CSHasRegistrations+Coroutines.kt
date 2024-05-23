@@ -48,7 +48,9 @@ inline fun CoroutineDispatcher.launch(
     crossinline func: suspend (CSRegistration) -> Unit,
 ): CSRegistration {
     var job: Job? = null
-    val registration = CSRegistration(isActive = true) { job?.cancel() }
+    val registration = CSRegistration(isActive = true, onCancel = {
+        job?.let { if (!it.isCompleted) it.cancel() }
+    })
     job = mainScope.launch(this) {
         if (isActive && registration.isActive) func(registration)
     }
@@ -64,7 +66,7 @@ inline fun CSHasRegistrations.launch(
         registration.await().also {
             if (!it.isCanceled) {
                 func(it)
-                it.cancel()
+                if (!it.isCanceled) it.cancel()
             }
         }
     })
