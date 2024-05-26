@@ -14,7 +14,7 @@ class CSBackgroundTest {
     @Test
     fun background() {
         var int by atomic(0)
-        background(after = 5.milliseconds) { int += 1 }
+        background(after = 10.milliseconds) { int += 1 }
         assert(expected = 0, actual = int)
         runBlocking { delay(1.seconds) }
         assert(expected = 1, actual = int)
