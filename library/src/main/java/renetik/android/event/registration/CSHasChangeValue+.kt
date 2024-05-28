@@ -99,6 +99,9 @@ fun <T> CSHasChangeValue<T?>.actionNull(function: () -> Unit): CSRegistration =
 fun <T> CSHasChangeValue<T?>.actionNotNull(function: () -> Unit) =
     action { if (it != null) function() }
 
+fun <T> CSHasChangeValue<T?>.actionNotNull(function: (T) -> Unit) =
+    action { if (it != null) function(it) }
+
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
 
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
