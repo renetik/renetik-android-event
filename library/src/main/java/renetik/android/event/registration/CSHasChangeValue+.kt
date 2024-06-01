@@ -17,6 +17,10 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 
+suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
+    while (!condition(value)) waitForChange()
+}
+
 suspend fun CSHasChangeValue<Boolean>.waitIsTrue(): Unit = suspendCancellableCoroutine {
     if (isTrue) it.resumeWith(success(Unit))
     else {
