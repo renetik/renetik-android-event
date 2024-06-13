@@ -20,8 +20,6 @@ interface CSRegistration : CSHasCancel, Closeable {
     override fun cancel()
 
     companion object {
-        val EmptyRegistration = CSRegistration(isActive = false) {}
-
         fun paused(registration: CSRegistration?, function: Func) {
             registration?.pause()
             function()
