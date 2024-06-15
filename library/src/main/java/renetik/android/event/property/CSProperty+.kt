@@ -36,7 +36,7 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
 
 fun <T> CSProperty<T?>.clear() = value(null)
 
-fun CSVariable<Boolean>.connect(property: CSHasChangeValue<Boolean>): CSRegistration =
+fun <T> CSVariable<T>.connect(property: CSHasChangeValue<T>): CSRegistration =
     property.action { value -> this.value = value }
 
 inline fun <T, V> CSProperty<T>.computed(
