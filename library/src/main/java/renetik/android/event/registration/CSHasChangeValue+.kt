@@ -108,6 +108,9 @@ fun <T> CSHasChangeValue<T?>.actionNotNull(function: (T) -> Unit) =
 
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
 
+operator fun CSHasChangeValue<Boolean>.plus(other: CSHasChangeValue<Boolean>) =
+    (this to other).delegate(from = { first, second -> first && second })
+
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     value: Value, crossinline onChange: () -> Unit
 ): CSRegistration = onChange { if (this.value == value) onChange() }
