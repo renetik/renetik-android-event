@@ -294,11 +294,16 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onAction(item1.value, item2.value)
         }
 
-        //TODO remove this Pair and use normal as this is unnecessary elswhewer why here.
         inline fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
-            crossinline onAction: (Pair<Argument1, Argument2>) -> Unit,
-        ): CSRegistration = action(first, second) { first, second -> onAction(first to second) }
+            crossinline onAction: (Argument1, Argument2) -> Unit,
+        ): CSRegistration = action(first, second) { first, second -> onAction(first, second) }
+
+
+        inline fun <Argument1, Argument2>
+                Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
+            crossinline onAction: () -> Unit,
+        ): CSRegistration = action(first, second) { _, _ -> onAction() }
 
 
         fun <Argument1, Argument2, Argument3, Return>
