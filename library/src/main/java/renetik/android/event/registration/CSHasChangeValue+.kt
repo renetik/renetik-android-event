@@ -1,51 +1,33 @@
 package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
-import renetik.android.core.kotlin.primitives.isFalse
-import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.CSValue
-import renetik.android.core.lang.value.isFalse
-import renetik.android.core.lang.value.isTrue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSLateProperty
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 
+//suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
+//    while (!condition(value)) waitForChange()
+//}
+
 suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
-    while (!condition(value)) waitForChange()
-}
-
-suspend fun CSHasChangeValue<Boolean>.waitIsTrue(): Unit = suspendCancellableCoroutine {
-    if (isTrue) it.resumeWith(success(Unit))
-    else {
+    if (!condition(value)) suspendCancellableCoroutine { coroutine ->
         var registration: CSRegistration? = null
-        registration = onTrue {
-            registration?.cancel()
-            registration = null
-            it.resumeWith(success(Unit))
+        registration = onChange {
+            if (condition(value)) {
+                registration?.cancel()
+                registration = null
+                coroutine.resumeWith(success(Unit))
+            }
         }
-        it.invokeOnCancellation { registration?.cancel() }
+        coroutine.invokeOnCancellation { registration?.cancel() }
     }
-}
-
-suspend fun CSHasChangeValue<Boolean>.waitIsFalse(): Unit = suspendCancellableCoroutine {
-    if (isFalse) it.resumeWith(success(Unit))
-    else {
-        var registration: CSRegistration? = null
-        registration = onFalse {
-            registration?.cancel()
-            registration = null
-            it.resumeWith(success(Unit))
-        }
-        it.invokeOnCancellation { registration?.cancel() }
-    }
-
 }
 
 fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
@@ -74,23 +56,6 @@ fun <T> CSHasChangeValue<T>.actionFromTo(
     return onChange { function(value, it); value = it }
 }
 
-fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
-    onChange { if (it.isFalse) function() }
-
-
-fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit) =
-    onChange { if (it.isTrue) function() }
-
-fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
-    if (isTrue) function()
-    return onTrue(function)
-}
-
-fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
-    if (isFalse) function()
-    return onFalse(function)
-}
-
 fun <T> CSHasChangeValue<T?>.onNull(function: () -> Unit) =
     onChange { if (it == null) function() }
 
@@ -105,11 +70,6 @@ fun <T> CSHasChangeValue<T?>.actionNotNull(function: () -> Unit) =
 
 fun <T> CSHasChangeValue<T?>.actionNotNull(function: (T) -> Unit) =
     action { if (it != null) function(it) }
-
-operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
-
-operator fun CSHasChangeValue<Boolean>.plus(other: CSHasChangeValue<Boolean>) =
-    (this to other).delegate(from = { first, second -> first && second })
 
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     value: Value, crossinline onChange: () -> Unit
@@ -256,25 +216,3 @@ fun <V, Instance> CSHasRegistrations.lazyFactory(
             return instance!!
         }
 }
-
-// I don't even understand this now... and not used.
-//fun <V, Instance> CSHasRegistrations.lazyHasChangeValue(
-//    property: () -> CSHasChangeValue<V>,
-//    createInstance: (V) -> Instance
-//): CSHasChangeValue<Instance> where Instance : CSHasDestruct {
-//    var instance: Instance? = null
-//    return object : CSHasChangeValue<Instance> {
-//        val outputModelInstance1: CSHasChangeValue<Instance> by lazy {
-//            property().hasChangeValue(this@lazyHasChangeValue, from = {
-//                createInstance(it).also {
-//                    instance?.destruct()
-//                    instance = it
-//                }
-//            })
-//        }
-//        override val value: Instance get() = outputModelInstance1.value
-//
-//        override fun onChange(function: (Instance) -> Unit): CSRegistration =
-//            outputModelInstance1.onChange(function)
-//    }
-//}
