@@ -12,10 +12,6 @@ import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 
-//suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
-//    while (!condition(value)) waitForChange()
-//}
-
 suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     if (!condition(value)) suspendCancellableCoroutine { coroutine ->
         var registration: CSRegistration? = null
