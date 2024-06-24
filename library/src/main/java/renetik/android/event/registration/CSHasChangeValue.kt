@@ -16,52 +16,67 @@ import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
+
+        @Deprecated("Use hasChangeValue")
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null, onChange: ArgFunc<T>? = null,
         ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
 
+        @Deprecated("Use hasChangeValue")
         inline fun <T, Return> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: (T) -> Return,
             noinline onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
-                override var value: Return = from(property.value)
-                override fun onChange(function: (Return) -> Unit): CSRegistration =
-                    property.onChange {
+                override val value: Return get() = from(property.value)
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    var value: Return = value
+                    return property.onChange {
                         val newValue = from(it)
                         if (value != newValue) {
                             value = newValue
-                            onChange?.invoke(value)
-                            function(value)
+                            onChange?.invoke(newValue)
+                            function(newValue)
                         }
                     }.registerTo(parent)
+                }
             }
         }
 
-        inline fun <T, V, Return> Pair<CSHasChangeValue<T>, CSHasChangeValue<V>>.delegate(
+        @Deprecated("Use hasChangeValue")
+        inline fun <T, V, Return> Pair<
+                CSHasChangeValue<T>, CSHasChangeValue<V>
+                >.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: (T, V) -> Return,
             noinline onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
-            override var value: Return = from(first.value, second.value)
-            fun onNewValue(newValue: Return, function: (Return) -> Unit) {
-                if (value != newValue) {
-                    value = newValue
-                    onChange?.invoke(value)
-                    function(value)
-                }
+            override val value: Return get() = from(first.value, second.value)
+            override fun onChange(function: (Return) -> Unit): CSRegistration {
+                var value: Return = value
+                return CSRegistration(
+                    first.onChange {
+                        val newValue = from(it, second.value)
+                        if (value != newValue) {
+                            value = newValue
+                            onChange?.invoke(newValue)
+                            function(newValue)
+                        }
+                    }.registerTo(parent),
+                    second.onChange {
+                        val newValue = from(first.value, it)
+                        if (value != newValue) {
+                            value = newValue
+                            onChange?.invoke(newValue)
+                            function(newValue)
+                        }
+                    }.registerTo(parent),
+                )
             }
-
-            override fun onChange(function: (Return) -> Unit) = CSRegistration(
-                first.onChange { onNewValue(from(it, second.value), function) }
-                    .registerTo(parent),
-                second.onChange { onNewValue(from(first.value, it), function) }
-                    .registerTo(parent)
-            )
         }
 
-        //TODO!!! All delegates has to be updated !!!! So they dont fire change whne value not changed
+        @Deprecated("Use hasChangeValue")
         inline fun <T, V, K, Return>
                 Triple<CSHasChangeValue<T>,
                         CSHasChangeValue<V>,
@@ -94,6 +109,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
+        @Deprecated("Use hasChangeValue")
         @JvmName("delegateChild")
         inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegate(
@@ -130,6 +146,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        @Deprecated("Use hasChangeValue")
         @JvmName("delegateNullable")
         inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegateNullable(
@@ -178,7 +195,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override var value: Return = from(property.value)
 
                 init {
-                    this + property.onChange { item1 -> value(from(item1)) }
+                    this + property.onChange { value(from(it)) }
                 }
             }
         }

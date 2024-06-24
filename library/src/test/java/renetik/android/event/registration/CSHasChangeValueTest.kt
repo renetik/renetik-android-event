@@ -3,19 +3,33 @@ package renetik.android.event.registration
 import org.junit.Test
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.CSValue.Companion.value
+import renetik.android.core.lang.variable.plusAssign
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateNullable
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValueNullable
 import renetik.android.testing.CSAssert.assert
 
 class CSHasChangeValueTest {
     @Test
+    fun delegate() {
+        val property = property(0)
+        val isRecorded = property.hasChangeValue(from = { it > 1 })
+        val isRecordedUser1 = isRecorded.hasChangeValue(from = { "$it" })
+        val isRecordedUser2 = isRecorded.hasChangeValue(from = { "$it" })
+        assert(expected = false, actual = isRecorded.value)
+        assert(expected = "false", actual = isRecordedUser1.value)
+        assert(expected = "false", actual = isRecordedUser2.value)
+        property += 5
+        assert(expected = true, actual = isRecorded.value)
+        assert(expected = "true", actual = isRecordedUser1.value)
+        assert(expected = "true", actual = isRecordedUser2.value)
+    }
+
+    @Test
     fun delegateChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
-        val delegateChild = property.delegate(child = { it.value })
+        val delegateChild = property.hasChangeValue(child = { it.value })
         testDelegateChildProperty(property, delegateChild)
     }
 
@@ -47,7 +61,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegateNullableChild() {
         val property = property<CSValue<CSProperty<Int>>?>(null)
-        val delegateChild = property.delegateNullable(child = { it?.value })
+        val delegateChild = property.hasChangeValueNullable(child = { it?.value })
         testDelegateNullableChildProperty(property, delegateChild)
     }
 
