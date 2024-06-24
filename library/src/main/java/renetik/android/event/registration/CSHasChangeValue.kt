@@ -185,6 +185,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        fun <T> CSHasChangeValue<T>.hasChangeValue(
+            parent: CSHasDestruct? = null, onChange: ArgFunc<T>? = null,
+        ): CSHasChangeValue<T> = hasChangeValue(parent, from = { it }, onChange)
+
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasDestruct? = null,
