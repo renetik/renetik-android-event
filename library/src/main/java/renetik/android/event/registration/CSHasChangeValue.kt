@@ -17,12 +17,23 @@ import kotlin.properties.Delegates.notNull
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
 
-        @Deprecated("Use hasChangeValue")
+        class DelegateValue<Return>(
+            var value: Return, val onChange: ArgFunc<Return>?,
+            val function: (Return) -> Unit
+        ) {
+            operator fun invoke(newValue: Return) {
+                if (value != newValue) {
+                    value = newValue
+                    onChange?.invoke(newValue)
+                    function(newValue)
+                }
+            }
+        }
+
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null, onChange: ArgFunc<T>? = null,
         ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
 
-        @Deprecated("Use hasChangeValue")
         inline fun <T, Return> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: (T) -> Return,
@@ -31,20 +42,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    var value: Return = value
-                    return property.onChange {
-                        val newValue = from(it)
-                        if (value != newValue) {
-                            value = newValue
-                            onChange?.invoke(newValue)
-                            function(newValue)
-                        }
-                    }.registerTo(parent)
+                    val value = DelegateValue(value, onChange, function)
+                    return property.onChange { value(from(it)) }.registerTo(parent)
                 }
             }
         }
 
-        @Deprecated("Use hasChangeValue")
         inline fun <T, V, Return> Pair<
                 CSHasChangeValue<T>, CSHasChangeValue<V>
                 >.delegate(
@@ -54,29 +57,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return get() = from(first.value, second.value)
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                var value: Return = value
+                val value = DelegateValue(value, onChange, function)
                 return CSRegistration(
-                    first.onChange {
-                        val newValue = from(it, second.value)
-                        if (value != newValue) {
-                            value = newValue
-                            onChange?.invoke(newValue)
-                            function(newValue)
-                        }
-                    }.registerTo(parent),
-                    second.onChange {
-                        val newValue = from(first.value, it)
-                        if (value != newValue) {
-                            value = newValue
-                            onChange?.invoke(newValue)
-                            function(newValue)
-                        }
-                    }.registerTo(parent),
-                )
+                    first.onChange { value(from(it, second.value)) },
+                    second.onChange { value(from(first.value, it)) },
+                ).registerTo(parent)
             }
         }
 
-        @Deprecated("Use hasChangeValue")
         inline fun <T, V, K, Return>
                 Triple<CSHasChangeValue<T>,
                         CSHasChangeValue<V>,
@@ -86,30 +74,18 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             noinline onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return
-                get() = from(
-                    first.value, second.value, third.value
-                )
+                get() = from(first.value, second.value, third.value)
 
-            override fun onChange(function: (Return) -> Unit) = CSRegistration(
-                first.onChange {
-                    val value = from(it, second.value, third.value)
-                    onChange?.invoke(value)
-                    function(value)
-                }.registerTo(parent),
-                second.onChange {
-                    val value = from(first.value, it, third.value)
-                    onChange?.invoke(value)
-                    function(value)
-                }.registerTo(parent),
-                third.onChange {
-                    val value = from(first.value, second.value, it)
-                    onChange?.invoke(value)
-                    function(value)
-                }.registerTo(parent)
-            )
+            override fun onChange(function: (Return) -> Unit): CSRegistration {
+                val value = DelegateValue(value, onChange, function)
+                return CSRegistration(
+                    first.onChange { value(from(it, second.value, third.value)) },
+                    second.onChange { value(from(first.value, it, third.value)) },
+                    third.onChange { value(from(first.value, second.value, it)) }
+                ).registerTo(parent)
+            }
         }
 
-        @Deprecated("Use hasChangeValue")
         @JvmName("delegateChild")
         inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegate(
@@ -120,33 +96,22 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<ChildValue> {
                 override val value: ChildValue get() = child(property.value).value
                 override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
+                    val value = DelegateValue(value, onChange, function)
                     var childRegistration: CSRegistration? = null
-                    var isPaused = false
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (childRegistration != null) childItem.also {
-                            if (!isPaused) {
-                                onChange?.invoke(it.value)
-                                function(it.value)
-                            }
-                        }
-                        childRegistration = childItem.onChange { childValue ->
-                            if (!isPaused) {
-                                onChange?.invoke(childValue)
-                                function(childValue)
-                            }
-                        }
+                        if (childRegistration != null) childItem.also { value(it.value) }
+                        childRegistration = childItem.onChange(value::invoke)
                     }
-                    return CSRegistration(isActive = true,
-                        onPause = { isPaused = true }, onResume = { isPaused = false },
-                        onCancel = { parentRegistration.cancel(); childRegistration?.cancel() })
-                        .registerTo(parent)
+                    return CSRegistration(
+                        { parentRegistration }, { childRegistration }
+                    ).registerTo(parent)
                 }
             }
         }
 
-        @Deprecated("Use hasChangeValue")
+
         @JvmName("delegateNullable")
         inline fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegateNullable(
@@ -157,30 +122,19 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<ChildValue?> {
                 override val value: ChildValue? get() = child(property.value)?.value
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
+                    val value = DelegateValue(value, onChange, function)
                     var childRegistration: CSRegistration? = null
                     var isInitialized = false
-                    var isPaused = false
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (isInitialized) childItem.also {
-                            if (!isPaused) {
-                                onChange?.invoke(it?.value)
-                                function(it?.value)
-                            }
-                        }
+                        if (isInitialized) childItem.also { value(it?.value) }
                         isInitialized = true
-                        childRegistration = childItem?.onChange { childValue ->
-                            if (!isPaused) {
-                                onChange?.invoke(childValue)
-                                function(childValue)
-                            }
-                        }
+                        childRegistration = childItem?.onChange(value::invoke)
                     }
-                    return CSRegistration(isActive = true,
-                        onPause = { isPaused = true }, onResume = { isPaused = false },
-                        onCancel = { parentRegistration.cancel(); childRegistration?.cancel() })
-                        .registerTo(parent)
+                    return CSRegistration(
+                        { parentRegistration }, { childRegistration }
+                    ).registerTo(parent)
                 }
             }
         }

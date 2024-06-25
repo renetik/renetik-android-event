@@ -9,11 +9,6 @@ fun CSRegistration.registerTo(registrations: CSHasRegistrations?): CSRegistratio
 fun CSHasRegistrations.register(registration: CSRegistration): CSRegistration =
     registrations.register(registration)
 
-//@AnyThread
-//fun <Parent : CSHasRegistrations?, T : CSRegistration>
-//        Parent.register(registration: T): CSRegistration =
-//    this?.let { registrations.register(registration) } ?: registration
-
 operator fun CSHasRegistrations.plus(registration: CSRegistration): CSRegistration =
     register(registration)
 

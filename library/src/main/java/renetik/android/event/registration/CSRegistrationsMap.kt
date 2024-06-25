@@ -111,11 +111,6 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
             override fun pause() = registration.pause()
             override fun cancel() = cancel(registration)
         }
-//        return CSRegistration(
-//            isActive = registration.isActive,
-//            onResume = { registration.resume() },
-//            onPause = { registration.pause() },
-//            onCancel = { cancel(registration) })
     }
 
     @Synchronized
