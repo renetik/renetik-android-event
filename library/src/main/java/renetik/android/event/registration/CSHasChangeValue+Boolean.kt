@@ -32,12 +32,21 @@ suspend fun CSHasChangeValue<Boolean>.waitIsFalse() {
     }
 }
 
-fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit) =
+fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit): CSRegistration =
     onChange { if (it.isFalse) function() }
 
 
-fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit) =
+fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
+
+
+fun CSHasChangeValue<Boolean>.eventTrue(): CSHasChange<Unit> {
+    val self = this
+    return object : CSHasChange<Unit> {
+        override fun onChange(function: (Unit) -> Unit): CSRegistration =
+            self.onTrue { function(Unit) }
+    }
+}
 
 fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
     if (isTrue) function()
