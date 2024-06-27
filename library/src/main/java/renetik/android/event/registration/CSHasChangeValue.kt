@@ -11,7 +11,6 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
@@ -220,7 +219,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
                 init {
                     this + property.action(
-                        optionalChild = { child(it) },
+                        nullableChild = { child(it) },
                         onChange = { value(it) }
                     )
                 }
