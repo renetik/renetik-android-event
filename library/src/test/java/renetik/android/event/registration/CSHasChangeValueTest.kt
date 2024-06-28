@@ -4,6 +4,8 @@ import org.junit.Test
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.CSValue.Companion.value
 import renetik.android.core.lang.variable.plusAssign
+import renetik.android.core.lang.variable.setFalse
+import renetik.android.core.lang.variable.setTrue
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
@@ -74,13 +76,56 @@ class CSHasChangeValueTest {
         testDelegateNullableChildProperty(property, delegateChild)
     }
 
+    @Test
+    fun hasChangeValueBooleansAnd() {
+        val propertyFirst = property(false)
+        val propertySecond = property(false)
+        var trueAndTrue = 0
+        (propertyFirst and propertySecond).onTrue { trueAndTrue += 1 }
+        var falseAndTrue = 0
+        (!propertyFirst and propertySecond).onTrue { falseAndTrue += 1 }
+        var trueAndFalse = 0
+        (propertyFirst and !propertySecond).onTrue { trueAndFalse += 1 }
+        var falseAndFalse = 0
+        (!propertyFirst and !propertySecond).onTrue { falseAndFalse += 1 }
+        assert("0,0,0,0", "$trueAndTrue,$falseAndTrue,$trueAndFalse,$falseAndFalse")
+        propertyFirst.setTrue()
+        assert("0,0,1,0", "$trueAndTrue,$falseAndTrue,$trueAndFalse,$falseAndFalse")
+        propertyFirst.setFalse()
+        propertySecond.setTrue()
+        assert("0,1,1,1", "$trueAndTrue,$falseAndTrue,$trueAndFalse,$falseAndFalse")
+        propertyFirst.setTrue()
+        assert("1,1,1,1", "$trueAndTrue,$falseAndTrue,$trueAndFalse,$falseAndFalse")
+    }
+
+
+    @Test
+    fun hasChangeValueBooleansAndOthers() {
+        val isRecording = property(true)
+        val duration: CSProperty<Int> = property(0)
+        val isRecorded = duration.hasChangeValue(from = { it >= 500 })
+        var isRecordedOnChange = 0
+        isRecorded.onChange { isRecordedOnChange += 1 }
+        var isNotRecordingAndRecorded = 0
+        (!isRecording and isRecorded).onTrue { isNotRecordingAndRecorded += 1 }
+        assert(expected = 0, isNotRecordingAndRecorded)
+        isRecording.setFalse()
+        assert(expected = 0, isNotRecordingAndRecorded)
+        duration.value = 1000
+        assert(expected = false, isRecording.value)
+        assert(expected = true, isRecorded.value)
+        assert(expected = 1, isRecordedOnChange)
+        assert(expected = 1, isNotRecordingAndRecorded)
+    }
+
     private fun testDelegateNullableChildProperty(
         property: CSProperty<CSValue<CSProperty<Int>>?>,
         delegateChild: CSHasChangeValue<Int?>
     ) {
         var delegateChildOnChangeValue: Int? = null
         var delegateChildActionValue: Int? = null
-        val delegateChildOnChange = delegateChild.onChange { delegateChildOnChangeValue = it }
+        val delegateChildOnChange =
+            delegateChild.onChange { delegateChildOnChangeValue = it }
         delegateChild.action { delegateChildActionValue = it }
         assert(expected = null, actual = delegateChildOnChangeValue)
         assert(expected = null, actual = delegateChildActionValue)
