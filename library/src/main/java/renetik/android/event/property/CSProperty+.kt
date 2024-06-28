@@ -78,7 +78,7 @@ operator fun CSProperty<Int>.rangeUntil(
 
 fun CSProperty<Int>.computedAsPercentOf(
     parent: CSHasRegistrations, max: Int = 100,
-) = computed(
+): CSProperty<Float> = computed(
     parent, from = { it.toPercentOf(max) },
     to = { it.percentOf(max.toFloat()).roundToInt() }
 )

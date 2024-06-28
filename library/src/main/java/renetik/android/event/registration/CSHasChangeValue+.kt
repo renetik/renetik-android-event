@@ -1,14 +1,12 @@
 package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
-import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSLateProperty
-import renetik.android.event.property.CSProperty
-import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 
@@ -71,18 +69,9 @@ inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     value: Value, crossinline onChange: () -> Unit
 ): CSRegistration = onChange { if (this.value == value) onChange() }
 
-inline fun <T, V> CSHasChangeValue<T>.computed(
-    parent: CSHasRegistrations? = null,
-    crossinline from: (T) -> V, noinline onChange: ArgFunc<V>? = null
-): CSHasChangeValue<V> {
-    val property: CSProperty<V> = property(from(value), onChange)
-    onChange { property.value = from(value) }.also { parent?.register(it) }
-    return property
-}
-
 fun <Value> CSHasChangeValue<Value>.hasValue(
-    parent: CSHasRegistrations? = null, value: Value,
-): CSHasChangeValue<Boolean> = computed(parent, from = { it == value })
+    parent: CSHasDestruct? = null, value: Value,
+): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
 @JvmName("onChangeChild")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
