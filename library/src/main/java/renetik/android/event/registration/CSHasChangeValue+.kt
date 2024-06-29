@@ -6,6 +6,7 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSLateProperty
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
@@ -23,6 +24,9 @@ suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
         coroutine.invokeOnCancellation { registration?.cancel() }
     }
 }
+
+fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> =
+    delegate(from = { it == null })
 
 fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
