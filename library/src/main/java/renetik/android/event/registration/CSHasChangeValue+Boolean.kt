@@ -39,7 +39,6 @@ fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit): CSRegistration =
 fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
 
-
 fun CSHasChangeValue<Boolean>.eventTrue(): CSHasChange<Unit> {
     val self = this
     return object : CSHasChange<Unit> {
