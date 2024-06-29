@@ -28,6 +28,9 @@ suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
 fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> =
     delegate(from = { it == null })
 
+fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> =
+    delegate(from = { it != null })
+
 fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
     if (lateProperty != null) lateProperty.lateValue?.let(function)
