@@ -39,7 +39,7 @@ fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit): CSRegistration =
 fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
 
-fun CSHasChangeValue<Boolean>.eventTrue(
+fun CSHasChangeValue<Boolean>.isTrueEvent(
     function: (() -> Unit)? = null
 ): CSHasChange<Unit> {
     function?.let { onTrue(function) }
