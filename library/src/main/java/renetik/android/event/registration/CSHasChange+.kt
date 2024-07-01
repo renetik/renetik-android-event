@@ -4,15 +4,16 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
 
-suspend fun <T> CSHasChange<T>.waitForChange(): T = suspendCancellableCoroutine { coroutine ->
-    var registration: CSRegistration? = null
-    registration = onChange {
-        registration?.cancel()
-        registration = null
-        coroutine.resumeWith(Result.success(it))
+suspend fun <T> CSHasChange<T>.waitForChange(): T =
+    suspendCancellableCoroutine { coroutine ->
+        var registration: CSRegistration? = null
+        registration = onChange {
+            registration?.cancel()
+            registration = null
+            coroutine.resumeWith(Result.success(it))
+        }
+        coroutine.invokeOnCancellation { registration?.cancel() }
     }
-    coroutine.invokeOnCancellation { registration?.cancel() }
-}
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
     crossinline function: () -> Unit,
@@ -39,6 +40,13 @@ inline fun <Argument> CSHasChange<Argument>.onChange(
     lateinit var registration: CSRegistration
     registration = onChange { function(registration) }
     return registration
+}
+
+inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
+    crossinline function: () -> Unit,
+): CSRegistration = onChange { registration: CSRegistration ->
+    registration.cancel()
+    function()
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
