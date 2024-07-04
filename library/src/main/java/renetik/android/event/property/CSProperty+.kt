@@ -82,3 +82,5 @@ fun CSProperty<Int>.computedAsPercentOf(
     parent, from = { it.toPercentOf(max) },
     to = { it.percentOf(max.toFloat()).roundToInt() }
 )
+
+operator fun CSProperty<Boolean>.not() = computed(from = { !it }, to = { !it })
