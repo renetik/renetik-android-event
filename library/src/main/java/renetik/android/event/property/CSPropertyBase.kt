@@ -5,7 +5,7 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
 
 abstract class CSPropertyBase<T>(
-    parent: CSHasDestruct? = null,
+    val parent: CSHasDestruct? = null,
     val onChange: ((value: T) -> Unit)? = null
 ) : CSModel(parent), CSProperty<T> {
 
