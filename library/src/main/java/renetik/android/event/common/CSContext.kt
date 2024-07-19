@@ -19,15 +19,15 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     constructor(context: Context) : super(context)
 
     constructor(parent: CSContext) : this(parent.context) {
-        registerParent(parent)
+        parent(parent)
     }
 
     constructor(parent: CSHasContext) : this(parent.context) {
-        registerParent(parent)
+        parent(parent)
     }
 
     constructor(parent: CSHasDestruct, context: Context) : this(context) {
-        registerParent(parent)
+        parent(parent)
     }
 
     // Returning wrapped context as there is no use of this wrapped in child anywhere....

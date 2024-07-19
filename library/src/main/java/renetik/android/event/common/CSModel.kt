@@ -27,7 +27,7 @@ open class CSModel(
         private set
 
     init {
-        parent?.let(::registerParent)
+        parent?.let(::parent)
     }
 
     override fun onDestruct() {

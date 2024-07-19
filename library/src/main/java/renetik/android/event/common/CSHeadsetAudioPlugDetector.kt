@@ -5,7 +5,6 @@ import android.content.Intent.ACTION_HEADSET_PLUG
 import renetik.android.core.extensions.content.register
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.core.logging.CSLog.logWarn
-import renetik.android.core.logging.CSLogMessage.Companion.message
 
 class CSHeadsetAudioPlugDetector(
     parent: CSContext,
