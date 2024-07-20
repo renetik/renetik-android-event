@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
@@ -29,8 +31,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        fun <T> CSHasChangeValue<T>.delegate(
-            parent: CSHasRegistrations? = null, onChange: ArgFunc<T>? = null,
+        inline fun <T> CSHasChangeValue<T>.delegate(
+            parent: CSHasRegistrations? = null,
+            noinline onChange: ArgFunc<T>? = null,
         ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
 
         inline fun <T, Return> CSHasChangeValue<T>.delegate(
@@ -47,9 +50,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T, V, Return> Pair<
-                CSHasChangeValue<T>, CSHasChangeValue<V>
-                >.delegate(
+        inline fun <T, V, Return> Pair<CSHasChangeValue<T>,
+                CSHasChangeValue<V>>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: (T, V) -> Return,
             noinline onChange: ArgFunc<Return>? = null,
