@@ -13,9 +13,9 @@ val CSRegistrationEmpty = object : CSRegistration {
 }
 
 fun CSRegistration(vararg registrations: CSRegistration?) =
-    CSRegistration(registrations.asList())
+    CSRegistration(registrations.asIterable())
 
-fun CSRegistration(registrations: List<CSRegistration?>) = CSRegistration(
+fun CSRegistration(registrations: Iterable<CSRegistration?>) = CSRegistration(
     isActive = true,
     onResume = { registrations.forEach { it?.resume() } },
     onPause = { registrations.forEach { if (it?.isActive == true) it.pause() } },

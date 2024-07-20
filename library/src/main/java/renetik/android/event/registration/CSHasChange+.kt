@@ -2,6 +2,7 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
+import renetik.android.core.lang.Quadruple
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
@@ -57,3 +58,24 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     registrations.register(onChange { laterOnceFunction() })
     return registrations
 }
+
+fun Pair<CSHasChange<*>, CSHasChange<*>>.onChange(
+    onChange: () -> Unit
+): CSRegistration = CSRegistration(
+    first.onChange(onChange), second.onChange(onChange)
+)
+
+fun Triple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
+    onChange: () -> Unit
+): CSRegistration = CSRegistration(
+    first.onChange(onChange), second.onChange(onChange),
+    third.onChange(onChange)
+)
+
+fun Quadruple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
+    onChange: () -> Unit
+): CSRegistration = CSRegistration(
+    first.onChange(onChange), second.onChange(onChange),
+    third.onChange(onChange), fourth.onChange(onChange)
+)
+
