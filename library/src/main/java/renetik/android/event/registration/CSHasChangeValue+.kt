@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -168,9 +170,8 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     })
 }
 
-//Inline not possible, don't try again :)
-fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
-    list: MutableList<Item>, function: (index: Int) -> Item
+inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
+    list: MutableList<Item>, noinline function: (index: Int) -> Item
 ): CSRegistration = action { value -> list.update(value, function) }
 
 fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
