@@ -1,6 +1,5 @@
 package renetik.android.event.process
 
-import renetik.android.core.kotlin.collections.isEmpty
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.kotlin.collections.put
 import renetik.android.core.kotlin.collections.putAll
@@ -27,7 +26,7 @@ open class CSConcurrentProcess<T : Any>(
 
     private fun onResponseSuccess(succeededProcess: CSProcess<*>) {
         runningProcesses.remove(succeededProcess)
-        if (runningProcesses.isEmpty) {
+        if (runningProcesses.isEmpty()) {
             val mutableListData = (data as MutableList)
             processes.forEach { response -> mutableListData.add(response.data!!) }
             success(mutableListData)
