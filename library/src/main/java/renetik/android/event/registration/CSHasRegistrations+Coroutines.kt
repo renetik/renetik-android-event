@@ -33,7 +33,7 @@ suspend fun <T> CoroutineContext.context(
     block: suspend CoroutineScope.() -> T
 ): T = withContext(this, block)
 
-suspend fun Job.cancelIfNotActive(scope: CoroutineScope, onCancel: () -> Unit) {
+suspend fun Job.cancelIfNotActive(scope: CoroutineScope, onCancel: () -> Unit) = apply {
     while (isActive) {
         delay(500)
         if (!scope.isActive) {
