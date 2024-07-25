@@ -159,15 +159,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+//        fun <Argument, Return>
+//                CSHasChangeValue<Argument>.hasChangeValueDestruct(
+//            parent: CSHasDestruct? = null,
+//            from: (Argument) -> Return,
+//            onChange: ArgFunc<Return>? = null
+//        ): CSHasChangeValue<Return> where Return : CSHasDestruct =
+//            hasChangeValueWithPrevious(parent, from = { previous, to ->
+//                previous?.destruct(); from(to)
+//            }, onChange)
+
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValueDestruct(
             parent: CSHasDestruct? = null,
             from: (Argument) -> Return,
             onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> where Return : CSHasDestruct =
-            hasChangeValueWithPrevious(parent, from = { previous, to ->
-                previous?.destruct(); from(to)
-            }, onChange)
+            hasChangeValue(parent, from, onChange)
+                .apply { onChangeFromTo { from, _ -> from.destruct() } }
 
         fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValueWithPrevious(
