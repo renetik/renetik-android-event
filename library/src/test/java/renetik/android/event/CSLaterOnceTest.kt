@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
+import renetik.android.event.common.CSLaterOnceFunc.Companion.funLaterOnce
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.testing.CSAssert.assert
@@ -32,7 +32,7 @@ class CSLaterOnceTest {
     fun laterOnceTest() = runTest {
         var count = 0
         val model = CSModel()
-        val laterOnceFunc = model.laterOnce { count++ }
+        val laterOnceFunc = model.funLaterOnce { count++ }
 
         laterOnceFunc()
         laterOnceFunc()

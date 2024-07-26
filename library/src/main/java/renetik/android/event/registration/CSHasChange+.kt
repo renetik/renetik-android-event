@@ -3,7 +3,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
-import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnce
+import renetik.android.event.common.CSLaterOnceFunc.Companion.funLaterOnce
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
     suspendCancellableCoroutine { coroutine ->
@@ -54,7 +54,7 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     crossinline function: Func,
 ): CSRegistration {
     val registrations = CSRegistrationsMap(this)
-    val laterOnceFunction = registrations.laterOnce { function() }
+    val laterOnceFunction = registrations.funLaterOnce { function() }
     registrations.register(onChange { laterOnceFunction() })
     return registrations
 }

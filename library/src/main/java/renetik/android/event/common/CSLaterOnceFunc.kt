@@ -14,10 +14,10 @@ class CSLaterOnceFunc(
 ) : CSFunc {
 
     companion object {
-        fun CSHasRegistrations.laterOnce(after: Duration, function: () -> Unit) =
+        fun CSHasRegistrations.funLaterOnce(after: Duration, function: () -> Unit) =
             CSLaterOnceFunc(this, function, after.inWholeMilliseconds.toInt())
 
-        fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> Unit) =
+        fun CSHasRegistrations.funLaterOnce(after: Int = 0, function: () -> Unit) =
             CSLaterOnceFunc(this, function, after)
     }
 
