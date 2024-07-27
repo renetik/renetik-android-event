@@ -9,7 +9,7 @@ import kotlin.time.Duration
 
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
-    private val function: () -> Unit,
+    val function: () -> Unit,
     val after: Int = 0,
 ) : CSFunc {
 
