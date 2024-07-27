@@ -5,7 +5,7 @@ import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 
-suspend fun <T> CSHasChange<T>.waitForIt(): T =
+suspend fun <T> CSHasChange<T>.waitForChange(): T =
     suspendCancellableCoroutine { coroutine ->
         var registration: CSRegistration? = null
         registration = onChange {
