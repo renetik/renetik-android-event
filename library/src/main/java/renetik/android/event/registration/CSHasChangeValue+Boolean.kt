@@ -39,14 +39,14 @@ fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit): CSRegistration =
 fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
 
-fun CSHasChangeValue<Boolean>.isTrueEvent(
+fun CSHasChangeValue<Boolean>.eventIsTrue(
     function: (() -> Unit)? = null
 ): CSHasChange<Unit> {
     function?.let { onTrue(function) }
     val self = this
     return object : CSHasChange<Unit> {
-        override fun onChange(onChange: (Unit) -> Unit): CSRegistration =
-            self.onTrue { onChange(Unit) }
+        override fun onChange(function: (Unit) -> Unit): CSRegistration =
+            self.onTrue { function(Unit) }
     }
 }
 
