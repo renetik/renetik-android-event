@@ -4,6 +4,7 @@ import renetik.android.core.kotlin.primitives.percentOf
 import renetik.android.core.kotlin.primitives.toPercentOf
 import renetik.android.core.lang.ArgFunc
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.paused
@@ -61,6 +62,22 @@ inline fun <T, V> CSProperty<T>.computed(
     }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
         thisOnChange.paused { set(this, it) }
+    }
+    return property
+}
+
+inline fun <T, V> CSProperty<T>.computed(
+    parent: CSHasRegistrations? = null,
+    crossinline from: (T) -> CSProperty<V>,
+    noinline onChange: ArgFunc<V>? = null,
+): CSProperty<V> {
+    lateinit var propertyOnChange: CSRegistration
+    val property: CSProperty<V> = property(from(value).value, onChange)
+    val thisOnChange = onChange {
+        propertyOnChange.paused { property.value(from(value).value) }
+    }.also { parent?.register(it) }
+    propertyOnChange = property.onChange {
+        thisOnChange.paused { from(value).value(it) }
     }
     return property
 }
