@@ -68,21 +68,21 @@ inline fun <T, V> CSProperty<T>.computed(
 
 inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
-    crossinline from: (T) -> CSProperty<V>,
+    crossinline child: (T) -> CSProperty<V>,
     noinline onChange: ArgFunc<V>? = null,
 ): CSProperty<V> {
     lateinit var propertyOnChange: CSRegistration
-    val property: CSProperty<V> = property(from(value).value, onChange)
+    val property: CSProperty<V> = property(child(value).value, onChange)
     var fromAction: CSRegistration? = null
     val thisOnChange = onChange {
-        fromAction = from(value).action {
+        fromAction = child(value).action {
             propertyOnChange.paused { property.value(it) }
         }.let {
             parent?.register(fromAction, it) ?: run { fromAction?.cancel(); it }
         }
     }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
-        thisOnChange.paused { from(value).value(it) }
+        thisOnChange.paused { child(value).value(it) }
     }
     return property
 }
