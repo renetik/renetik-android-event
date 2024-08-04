@@ -366,6 +366,22 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             crossinline onChange: () -> Unit,
         ): CSRegistration = onChange(first, second, third) { _, _, _ -> onChange() }
 
+        inline fun <Argument1, Argument2, Argument3>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.onChangeLaterOnce(
+            crossinline onChange: (Argument1, Argument2, Argument3) -> Unit,
+        ): CSRegistration = list(first, second, third)
+            .onChangeLaterOnce { onChange(first.value, second.value, third.value) }
+
+        inline fun <Argument1, Argument2, Argument3>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.onChangeLaterOnce(
+            crossinline onChange: () -> Unit,
+        ): CSRegistration = list(first, second, third)
+            .onChangeLaterOnce { onChange() }
+
         inline fun <Argument1, Argument2, Argument3> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
@@ -381,6 +397,21 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument3>>.action(
             crossinline onAction: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = action(first, second, third, onAction)
+
+        inline fun <Argument1, Argument2, Argument3>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.actionLaterOnce(
+            crossinline onAction: (Argument1, Argument2, Argument3) -> Unit,
+        ): CSRegistration = list(first, second, third)
+            .actionLaterOnce { onAction(first.value, second.value, third.value) }
+
+        inline fun <Argument1, Argument2, Argument3>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>>.actionLaterOnce(
+            crossinline onAction: () -> Unit,
+        ): CSRegistration = actionLaterOnce { a, b, c -> onAction() }
 
         inline fun <Argument1, Argument2, Argument3, Argument4> onChange(
             item1: CSHasChangeValue<Argument1>,
