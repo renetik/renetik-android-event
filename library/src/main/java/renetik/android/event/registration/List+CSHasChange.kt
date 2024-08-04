@@ -15,6 +15,13 @@ inline fun <T : CSHasChange<*>> List<T>.onChange(
     return registrations
 }
 
+inline fun <T : CSHasChange<*>> List<T>.action(
+    crossinline function: Func
+): CSRegistration {
+    function()
+    return onChange(function)
+}
+
 inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
     crossinline function: Func
 ): CSRegistrations {
@@ -24,9 +31,9 @@ inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
     return registrations
 }
 
-inline fun <T : CSHasChange<*>> List<T>.action(
+inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
     crossinline function: Func
-): CSRegistration {
+): CSRegistrations {
     function()
-    return onChange(function)
+    return onChangeLaterOnce(function)
 }
