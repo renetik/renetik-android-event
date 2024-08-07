@@ -27,13 +27,13 @@ suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     }
 }
 
-fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> =
+fun <T> CSHasChangeValue<T?>.isChangeToNull(): CSHasChangeValue<Boolean> =
     delegate(from = { it == null })
 
-fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> =
+fun <T> CSHasChangeValue<T?>.isChangeToNotNull(): CSHasChangeValue<Boolean> =
     delegate(from = { it != null })
 
-inline fun <reified T> CSHasChangeValue<*>.isType(): CSHasChangeValue<Boolean> =
+inline fun <reified T> CSHasChangeValue<*>.isChangeToType(): CSHasChangeValue<Boolean> =
     delegate(from = { it is T })
 
 fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
