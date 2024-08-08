@@ -17,8 +17,8 @@ class CSLaterOnceFunc(
         fun CSHasRegistrations.laterOnceFunc(after: Duration, function: () -> Unit) =
             CSLaterOnceFunc(this, function, after.inWholeMilliseconds.toInt())
 
-        fun CSHasRegistrations.laterOnceFunc(function: () -> Unit, after: Int = 0) =
-            CSLaterOnceFunc(this, function, after)
+        fun CSHasRegistrations.laterOnceFunc(function: () -> Unit) =
+            CSLaterOnceFunc(this, function)
     }
 
     var registration: CSRegistration? = null

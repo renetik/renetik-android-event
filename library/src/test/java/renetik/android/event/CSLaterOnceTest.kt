@@ -32,7 +32,7 @@ class CSLaterOnceTest {
     fun laterOnceTest() = runTest {
         var count = 0
         val model = CSModel()
-        val laterOnceFunc = model.laterOnceFunc({ count++ })
+        val laterOnceFunc = model.laterOnceFunc { count++ }
 
         laterOnceFunc()
         laterOnceFunc()
