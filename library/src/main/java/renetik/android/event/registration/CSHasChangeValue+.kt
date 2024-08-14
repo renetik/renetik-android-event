@@ -27,19 +27,19 @@ suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     }
 }
 
-fun <T> CSHasChangeValue<T?>.isChangeToNull(): CSHasChangeValue<Boolean> =
-    delegate(from = { it == null })
+inline fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> =
+    isSetTo(null)
 
-fun <T> CSHasChangeValue<T?>.isChangeToNotNull(): CSHasChangeValue<Boolean> =
-    delegate(from = { it != null })
+inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> =
+    !isSetTo(null)
 
-inline fun <reified T> CSHasChangeValue<*>.isChangeToType(): CSHasChangeValue<Boolean> =
+inline fun <T> CSHasChangeValue<T>.isSetTo(value: T): CSHasChangeValue<Boolean> =
+    delegate(from = { it == value })
+
+inline fun <reified T> CSHasChangeValue<*>.isOfType(): CSHasChangeValue<Boolean> =
     delegate(from = { it is T })
 
-inline fun <reified T> CSHasChangeValue<T>.isChangeTo(
-    value: T): CSHasChangeValue<Boolean> = delegate(from = { it == value })
-
-fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
+inline fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
     if (lateProperty != null) lateProperty.lateValue?.let(function)
     else function(value)
@@ -80,9 +80,9 @@ fun <T> CSHasChangeValue<T?>.actionNotNull(function: () -> Unit) =
 fun <T> CSHasChangeValue<T?>.actionNotNull(function: (T) -> Unit) =
     action { if (it != null) function(it) }
 
-inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
-    value: Value, crossinline onChange: () -> Unit
-): CSRegistration = onChange { if (this.value == value) onChange() }
+inline fun <Value> CSHasChangeValue<Value>.onChangeTo(value: Value,
+    crossinline onChange: () -> Unit): CSRegistration =
+    onChange { if (this.value == value) onChange() }
 
 fun <Value> CSHasChangeValue<Value>.hasValue(
     parent: CSHasDestruct? = null, value: Value,
@@ -91,8 +91,7 @@ fun <Value> CSHasChangeValue<Value>.hasValue(
 @JvmName("onChangeChild")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    noinline onChange: (ChildValue) -> Unit
-): CSRegistration {
+    noinline onChange: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = onChange {
         childRegistration?.cancel()
@@ -107,8 +106,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 @JvmName("onChangeChildNullable")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-    crossinline onChange: (ChildValue) -> Unit
-): CSRegistration {
+    crossinline onChange: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
@@ -142,13 +140,11 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 @JvmName("actionChild")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    crossinline action: (ChildValue) -> Unit
-): CSRegistration {
+    crossinline action: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
-        childRegistration = child(parentValue)
-            .action { childValue -> action(childValue) }
+        childRegistration = child(parentValue).action { childValue -> action(childValue) }
     }
     return CSRegistration(isActive = true, onCancel = {
         parentRegistration.cancel()
@@ -158,8 +154,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
 
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     crossinline nullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-    crossinline onChange: ((ChildValue?) -> Unit)
-): CSRegistration {
+    crossinline onChange: ((ChildValue?) -> Unit)): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
@@ -173,45 +168,42 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     })
 }
 
-inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
-    list: MutableList<Item>, noinline function: (index: Int) -> Item
-): CSRegistration = action { value -> list.update(value, function) }
+inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(list: MutableList<Item>,
+    noinline function: (index: Int) -> Item): CSRegistration =
+    action { value -> list.update(value, function) }
 
 fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
     parent: CSHasRegistrations? = null,
-    createInstance: (V) -> Instance
-): CSValue<Instance>
-        where Instance : CSHasDestruct = object : CSValue<Instance> {
-    var instance: Instance? = null
-    override val value: Instance
-        get() {
-            if (instance == null) action {
-                instance?.destruct()
-                instance = createInstance(it)
-            }.also { parent?.register(it) }
-            return instance!!
-        }
-}
+    createInstance: (V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
+    object : CSValue<Instance> {
+        var instance: Instance? = null
+        override val value: Instance
+            get() {
+                if (instance == null) action {
+                    instance?.destruct()
+                    instance = createInstance(it)
+                }.also { parent?.register(it) }
+                return instance!!
+            }
+    }
 
 fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
     property: () -> CSHasChangeValue<V>,
-    createInstance: (V) -> Instance
-): CSValue<Instance> where Instance : CSHasDestruct =
+    createInstance: (V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
     lazyFactory(property) { previousInstance, param ->
         previousInstance?.onDestruct()
         createInstance(param)
     }
 
-fun <V, Instance> CSHasRegistrations.lazyFactory(
-    property: () -> CSHasChangeValue<V>,
-    createInstance: (Instance?, V) -> Instance
-): CSValue<Instance> where Instance : CSHasDestruct = object : CSValue<Instance> {
-    var instance: Instance? = null
-    override val value: Instance
-        get() {
-            if (instance == null) this@lazyFactory + property().action {
-                instance = createInstance(instance, it)
+fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValue<V>,
+    createInstance: (Instance?, V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
+    object : CSValue<Instance> {
+        var instance: Instance? = null
+        override val value: Instance
+            get() {
+                if (instance == null) this@lazyFactory + property().action {
+                    instance = createInstance(instance, it)
+                }
+                return instance!!
             }
-            return instance!!
-        }
-}
+    }
