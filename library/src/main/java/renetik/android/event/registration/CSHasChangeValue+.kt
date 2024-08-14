@@ -36,6 +36,9 @@ fun <T> CSHasChangeValue<T?>.isChangeToNotNull(): CSHasChangeValue<Boolean> =
 inline fun <reified T> CSHasChangeValue<*>.isChangeToType(): CSHasChangeValue<Boolean> =
     delegate(from = { it is T })
 
+inline fun <reified T> CSHasChangeValue<T>.isChangeTo(
+    value: T): CSHasChangeValue<Boolean> = delegate(from = { it == value })
+
 fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
     if (lateProperty != null) lateProperty.lateValue?.let(function)
