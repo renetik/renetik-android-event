@@ -36,6 +36,9 @@ inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> =
 inline infix fun <T> CSHasChangeValue<T>.isSetTo(value: T): CSHasChangeValue<Boolean> =
     delegate(from = { it == value })
 
+inline infix fun <T> CSHasChangeValue<T>.isNotSetTo(value: T): CSHasChangeValue<Boolean> =
+    delegate(from = { it != value })
+
 inline fun <reified T> CSHasChangeValue<*>.isOfType(): CSHasChangeValue<Boolean> =
     delegate(from = { it is T })
 
