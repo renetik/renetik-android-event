@@ -11,7 +11,6 @@ import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
 import kotlin.properties.Delegates.notNull
 
@@ -155,40 +154,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
                 init {
                     this + property.onChange { value(from(it)) }
-                }
-            }
-        }
-
-//        fun <Argument, Return>
-//                CSHasChangeValue<Argument>.hasChangeValueDestruct(
-//            parent: CSHasDestruct? = null,
-//            from: (Argument) -> Return,
-//            onChange: ArgFunc<Return>? = null
-//        ): CSHasChangeValue<Return> where Return : CSHasDestruct =
-//            hasChangeValueWithPrevious(parent, from = { previous, to ->
-//                previous?.destruct(); from(to)
-//            }, onChange)
-
-        fun <Argument, Return>
-                CSHasChangeValue<Argument>.hasChangeValueDestruct(
-            parent: CSHasDestruct? = null,
-            from: (Argument) -> Return,
-            onChange: ArgFunc<Return>? = null
-        ): CSHasChangeValue<Return> where Return : CSHasDestruct =
-            hasChangeValue(parent, from, onChange)
-                .apply { onChangeFromTo { from, _ -> from.destruct() } }
-
-        fun <Argument, Return>
-                CSHasChangeValue<Argument>.hasChangeValueWithPrevious(
-            parent: CSHasDestruct? = null,
-            from: (Return?, Argument) -> Return,
-            onChange: ArgFunc<Return>? = null
-        ): CSHasChangeValue<Return> = let { property ->
-            object : CSPropertyBase<Return>(parent, onChange) {
-                override var value: Return = from(null, property.value)
-
-                init {
-                    this + property.onChange { item1 -> value(from(value, item1)) }
                 }
             }
         }
@@ -411,7 +376,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.actionLaterOnce(
             crossinline onAction: () -> Unit,
-        ): CSRegistration = actionLaterOnce { a, b, c -> onAction() }
+        ): CSRegistration = actionLaterOnce { _, _, _ -> onAction() }
 
         inline fun <Argument1, Argument2, Argument3, Argument4> onChange(
             item1: CSHasChangeValue<Argument1>,
@@ -556,10 +521,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 )
             }
 
-        //TODO!!! Now "and" is creating tuple while "to" is making tuple from witch I make delegates..
-        // Rethink this if this could be opposite way ?
-        infix fun <T, V> CSHasChangeValue<T>.and(
-            other: CSHasChangeValue<V>): CSHasChangeValue<Pair<T, V>> =
+        infix fun <T, V> CSHasChangeValue<T>.and(other: CSHasChangeValue<V>)
+                : CSHasChangeValue<Pair<T, V>> =
             (this to other).delegate(from = { first, second -> first to second })
     }
 }

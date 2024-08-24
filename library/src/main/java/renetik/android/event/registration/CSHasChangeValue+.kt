@@ -53,6 +53,13 @@ fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
     return onChange(function)
 }
 
+fun <T> CSHasChangeValue<T>.onChangeFrom(
+    function: (from: T) -> Unit,
+): CSRegistration {
+    var value = this.value
+    return onChange { function(value); value = it }
+}
+
 fun <T> CSHasChangeValue<T>.onChangeFromTo(
     function: (from: T, to: T) -> Unit,
 ): CSRegistration {
