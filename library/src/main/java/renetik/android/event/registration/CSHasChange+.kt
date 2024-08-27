@@ -3,6 +3,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
+import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
@@ -19,12 +20,18 @@ suspend fun <T> CSHasChange<T>.waitForChange(): T =
 infix fun CSHasChange<*>.or(other: CSHasChange<*>): CSHasChange<Unit> {
     val self = this
     return object : CSHasChange<Unit> {
-        override fun onChange(function: (Unit) -> Unit): CSRegistration {
-            return CSRegistration(
-                self.onChange { function(Unit) },
-                other.onChange { function(Unit) },
-            )
-        }
+        override fun onChange(function: (Unit) -> Unit) = CSRegistration(
+            self.onChange { function(Unit) },
+            other.onChange { function(Unit) },
+        )
+    }
+}
+
+infix fun CSHasChange<*>.and(other: CSValue<Boolean>): CSHasChange<Unit> {
+    val self = this
+    return object : CSHasChange<Unit> {
+        override fun onChange(function: (Unit) -> Unit): CSRegistration =
+            CSRegistration(self.onChange { if (other.value) function(Unit) })
     }
 }
 
