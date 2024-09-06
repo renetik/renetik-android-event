@@ -267,6 +267,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSRegistration = action(first, second) { _, _ -> onAction() }
 
 
+        inline fun <Argument1, Argument2>
+                Pair<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>>.onChangeLaterOnce(
+            crossinline onChange: () -> Unit,
+        ): CSRegistration = list(first, second).onChangeLaterOnce { onChange() }
+
         fun <Argument1, Argument2, Argument3, Return>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
