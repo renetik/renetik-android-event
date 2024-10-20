@@ -11,6 +11,7 @@ import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
+import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
 import kotlin.properties.Delegates.notNull
 
@@ -157,6 +158,37 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
         }
+
+        inline fun <Argument, Return>
+                CSHasChangeValue<Argument>.hasChangeValue(
+            parent: CSHasDestruct? = null,
+            crossinline fromWithPrevious: (Argument, Return?) -> Return,
+            noinline onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSPropertyBase<Return>(parent, onChange) {
+                var previous: Return? = null
+
+                override var value: Return = fromWithPrevious(property.value, previous)
+
+                init {
+                    this + property.onChange {
+                        value(fromWithPrevious(it, previous))
+                        previous = value
+                    }
+                }
+            }
+        }
+
+        inline fun <Argument, Return : CSHasDestruct>
+                CSHasChangeValue<Argument>.hasChangeValueDestruct(
+            parent: CSHasDestruct? = null,
+            crossinline from: (Argument) -> Return,
+            noinline onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> = hasChangeValue(
+            parent, fromWithPrevious = { type, previous ->
+                previous?.destruct(); from(type)
+            }, onChange
+        )
 
         @JvmName("hasChangeValueChild")
         inline fun <ParentValue, Return : Any>
