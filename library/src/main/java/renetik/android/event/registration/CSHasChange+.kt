@@ -4,7 +4,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
 import renetik.android.core.lang.value.CSValue
+import renetik.android.event.CSEvent
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
+import renetik.android.event.fire
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
     suspendCancellableCoroutine { coroutine ->
@@ -83,6 +85,13 @@ fun Pair<CSHasChange<*>, CSHasChange<*>>.onChange(
 ): CSRegistration = CSRegistration(
     first.onChange(onChange), second.onChange(onChange)
 )
+
+fun Pair<CSHasChange<*>, CSHasChange<*>>.event(
+    parent: CSHasRegistrations? = null
+): CSEvent<Unit> = CSEvent.event().also { event ->
+    first.onChange(event::fire).also { parent?.register(it) }
+    second.onChange(event::fire).also { parent?.register(it) }
+}
 
 fun Triple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
     onChange: () -> Unit
