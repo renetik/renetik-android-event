@@ -26,12 +26,11 @@ class CSEventImpl<T> : CSEvent<T> {
 
     @Synchronized
     override fun fire(argument: T) {
-        if (paused) return
         if (firing) {
             logDebugTrace { "Event fired while firing" }
             return
         }
-        if (listeners.isEmpty()) return
+        if (paused || listeners.isEmpty()) return
 
         firing = true
         for (listener in listeners)
