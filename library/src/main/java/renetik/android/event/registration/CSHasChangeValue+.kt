@@ -81,6 +81,9 @@ fun <T> CSHasChangeValue<T?>.onNull(function: () -> Unit) =
 fun <T> CSHasChangeValue<T?>.onNotNull(function: () -> Unit) =
     onChange { if (it != null) function() }
 
+fun <T> CSHasChangeValue<T?>.onNotNull(function: (T) -> Unit) =
+    onChange { if (it != null) function(it) }
+
 fun <T> CSHasChangeValue<T?>.actionNull(function: () -> Unit): CSRegistration =
     action { if (it == null) function() }
 
