@@ -27,12 +27,12 @@ abstract class CSPropertyBase<T>(
         onValueChanged(newValue, fire)
     }
 
-    open fun onValueChanged(newValue: T, fire: Boolean = true) {
+    protected open fun onValueChanged(newValue: T, fire: Boolean = true) {
         isChanged = true
         if (fire) fireChange()
     }
 
-    private var isChanged = false
+    protected open var isChanged = false
 
     override fun pause() {
         eventChange.pause()

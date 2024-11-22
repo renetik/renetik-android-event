@@ -13,7 +13,15 @@ class CSSafePropertyImpl<T>(
 
     override fun value(newValue: T, fire: Boolean) {
         if (field.getAndSet(newValue) != newValue)
-            onMain { onValueChanged(newValue, fire) }
+            onValueChanged(newValue, fire)
+    }
+
+    @Volatile
+    override var isChanged = false
+
+    override fun fireChange() = value.let {
+        onChange?.invoke(it)
+        onMain { eventChange.fire(it) }
     }
 
     override var value: T
