@@ -2,9 +2,13 @@ package renetik.android.event
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.common.CSModel
+import renetik.android.event.common.destruct
 import renetik.android.event.registration.paused
+import renetik.android.event.registration.plus
 
 /**
  * Simple event use cases
@@ -103,5 +107,24 @@ class EventTest {
         event.fire()
         assertEquals(0, count)
         assertFalse(registration.isActive)
+    }
+
+    @Test
+    fun testDestructWhileRunning() {
+        val model = CSModel()
+        val event = event()
+        var count = 0
+        model + event.listen {
+            count += 1
+        }
+        model + event.listen {
+            model.destruct()
+        }
+        model + event.listen {
+            count += 1
+        }
+        event.fire()
+        assertEquals(1, count)
+        assertTrue(model.isDestructed)
     }
 }
