@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 class CSSafePropertyImpl<T>(
     parent: CSHasDestruct,
-    value: T, onChange: ((value: T) -> Unit)? = null
-) : CSPropertyBase<T>(parent, onChange), CSSafeProperty<T> {
+    value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
+) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
 
     private val field = AtomicReference(value)
 
@@ -30,7 +30,7 @@ class CSSafePropertyImpl<T>(
 
     companion object {
         fun <T> CSHasDestruct.safeProperty(
-            value: T, onChange: ((value: T) -> Unit)? = null
-        ) = CSSafePropertyImpl(this, value, onChange)
+            value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
+        ) = CSSafePropertyImpl(this, value, onChangeUnsafe)
     }
 }
