@@ -34,7 +34,8 @@ class CSEventImpl<T> : CSEvent<T> {
 
         firing = true
         for (listener in listeners)
-            if (!paused) listener.invoke(argument)
+            if (!paused && listener.isActive)
+                listener.invoke(argument)
         firing = false
 
         if (toRemove.hasItems) {
@@ -65,9 +66,9 @@ class CSEventImpl<T> : CSEvent<T> {
         override fun onCancel() {
             super.onCancel()
             synchronized(this@CSEventImpl) {
-                val index = listeners.indexOf(this)
-                if (index >= 0) {
-                    if (firing) toRemove.add(this) else listeners.removeAt(index)
+                if (this in listeners) {
+                    if (firing) toRemove.add(this)
+                    else listeners.remove(this)
                 } else logWarnTrace {
                     "${this::class} listener:${listener::class} not found"
                 }
