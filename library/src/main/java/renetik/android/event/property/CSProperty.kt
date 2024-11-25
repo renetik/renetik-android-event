@@ -38,12 +38,6 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
         ): CSProperty<T> = lateProperty(onChange)
             .apply { parent + connect(property) }
 
-        fun <T> propertyDelegate(
-            property: CSProperty<T>,
-            onChange: ((value: T) -> Unit)? = null,
-        ): CSProperty<T> = lateProperty(onChange)
-            .apply { connect(property) }
-
         fun <T> nullableProperty(
             onChange: ((value: T?) -> Unit)? = null,
         ): CSProperty<T?> = CSPropertyImpl(null, onChange)
