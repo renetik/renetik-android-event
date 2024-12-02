@@ -14,7 +14,7 @@ inline fun CSHasRegistrations.onChangeOnce(
 
 inline fun CSHasRegistrations.listenUntilTrueOnce(
     hasChange: CSHasChange<Boolean>,
-    crossinline listener: (argument: Boolean) -> Unit
+    crossinline listener: () -> Unit
 ) = this + hasChange.onChange { registration, value ->
-    if (registration.isActive && value) listener(true)
+    if (registration.isActive && value) listener()
 }
