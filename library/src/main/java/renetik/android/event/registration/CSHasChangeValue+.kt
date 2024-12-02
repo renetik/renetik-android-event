@@ -60,6 +60,10 @@ fun <T> CSHasChangeValue<T>.onChangeFrom(
     return onChange { function(value); value = it }
 }
 
+fun <T> CSHasChangeValue<T?>.onChangeNotNull(
+    function: (from: T) -> Unit,
+): CSRegistration = onChange { it?.let(function) }
+
 fun <T> CSHasChangeValue<T>.onChangeFromTo(
     function: (from: T, to: T) -> Unit,
 ): CSRegistration {
