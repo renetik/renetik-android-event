@@ -3,6 +3,7 @@ package renetik.android.event.process
 import renetik.android.core.lang.ArgFunc
 import renetik.android.event.common.CSHasDestruct
 
+@Deprecated("In favor of coroutines")
 open class CSMultiProcessBase<Data : Any>(
     parent: CSHasDestruct, data: Data? = null) : CSProcess<Data>(parent, data) {
 

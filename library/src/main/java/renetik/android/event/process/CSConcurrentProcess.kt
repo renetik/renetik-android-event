@@ -5,6 +5,7 @@ import renetik.android.core.kotlin.collections.put
 import renetik.android.core.kotlin.collections.putAll
 import renetik.android.event.common.CSHasDestruct
 
+@Deprecated("In favor of coroutines")
 open class CSConcurrentProcess<T : Any>(
     parent: CSHasDestruct,
     data: MutableList<T>) : CSProcess<List<T>>(parent, data) {

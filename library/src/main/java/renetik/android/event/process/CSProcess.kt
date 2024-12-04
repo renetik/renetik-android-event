@@ -10,8 +10,9 @@ import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
-import renetik.android.event.util.CSLater.later
+import renetik.android.event.registration.launch
 
+@Deprecated("In favor of coroutines")
 open class CSProcess<Data : Any>(
     parent: CSHasDestruct? = null,
     var data: Data? = null,
@@ -19,9 +20,9 @@ open class CSProcess<Data : Any>(
 
     companion object {
         fun <Data : Any> CSProcess(
-            parent: CSHasDestruct, function: CSProcess<Data>.() -> Unit,
-        ): CSProcess<Data> = CSProcess<Data>(parent).also {
-            it.later { function(it) }
+            parent: CSHasDestruct, function: suspend CSProcess<Data>.() -> Unit,
+        ): CSProcess<Data> = CSProcess<Data>(parent).also { process ->
+            process.launch { function(process) }
         }
     }
 
