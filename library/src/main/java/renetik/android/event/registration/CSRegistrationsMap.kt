@@ -7,6 +7,8 @@ import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.fire
 import java.util.concurrent.atomic.AtomicInteger
 
 class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegistrations {
@@ -17,11 +19,13 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
     override var isActive by variable(true, ::onActiveChange)
         private set
 
-    private var isCancelling: Boolean = false
-
     @get:Synchronized
     override var isCanceled: Boolean = false
         private set
+
+    override val eventCancel = event()
+
+    private var isCancelling: Boolean = false
 
     private val registrationMap: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
     private val counter = AtomicInteger(0)
@@ -70,6 +74,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         }
         registrationMap.onEach { it.value.cancel() }.clear()
         isCanceled = true
+        eventCancel.fire()
     }
 
     @Synchronized
@@ -108,9 +113,13 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         return object : CSRegistration {
             override val isActive: Boolean get() = registration.isActive
             override val isCanceled: Boolean get() = registration.isCanceled
+            override val eventCancel = registration.eventCancel
             override fun resume() = registration.resume()
             override fun pause() = registration.pause()
-            override fun cancel() = cancel(registration)
+            override fun cancel() {
+                cancel(registration)
+                eventCancel.fire()
+            }
         }
     }
 

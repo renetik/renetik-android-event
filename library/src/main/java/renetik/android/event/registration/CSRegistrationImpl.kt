@@ -2,6 +2,8 @@ package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
 import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.fire
 
 open class CSRegistrationImpl(
     isActive: Boolean = false
@@ -13,6 +15,8 @@ open class CSRegistrationImpl(
     @get:Synchronized
     final override var isCanceled: Boolean = false
         private set
+
+    override val eventCancel = event()
 
     @Synchronized
     @AnyThread
@@ -41,8 +45,6 @@ open class CSRegistrationImpl(
             isActive = false
             onPause()
         }
-//        else
-//            logWarnTrace { "Already pause:$this" }
     }
 
     open fun onPause() = Unit
@@ -54,6 +56,7 @@ open class CSRegistrationImpl(
         if (isActive) pause()
         isCanceled = true
         onCancel()
+        eventCancel.fire()
     }
 
     open fun onCancel() = Unit

@@ -4,6 +4,8 @@ import androidx.annotation.AnyThread
 import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.fire
 
 class CSRegistrationsList(parent: Any) : CSRegistrations {
     private val id = "$parent"
@@ -16,6 +18,8 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
     @get:Synchronized
     override var isCanceled: Boolean = false
         private set
+
+    override val eventCancel = event()
 
     @Synchronized
     @AnyThread
@@ -55,6 +59,7 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
         }
         isCanceled = true
         clear()
+        eventCancel.fire()
     }
 
     @Synchronized
@@ -86,16 +91,15 @@ class CSRegistrationsList(parent: Any) : CSRegistrations {
         registrationList.add(registration)
         return object : CSRegistration {
             override val isActive: Boolean get() = registration.isActive
+            override val eventCancel = registration.eventCancel
             override val isCanceled: Boolean get() = registration.isCanceled
             override fun resume() = registration.resume()
             override fun pause() = registration.pause()
-            override fun cancel() = cancel(registration)
+            override fun cancel() {
+                cancel(registration)
+                eventCancel.fire()
+            }
         }
-//        return CSRegistration(
-//            isActive = registration.isActive,
-//            onResume = { registration.resume() },
-//            onPause = { registration.pause() },
-//            onCancel = { cancel(registration) })
     }
 
     @Synchronized

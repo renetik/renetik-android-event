@@ -1,12 +1,14 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.Func
+import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.io.Closeable
 
 val CSRegistrationEmpty = object : CSRegistration {
     override val isActive: Boolean = false
     override val isCanceled: Boolean = false
+    override val eventCancel = event()
     override fun resume() = Unit
     override fun pause() = Unit
     override fun cancel() = Unit

@@ -4,11 +4,13 @@ import androidx.annotation.AnyThread
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.CSHasCancel
 import renetik.android.core.lang.Func
+import renetik.android.event.CSEvent
 import java.io.Closeable
 
 interface CSRegistration : CSHasCancel, Closeable {
     val isActive: Boolean
     val isCanceled: Boolean
+    val eventCancel: CSEvent<Unit>
 
     @AnyThread
     fun resume()
