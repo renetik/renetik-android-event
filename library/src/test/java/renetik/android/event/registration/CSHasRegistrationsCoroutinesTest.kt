@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import renetik.android.core.lang.result.context
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
@@ -79,7 +80,7 @@ class CSHasRegistrationsCoroutinesTest {
         model.launch {
             count += 1
             value = 2
-            Dispatchers.Main.launch {
+            Main.launch {
                 count += 1
                 value = 4
             }
