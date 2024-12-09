@@ -571,9 +571,5 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     fifth.value, sixth.value, seventh.value
                 )
             }
-
-        infix fun <T, V> CSHasChangeValue<T>.and(other: CSHasChangeValue<V>)
-                : CSHasChangeValue<Pair<T, V>> =
-            (this to other).delegate(from = { first, second -> first to second })
     }
 }
