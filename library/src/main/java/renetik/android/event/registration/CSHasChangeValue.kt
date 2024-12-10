@@ -11,6 +11,7 @@ import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
+import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
 import kotlin.properties.Delegates.notNull
@@ -46,6 +47,21 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
                     val value = DelegateValue(value, onChange, function)
                     return property.onChange { value(from(it)) }.registerTo(parent)
+                }
+            }
+        }
+
+        inline fun <T> CSHasChangeValue<T>.delegateIsChange(
+            parent: CSHasRegistrations? = null,
+        ): CSHasChangeValue<Boolean> = let { property ->
+            object : CSHasChangeValue<Boolean> {
+                override var value: Boolean = false
+                override fun onChange(function: (Boolean) -> Unit): CSRegistration {
+                    return property.onChange {
+                        value = true
+                        function(true)
+                        value = false
+                    }.registerTo(parent)
                 }
             }
         }
@@ -501,6 +517,20 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         inline fun <Argument1, Argument2, Argument3, Argument4, Argument5>
                 Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>>.onChangeLaterOnce(
+            crossinline onChange: (
+                Argument1, Argument2, Argument3, Argument4, Argument5
+            ) -> Unit,
+        ): CSRegistration = list(first, second, third, fourth, fifth)
+            .onChangeLaterOnce {
+                onChange(
+                    first.value, second.value, third.value, fourth.value, fifth.value
+                )
+            }
+
+        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+                Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>>.actionLaterOnce(
             crossinline onChange: (
                 Argument1, Argument2, Argument3, Argument4, Argument5
@@ -532,29 +562,56 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 Argument1, Argument2, Argument3, Argument4, Argument5, Argument6
             ) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth, sixth).action {
-            onChange(
-                first.value, second.value, third.value, fourth.value, fifth.value,
-                sixth.value
-            )
+            onChange(first.value, second.value, third.value,
+                fourth.value, fifth.value, sixth.value)
         }
 
+//        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+//                Sixtuple<CSHasChangeValue<Argument1>,
+//                        CSHasChangeValue<Argument2>,
+//                        CSHasChangeValue<Argument3>,
+//                        CSHasChangeValue<Argument4>,
+//                        CSHasChangeValue<Argument5>,
+//                        CSHasChangeValue<Argument6>>.actionLaterOnce(
+//            crossinline onChange: (
+//                Argument1, Argument2, Argument3, Argument4, Argument5, Argument6
+//            ) -> Unit,
+//        ): CSRegistration = list(first, second, third, fourth, fifth, sixth).actionLaterOnce {
+//            onChange(first.value, second.value, third.value,
+//                fourth.value, fifth.value, sixth.value)
+//        }
+
         inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
-                Sixtuple<CSHasChangeValue<Argument1>,
-                        CSHasChangeValue<Argument2>,
-                        CSHasChangeValue<Argument3>,
-                        CSHasChangeValue<Argument4>,
-                        CSHasChangeValue<Argument5>,
-                        CSHasChangeValue<Argument6>>.actionLaterOnce(
-            crossinline onChange: (
-                Argument1, Argument2, Argument3, Argument4, Argument5, Argument6
-            ) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth, fifth, sixth)
-            .actionLaterOnce {
-                onChange(
-                    first.value, second.value, third.value, fourth.value, fifth.value,
-                    sixth.value
+                Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
+                        >.actionLaterOnce(
+            crossinline onChange: (Argument1, Argument2, Argument3,
+                                   Argument4, Argument5, Argument6) -> Unit): CSRegistration {
+            val registrations = CSRegistrationsMap(this)
+            var value1: Argument1? = null
+            var value2: Argument2? = null
+            var value3: Argument3? = null
+            var value4: Argument4? = null
+            var value5: Argument5? = null
+            var value6: Argument6? = null
+            val laterOnceFunction = registrations.laterOnceFunc {
+                if (registrations.isActive) onChange(
+                    (value1 ?: first.value), (value2 ?: second.value), (value3 ?: third.value),
+                    (value4 ?: fourth.value), (value5 ?: fifth.value), (value6 ?: sixth.value)
                 )
+                value1 = null; value2 = null; value3 = null;
+                value4 = null; value5 = null; value6 = null
             }
+            registrations + first.onChange { value1 = it; laterOnceFunction() }
+            registrations + second.onChange { value2 = it; laterOnceFunction() }
+            registrations + third.onChange { value3 = it; laterOnceFunction() }
+            registrations + fourth.onChange { value4 = it; laterOnceFunction() }
+            registrations + fifth.onChange { value5 = it; laterOnceFunction() }
+            registrations + sixth.onChange { value6 = it; laterOnceFunction() }
+            laterOnceFunction()
+            return registrations
+        }
 
         inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7>
                 Seventuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,

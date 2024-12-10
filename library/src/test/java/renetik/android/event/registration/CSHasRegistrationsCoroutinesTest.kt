@@ -3,24 +3,31 @@ package renetik.android.event.registration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import renetik.android.core.lang.result.context
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
 import renetik.android.testing.CSAssert.assert
+import renetik.android.testing.TestApplication
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
+@Config(application = TestApplication::class)
 class CSHasRegistrationsCoroutinesTest {
 
     @Before
@@ -100,8 +107,6 @@ class CSHasRegistrationsCoroutinesTest {
         model.launch {
             count += 1
             wait1.waitIsFalse()
-            Job()
-//           val ss =  (it.job + Main)
             Main.context {
                 count += 1
                 wait2.waitIsFalse()
@@ -116,6 +121,35 @@ class CSHasRegistrationsCoroutinesTest {
         advanceUntilIdle()
         assert(2, count)
         model.destruct()
+        wait2.setFalse()
+        advanceUntilIdle()
+        assert(2, count)
+    }
+
+    @Test
+    fun contextFromLaunchCancel() = runTest {
+        val parent = CSModel()
+        val wait1 = parent.safeProperty(true)
+        val wait2 = parent.safeProperty(true)
+        var count = 0
+        val registration = parent.launch {
+            count += 1
+            wait1.waitIsFalse()
+            Main.context {
+                count += 1
+                wait2.waitIsFalse()
+                Main.context {
+                    count += 1
+                    assert(3, count)
+                }
+            }
+        }
+        advanceUntilIdle()
+        assert(1, count)
+        wait1.setFalse()
+        advanceUntilIdle()
+        assert(2, count)
+        registration.cancel()
         wait2.setFalse()
         advanceUntilIdle()
         assert(2, count)

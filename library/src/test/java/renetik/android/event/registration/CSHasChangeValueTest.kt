@@ -3,15 +3,18 @@ package renetik.android.event.registration
 import org.junit.Test
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.CSValue.Companion.value
+import renetik.android.core.lang.variable.assign
 import renetik.android.core.lang.variable.plusAssign
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegateIsChange
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateNullable
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValueNullable
+import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
 import renetik.android.testing.CSAssert.assert
 
 class CSHasChangeValueTest {
@@ -28,6 +31,31 @@ class CSHasChangeValueTest {
         assert(expected = true, actual = isRecorded.value)
         assert(expected = "true", actual = isRecordedUser1.value)
         assert(expected = "true", actual = isRecordedUser2.value)
+    }
+
+
+    @Test
+    fun delegateIsChange() {
+        val property1 = property(0)
+        val property2 = property(0)
+        val delegateIsChange = property1.delegateIsChange()
+        var _isChange: Boolean? = null
+        var _value2: Int? = null
+        (delegateIsChange to property2).onChange { isChange, value2 ->
+            _isChange = isChange
+            _value2 = value2
+        }
+        assert(expected = null, actual = _isChange)
+        property2 assign 1
+        assert(expected = false, actual = _isChange)
+        assert(expected = 1, actual = _value2)
+        assert(expected = 0, actual = property1.value)
+        assert(expected = 1, actual = property2.value)
+        property1 assign 1
+        assert(expected = true, actual = _isChange)
+        assert(expected = 1, actual = _value2)
+        assert(expected = 1, actual = property1.value)
+        assert(expected = 1, actual = property2.value)
     }
 
     @Test

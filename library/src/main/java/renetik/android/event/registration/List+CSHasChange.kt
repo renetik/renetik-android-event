@@ -36,6 +36,11 @@ inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
 inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
     crossinline function: Func
 ): CSRegistrations {
-    function()
-    return onChangeLaterOnce(function)
+    val registrations = CSRegistrationsMap(this)
+    val laterOnceFunction = registrations.laterOnceFunc {
+        if (registrations.isActive) function()
+    }
+    forEach { registrations + it.onChange { laterOnceFunction() } }
+    laterOnceFunction()
+    return registrations
 }
