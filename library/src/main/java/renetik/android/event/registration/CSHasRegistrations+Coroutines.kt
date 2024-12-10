@@ -6,6 +6,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.job
 
 inline fun CSHasRegistrations.launch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
@@ -23,27 +25,47 @@ inline fun CSHasRegistrations.launch(
     return registration.getCompleted()
 }
 
-inline fun CSHasRegistrations.launch(
-    key: String,
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    crossinline func: suspend (CSRegistration) -> Unit,
-): CSRegistration {
-    val registration = CompletableDeferred<CSRegistration>()
-    registration.complete(this + (key to dispatcher.launch {
-        registration.await().also {
-            if (!it.isCanceled) {
-                func(it)
-                it.cancel()
-            }
-        }
-    }))
-    return registration.getCompleted()
+private class JobRegistrationImpl2(
+    private val registration: CSRegistration
+) : JobRegistration {
+    private var _job: Job? = null
+    fun job(job: Job) {
+        _job = job
+    }
+
+    override val job: Job get() = _job!!
+    override val isActive: Boolean get() = registration.isActive
+    override val isCanceled: Boolean get() = registration.isCanceled
+    override val eventCancel = registration.eventCancel
+    override fun resume() = registration.resume()
+    override fun pause() = registration.pause()
+    override fun cancel() {
+        registration.cancel()
+    }
 }
 
-inline fun CSHasRegistrations.launchIfNot(
+fun CSHasRegistrations.launch(
     key: String,
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    crossinline func: suspend (CSRegistration) -> Unit,
+    func: suspend (JobRegistration) -> Unit,
+): JobRegistration {
+    val newRegistration = CompletableDeferred<JobRegistrationImpl2>()
+    val jobRegistration = dispatcher.launch { registration ->
+        newRegistration.await().also {
+            newRegistration.getCompleted().job(registration.job)
+            if (!it.isCanceled) {
+                func(it); it.cancel()
+            }
+        }
+    }
+    newRegistration.complete(JobRegistrationImpl2(this + (key to jobRegistration)))
+    return newRegistration.getCompleted()
+}
+
+fun CSHasRegistrations.launchIfNot(
+    key: String,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    func: suspend (CSRegistration) -> Unit,
 ): CSRegistration? {
     if (registrations.isActive(key)) return null
     return launch(key, dispatcher, func)
