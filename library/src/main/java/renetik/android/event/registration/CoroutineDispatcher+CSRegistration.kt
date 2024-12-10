@@ -11,25 +11,18 @@ import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
 
 interface JobRegistration : CSRegistration {
-    val job: Job
+    val job: Job?
 }
 
 private class JobRegistrationImpl(
     isActive: Boolean = false,
     private val onCancel: (Job?) -> Unit,
 ) : CSRegistrationImpl(isActive), JobRegistration {
+    override var job: Job? = null
     override fun onCancel() {
         super.onCancel()
-        onCancel.invoke(_job)
+        onCancel.invoke(job)
     }
-
-    private var _job: Job? = null
-
-    fun job(job: Job) {
-        _job = job
-    }
-
-    override val job: Job get() = _job!!
 }
 
 fun CoroutineDispatcher.launch(
@@ -40,7 +33,7 @@ fun CoroutineDispatcher.launch(
     val job = CompletableDeferred<Job>()
     job.complete(mainScope.launch(this) {
         job.await()
-        registration.job(job.getCompleted())
+        registration.job = job.getCompleted()
         if (isActive && registration.isActive) func(registration)
     })
     return registration

@@ -1,16 +1,14 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package renetik.android.event.registration
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.job
 
+@OptIn(ExperimentalCoroutinesApi::class)
 inline fun CSHasRegistrations.launch(
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    dispatcher: CoroutineDispatcher = Main,
     crossinline func: suspend (CSRegistration) -> Unit,
 ): CSRegistration {
     val registration = CompletableDeferred<CSRegistration>()
@@ -28,33 +26,27 @@ inline fun CSHasRegistrations.launch(
 private class JobRegistrationImpl2(
     private val registration: CSRegistration
 ) : JobRegistration {
-    private var _job: Job? = null
-    fun job(job: Job) {
-        _job = job
-    }
-
-    override val job: Job get() = _job!!
+    override var job: Job? = null
     override val isActive: Boolean get() = registration.isActive
     override val isCanceled: Boolean get() = registration.isCanceled
     override val eventCancel = registration.eventCancel
     override fun resume() = registration.resume()
     override fun pause() = registration.pause()
-    override fun cancel() {
-        registration.cancel()
-    }
+    override fun cancel() = registration.cancel()
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 fun CSHasRegistrations.launch(
-    key: String,
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    key: String, dispatcher: CoroutineDispatcher = Main,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
     val newRegistration = CompletableDeferred<JobRegistrationImpl2>()
     val jobRegistration = dispatcher.launch { registration ->
         newRegistration.await().also {
-            newRegistration.getCompleted().job(registration.job)
+            it.job = registration.job!!
             if (!it.isCanceled) {
-                func(it); it.cancel()
+                func(it)
+                it.cancel()
             }
         }
     }
@@ -64,7 +56,7 @@ fun CSHasRegistrations.launch(
 
 fun CSHasRegistrations.launchIfNot(
     key: String,
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    dispatcher: CoroutineDispatcher = Main,
     func: suspend (CSRegistration) -> Unit,
 ): CSRegistration? {
     if (registrations.isActive(key)) return null
