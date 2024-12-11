@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
+import renetik.android.core.logging.CSLog.logInfo
 
 interface JobRegistration : CSRegistration {
     val job: Job?
