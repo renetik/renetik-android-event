@@ -1,6 +1,8 @@
 package renetik.android.event
 
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 import renetik.android.core.java.util.concurrent.background
 import renetik.android.core.java.util.concurrent.backgroundEach
 import renetik.android.core.java.util.concurrent.cancelInterrupt
@@ -18,7 +20,11 @@ import kotlin.time.Duration
 
 object CSBackground {
 
+    // has to be public for inline functions
     var executor: ScheduledExecutorService = createExecutor()
+        private set
+
+    var background: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
         private set
 
     fun shutdown() = executor.shutdownAndWait()
@@ -28,6 +34,7 @@ object CSBackground {
     fun restart() {
         shutdown()
         executor = createExecutor()
+        background = executor.asCoroutineDispatcher()
     }
 
     private fun createExecutor(): ScheduledExecutorService = newScheduledThreadPool(3) {
