@@ -12,6 +12,14 @@ import renetik.android.core.lang.result.mainScope
 
 interface JobRegistration : CSRegistration {
     val job: Job?
+    suspend fun cancelAndWait() {
+        cancel()
+        waitToFinish()
+    }
+
+    suspend fun waitToFinish() {
+        job?.join()
+    }
 }
 
 private class JobRegistrationImpl(
