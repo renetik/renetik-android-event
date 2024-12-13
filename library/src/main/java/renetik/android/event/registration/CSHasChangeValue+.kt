@@ -2,6 +2,7 @@
 
 package renetik.android.event.registration
 
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
@@ -53,6 +54,26 @@ fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
     return onChange(function)
 }
 
+fun <T> CSHasChangeValue<T>.onChangeLaunch(
+    function: suspend (T) -> Unit
+): CSRegistration {
+    val registrations = CSRegistrationsMap(this)
+    registrations + onChange { param ->
+        registrations + Main.launch { function(param) }
+    }
+    return registrations
+}
+
+fun <T> CSHasChangeValue<T>.actionLaunch(
+    function: suspend (T) -> Unit
+): CSRegistration {
+    val registrations = CSRegistrationsMap(this)
+    registrations + action { param ->
+        registrations + Main.launch { function(param) }
+    }
+    return registrations
+}
+
 fun <T> CSHasChangeValue<T>.onChangeFrom(
     function: (from: T) -> Unit,
 ): CSRegistration {
@@ -98,7 +119,7 @@ fun <T> CSHasChangeValue<T?>.actionNotNull(function: (T) -> Unit) =
     action { if (it != null) function(it) }
 
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(value: Value,
-    crossinline onChange: () -> Unit): CSRegistration =
+                                                      crossinline onChange: () -> Unit): CSRegistration =
     onChange { if (this.value == value) onChange() }
 
 fun <Value> CSHasChangeValue<Value>.hasValue(
@@ -186,7 +207,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
 }
 
 inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(list: MutableList<Item>,
-    noinline function: (index: Int) -> Item): CSRegistration =
+                                                                noinline function: (index: Int) -> Item): CSRegistration =
     action { value -> list.update(value, function) }
 
 fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
@@ -213,7 +234,7 @@ fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
     }
 
 fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValue<V>,
-    createInstance: (Instance?, V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
+                                                 createInstance: (Instance?, V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
     object : CSValue<Instance> {
         var instance: Instance? = null
         override val value: Instance
