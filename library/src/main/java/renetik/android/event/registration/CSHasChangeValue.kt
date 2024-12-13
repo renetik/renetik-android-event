@@ -16,6 +16,9 @@ import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
 import kotlin.properties.Delegates.notNull
 
+//TODO: Move delegates to CSHasChangeValue+delegate
+// investigate usefulness of parent in all of them
+// as it seems no leaks if no parent used and almost no used..
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
 
