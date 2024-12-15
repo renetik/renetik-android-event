@@ -32,8 +32,6 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     return CSRegistration(thisOnChange, propertyOnChange)
 }
 
-fun <T> CSProperty<T?>.clear() = value(null)
-
 inline fun <T, V> CSProperty<T>.delegate(
     parent: CSHasRegistrations? = null,
     crossinline from: (T) -> V, crossinline to: (V) -> T,
