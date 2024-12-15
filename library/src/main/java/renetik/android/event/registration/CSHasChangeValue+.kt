@@ -54,15 +54,15 @@ fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
     return onChange(function)
 }
 
-fun <T> CSHasChangeValue<T>.onChangeLaunch(
-    function: suspend (T) -> Unit
-): CSRegistration {
-    val registrations = CSRegistrationsMap(this)
-    registrations + onChange { param ->
-        registrations + Main.launch { function(param) }
-    }
-    return registrations
-}
+//fun <T> CSHasChangeValue<T>.onChangeLaunch(
+//    function: suspend (T) -> Unit
+//): CSRegistration {
+//    val registrations = CSRegistrationsMap(this)
+//    registrations + onChange { param ->
+//        registrations + Main.launch { function(param) }
+//    }
+//    return registrations
+//}
 
 fun <T> CSHasChangeValue<T>.actionLaunch(
     function: suspend (T) -> Unit

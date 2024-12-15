@@ -1,5 +1,6 @@
 package renetik.android.event.registration
 
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
@@ -7,6 +8,16 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.fire
+
+fun <T> CSHasChange<T>.onChangeLaunch(
+    function: suspend (T) -> Unit
+): CSRegistration {
+    val registrations = CSRegistrationsMap(this)
+    registrations + onChange { param ->
+        registrations + Main.launch { function(param) }
+    }
+    return registrations
+}
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
     suspendCancellableCoroutine { coroutine ->
