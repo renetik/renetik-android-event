@@ -7,6 +7,8 @@ import renetik.android.core.lang.variable.assign
 import renetik.android.core.lang.variable.plusAssign
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.fire
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
@@ -15,9 +17,26 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.delegateNul
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValueNullable
 import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
+import renetik.android.event.registration.CSHasChangeValue.Companion.or
 import renetik.android.testing.CSAssert.assert
 
 class CSHasChangeValueTest {
+
+    @Test
+    fun delegatePropertyOrEvent() {
+        val property = property(0)
+        val event = event()
+        val propertyOrEvent: CSHasChangeValue<Int> = property or event
+        var propertyOrEventChangeCount = 0
+        propertyOrEvent.onChange { propertyOrEventChangeCount += 1 }
+        property assign 1
+        assert(expected = 1, actual = propertyOrEvent.value)
+        assert(expected = 1, actual = propertyOrEventChangeCount)
+        event.fire()
+        assert(expected = 1, actual = propertyOrEvent.value)
+        assert(expected = 2, actual = propertyOrEventChangeCount)
+    }
+
     @Test
     fun delegate() {
         val property = property(0)

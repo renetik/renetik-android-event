@@ -23,7 +23,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
 
         class DelegateValue<Return>(
-            var value: Return, val onChange: ArgFunc<Return>?,
+            var value: Return, val onChange: ArgFunc<Return>? = null,
             val function: (Return) -> Unit
         ) {
             operator fun invoke(newValue: Return) {
@@ -66,6 +66,17 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         value = false
                     }.registerTo(parent)
                 }
+            }
+        }
+
+        infix fun <T> CSHasChangeValue<T>.or(second: CSHasChange<*>): CSHasChangeValue<T> {
+            val first = this
+            return object : CSHasChangeValue<T> {
+                override val value: T get() = first.value
+                override fun onChange(function: (T) -> Unit) = CSRegistration(
+                    first.onChange { function(it) },
+                    second.onChange { function(value) },
+                )
             }
         }
 
