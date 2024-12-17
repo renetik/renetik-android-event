@@ -32,7 +32,7 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     return CSRegistration(thisOnChange, propertyOnChange)
 }
 
-inline fun <T, V> CSProperty<T>.delegate(
+inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     crossinline from: (T) -> V, crossinline to: (V) -> T,
     noinline onChange: ArgFunc<V>? = null,
@@ -95,9 +95,9 @@ operator fun CSProperty<Int>.rangeUntil(
 
 fun CSProperty<Int>.computedAsPercentOf(
     parent: CSHasRegistrations, max: Int = 100,
-): CSProperty<Float> = delegate(
+): CSProperty<Float> = computed(
     parent, from = { it.toPercentOf(max) },
     to = { it.percentOf(max.toFloat()).roundToInt() }
 )
 
-operator fun CSProperty<Boolean>.not() = delegate(from = { !it }, to = { !it })
+operator fun CSProperty<Boolean>.not() = computed(from = { !it }, to = { !it })
