@@ -8,6 +8,8 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.fire
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 
 fun <T> CSHasChange<T>.onChangeLaunch(
     function: suspend (T) -> Unit
@@ -83,13 +85,18 @@ inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
+    after: Duration,
     crossinline function: Func,
 ): CSRegistration {
     val registrations = CSRegistrationsMap(this)
-    val laterOnceFunction = registrations.laterOnceFunc { function() }
+    val laterOnceFunction = registrations.laterOnceFunc(after) { function() }
     registrations.register(onChange { laterOnceFunction() })
     return registrations
 }
+
+inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
+    crossinline function: Func,
+) = onChangeLaterOnce(ZERO, function)
 
 fun Pair<CSHasChange<*>, CSHasChange<*>>.onChange(
     onChange: () -> Unit
