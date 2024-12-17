@@ -48,6 +48,18 @@ inline fun <T, V> CSProperty<T>.computed(
     return property
 }
 
+inline fun <T> CSProperty<T>.computedFrom(
+    parent: CSHasRegistrations? = null,
+    crossinline from: (T) -> T,
+    noinline onChange: ArgFunc<T>? = null,
+): CSProperty<T> = computed(parent, from, to = { it }, onChange)
+
+inline fun <T> CSProperty<T>.computedTo(
+    parent: CSHasRegistrations? = null,
+    crossinline to: (T) -> T,
+    noinline onChange: ArgFunc<T>? = null,
+): CSProperty<T> = computed(parent, from = { it }, to, onChange)
+
 inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     crossinline get: (T) -> V, crossinline set: (CSProperty<T>, V) -> Unit,
