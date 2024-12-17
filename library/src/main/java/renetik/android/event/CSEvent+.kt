@@ -11,6 +11,8 @@ fun CSEvent<Unit>.fire() = apply { fire(Unit) }
 
 operator fun CSEvent<Unit>.invoke() = apply { fire(Unit) }
 
+operator fun <T> CSEvent<T>.invoke(param: T) = apply { fire(param) }
+
 @JvmName("listenNoArg")
 fun CSEvent<*>.listen(function: Func): CSRegistration = listen { _, _ -> function() }
 

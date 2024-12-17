@@ -11,14 +11,31 @@ import renetik.android.event.fire
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
+operator fun <T> CSHasChange<T>.invoke(param: (T) -> Unit) = onChange(param)
+operator fun CSHasChange<Unit>.invoke(param: () -> Unit) = onChange(param)
+
+fun CSHasChange<Boolean>.onTrue(function: () -> Unit): CSRegistration =
+    onChange { param -> if (param) function() }
+
+fun CSHasChange<Boolean>.onFalse(function: () -> Unit): CSRegistration =
+    onChange { param -> if (!param) function() }
+
 fun <T> CSHasChange<T>.onChangeLaunch(
     function: suspend (T) -> Unit
-): CSRegistration {
-    val registrations = CSRegistrationsMap(this)
-    registrations + onChange { param ->
-        registrations + Main.launch { function(param) }
-    }
-    return registrations
+): CSRegistration = CSRegistrationsMap(this).also {
+    it + onChange { param -> it + Main.launch { function(param) } }
+}
+
+fun CSHasChange<Boolean>.onTrueLaunch(
+    function: suspend () -> Unit
+): CSRegistration = CSRegistrationsMap(this).also {
+    it + onTrue { it + Main.launch { function() } }
+}
+
+fun CSHasChange<Boolean>.onFalseLaunch(
+    function: suspend () -> Unit
+): CSRegistration = CSRegistrationsMap(this).also {
+    it + onFalse { it + Main.launch { function() } }
 }
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
