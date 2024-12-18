@@ -8,6 +8,7 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.fire
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
@@ -24,6 +25,39 @@ fun <T> CSHasChange<T>.onChangeLaunch(
     function: suspend (T) -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
     it + onChange { param -> it + Main.launch { function(param) } }
+}
+
+fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
+    function: suspend (from: T, to: T) -> Unit,
+): CSRegistration {
+    var value = this.value
+    return onChangeLaunch { function(value, it); value = it }
+}
+
+fun <T> CSHasChange<T>.onChangeLaunch(
+    parent: CSHasRegistrations, function: suspend (T) -> Unit
+): CSRegistrationImpl {
+    var previous: JobRegistration? = null
+    var current: JobRegistration? = null
+    val onChangeRegistration = onChange { param ->
+        current = parent.launch { registration ->
+            previous?.waitToFinish()
+            previous = registration
+            function(param)
+        }
+    }
+    return CSRegistration(true, onCancel = {
+        onChangeRegistration.cancel()
+        current?.cancel()
+        previous?.cancel()
+    })
+}
+
+fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
+    parent: CSHasRegistrations, function: suspend (from: T, to: T) -> Unit,
+): CSRegistration {
+    var value = this.value
+    return onChangeLaunch(parent) { function(value, it); value = it }
 }
 
 fun CSHasChange<Boolean>.onTrueLaunch(
