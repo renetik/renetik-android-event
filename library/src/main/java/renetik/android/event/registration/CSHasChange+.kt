@@ -36,7 +36,7 @@ fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
 
 fun <T> CSHasChange<T>.onChangeLaunch(
     parent: CSHasRegistrations, function: suspend (T) -> Unit
-): CSRegistrationImpl {
+): CSRegistration {
     var previous: JobRegistration? = null
     var current: JobRegistration? = null
     val onChangeRegistration = onChange { param ->
@@ -58,6 +58,25 @@ fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
 ): CSRegistration {
     var value = this.value
     return onChangeLaunch(parent) { function(value, it); value = it }
+}
+
+fun <T> CSHasChangeValue<T>.actionLaunch(
+    parent: CSHasRegistrations, function: suspend (T) -> Unit,
+): CSRegistration {
+    var previous: JobRegistration? = null
+    var current: JobRegistration? = null
+    val onChangeRegistration = action { param ->
+        current = parent.launch { registration ->
+            previous?.waitToFinish()
+            previous = registration
+            function(param)
+        }
+    }
+    return CSRegistration(true, onCancel = {
+        onChangeRegistration.cancel()
+        current?.cancel()
+        previous?.cancel()
+    })
 }
 
 fun CSHasChange<Boolean>.onTrueLaunch(
