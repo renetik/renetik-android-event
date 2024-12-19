@@ -59,9 +59,3 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
 }
 
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
-
-infix fun CSHasChangeValue<Boolean>.and(other: CSHasChangeValue<Boolean>) =
-    (this to other).delegate(from = { first, second -> first && second })
-
-infix fun CSHasChangeValue<Boolean>.or(other: CSHasChangeValue<Boolean>) =
-    (this to other).delegate(from = { first, second -> first || second })

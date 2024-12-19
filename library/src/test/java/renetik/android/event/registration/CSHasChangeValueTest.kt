@@ -17,7 +17,6 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.delegateNul
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValueNullable
 import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
-import renetik.android.event.registration.CSHasChangeValue.Companion.or
 import renetik.android.testing.CSAssert.assert
 
 class CSHasChangeValueTest {

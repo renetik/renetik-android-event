@@ -69,17 +69,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        infix fun <T> CSHasChangeValue<T>.or(second: CSHasChange<*>): CSHasChangeValue<T> {
-            val first = this
-            return object : CSHasChangeValue<T> {
-                override val value: T get() = first.value
-                override fun onChange(function: (T) -> Unit) = CSRegistration(
-                    first.onChange { function(it) },
-                    second.onChange { function(value) },
-                )
-            }
-        }
-
         inline fun <T, V, Return> Pair<CSHasChangeValue<T>,
                 CSHasChangeValue<V>>.delegate(
             parent: CSHasRegistrations? = null,

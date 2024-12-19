@@ -102,24 +102,6 @@ suspend fun <T> CSHasChange<T>.waitForChange(): T =
         coroutine.invokeOnCancellation { registration?.cancel() }
     }
 
-infix fun CSHasChange<*>.or(other: CSHasChange<*>): CSHasChange<Unit> {
-    val self = this
-    return object : CSHasChange<Unit> {
-        override fun onChange(function: (Unit) -> Unit) = CSRegistration(
-            self.onChange { function(Unit) },
-            other.onChange { function(Unit) },
-        )
-    }
-}
-
-infix fun CSHasChange<*>.and(other: CSValue<Boolean>): CSHasChange<Unit> {
-    val self = this
-    return object : CSHasChange<Unit> {
-        override fun onChange(function: (Unit) -> Unit): CSRegistration =
-            CSRegistration(self.onChange { if (other.value) function(Unit) })
-    }
-}
-
 inline fun <Argument> CSHasChange<Argument>.onChange(
     crossinline function: () -> Unit,
 ): CSRegistration = onChange { _ -> function() }

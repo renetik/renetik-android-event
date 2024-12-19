@@ -202,7 +202,8 @@ inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(list: MutableLis
 
 fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
     parent: CSHasRegistrations? = null,
-    createInstance: (V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
+    createInstance: (V) -> Instance
+): CSValue<Instance> where Instance : CSHasDestruct =
     object : CSValue<Instance> {
         var instance: Instance? = null
         override val value: Instance
@@ -217,14 +218,17 @@ fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
 
 fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
     property: () -> CSHasChangeValue<V>,
-    createInstance: (V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
+    createInstance: (V) -> Instance
+): CSValue<Instance> where Instance : CSHasDestruct =
     lazyFactory(property) { previousInstance, param ->
         previousInstance?.onDestruct()
         createInstance(param)
     }
 
-fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValue<V>,
-                                                 createInstance: (Instance?, V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
+fun <V, Instance> CSHasRegistrations.lazyFactory(
+    property: () -> CSHasChangeValue<V>,
+    createInstance: (Instance?, V) -> Instance
+): CSValue<Instance> where Instance : CSHasDestruct =
     object : CSValue<Instance> {
         var instance: Instance? = null
         override val value: Instance
