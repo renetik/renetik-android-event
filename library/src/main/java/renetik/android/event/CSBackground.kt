@@ -60,7 +60,7 @@ object CSBackground {
     inline fun backgroundEach(
         after: Int, period: Int = after,
         start: Boolean = true,
-        crossinline function: (CSRegistration) -> Unit,
+        @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         var task: ScheduledFuture<*> by notNull()
         var registration: CSRegistration by notNull()
