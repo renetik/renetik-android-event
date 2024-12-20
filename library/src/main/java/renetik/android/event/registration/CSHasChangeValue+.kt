@@ -116,7 +116,7 @@ fun <Value> CSHasChangeValue<Value>.hasValue(
     parent: CSHasDestruct? = null, value: Value,
 ): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
-@JvmName("onChangeChild")
+@JvmName("onChangeChildHasValue")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
     crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
     noinline onChange: (ChildValue) -> Unit): CSRegistration {
@@ -124,6 +124,21 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
     val parentRegistration = onChange {
         childRegistration?.cancel()
         childRegistration = child(value).action(onChange)
+    }
+    return CSRegistration(isActive = true, onCancel = {
+        parentRegistration.cancel()
+        childRegistration?.cancel()
+    })
+}
+
+@JvmName("onChangeChild")
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
+    crossinline child2: (ParentValue) -> CSHasChange<ChildValue>,
+    noinline onChange: (ChildValue) -> Unit): CSRegistration {
+    var childRegistration: CSRegistration? = null
+    val parentRegistration = onChange {
+        childRegistration?.cancel()
+        childRegistration = child2(value).onChange(onChange)
     }
     return CSRegistration(isActive = true, onCancel = {
         parentRegistration.cancel()
