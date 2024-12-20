@@ -569,21 +569,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 fourth.value, fifth.value, sixth.value)
         }
 
-//        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
-//                Sixtuple<CSHasChangeValue<Argument1>,
-//                        CSHasChangeValue<Argument2>,
-//                        CSHasChangeValue<Argument3>,
-//                        CSHasChangeValue<Argument4>,
-//                        CSHasChangeValue<Argument5>,
-//                        CSHasChangeValue<Argument6>>.actionLaterOnce(
-//            crossinline onChange: (
-//                Argument1, Argument2, Argument3, Argument4, Argument5, Argument6
-//            ) -> Unit,
-//        ): CSRegistration = list(first, second, third, fourth, fifth, sixth).actionLaterOnce {
-//            onChange(first.value, second.value, third.value,
-//                fourth.value, fifth.value, sixth.value)
-//        }
-
         inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
