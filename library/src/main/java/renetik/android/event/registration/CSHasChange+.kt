@@ -13,6 +13,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
 operator fun <T> CSHasChange<T>.invoke(param: (T) -> Unit) = onChange(param)
+
 operator fun CSHasChange<Unit>.invoke(param: () -> Unit) = onChange(param)
 
 fun CSHasChange<Boolean>.onTrue(function: () -> Unit): CSRegistration =
