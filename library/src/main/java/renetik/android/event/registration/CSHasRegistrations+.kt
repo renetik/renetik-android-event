@@ -5,6 +5,9 @@ import androidx.annotation.AnyThread
 fun CSRegistration.registerTo(registrations: CSHasRegistrations?): CSRegistration =
     registrations?.register(this) ?: this
 
+//operator fun CSRegistrations.plus(registration: CSRegistration): CSRegistration =
+//    register(registration)
+
 @AnyThread
 fun CSHasRegistrations.register(registration: CSRegistration): CSRegistration =
     registrations.register(registration)

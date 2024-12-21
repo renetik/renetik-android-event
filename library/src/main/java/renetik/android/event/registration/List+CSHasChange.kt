@@ -6,7 +6,7 @@ import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 inline fun <T : CSHasChange<*>> List<T>.onChange(
     crossinline function: Func
 ): CSRegistration {
-    val registrations = CSRegistrationsList(this)
+    val registrations = CSRegistrationsMap(this)
     forEach {
         registrations.register(it.onChange {
             if (registrations.isActive) function()

@@ -2,7 +2,6 @@ package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
 
-// Implement CSRegistrations Map and List with weak values wrappers ?
 interface CSRegistrations : CSRegistration {
 
     @AnyThread
