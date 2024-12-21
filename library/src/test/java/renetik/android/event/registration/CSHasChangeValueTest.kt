@@ -90,10 +90,8 @@ class CSHasChangeValueTest {
         testDelegateChildProperty(property, delegateChild)
     }
 
-    private fun testDelegateChildProperty(
-        delegatedProperty: CSProperty<CSValue<CSProperty<Int>>>,
-        testedProperty: CSHasChangeValue<Int>
-    ) {
+    private fun testDelegateChildProperty(delegatedProperty: CSProperty<CSValue<CSProperty<Int>>>,
+                                          testedProperty: CSHasChangeValue<Int>) {
         var delegateChildValue1: Int? = null
         var delegateChildValue2: Int? = null
         testedProperty.onChange { delegateChildValue1 = it }
@@ -113,6 +111,37 @@ class CSHasChangeValueTest {
         val property = property<CSValue<CSProperty<Int>>?>(null)
         val delegateChild = property.delegateNullable(nullableChild = { it?.value })
         testDelegateNullableChildProperty(property, delegateChild)
+    }
+
+    class SampleData {
+        val bpm: CSProperty<Int?> = property()
+    }
+
+    @Test
+    fun delegateNullableChild2() {
+        val sampleProperty = property<SampleData?>(null)
+        val bpmProperty = sampleProperty.delegateNullable(nullableChild = { it?.bpm })
+        var bpmPropertyOnChangeValue: Int? = null
+        var bpmPropertyActionValue: Int? = null
+        val delegateChildOnChange = bpmProperty.onChange { bpmPropertyOnChangeValue = it }
+        bpmProperty.action { bpmPropertyActionValue = it }
+        assert(expected = null, actual = bpmPropertyOnChangeValue)
+        assert(expected = null, actual = bpmPropertyActionValue)
+        sampleProperty assign SampleData()
+        assert(expected = null, actual = bpmPropertyOnChangeValue)
+        assert(expected = null, actual = bpmPropertyActionValue)
+        sampleProperty.value?.bpm?.value = 6
+        assert(expected = 6, actual = bpmPropertyOnChangeValue)
+        assert(expected = 6, actual = bpmPropertyActionValue)
+        delegateChildOnChange.pause()
+        sampleProperty.value?.bpm?.value = 7
+        assert(expected = 6, actual = bpmPropertyOnChangeValue)
+        assert(expected = 7, actual = bpmPropertyActionValue)
+        delegateChildOnChange.resume()
+        sampleProperty assign null
+        assert(expected = null, actual = bpmPropertyOnChangeValue)
+        assert(expected = null, actual = bpmPropertyActionValue)
+
     }
 
     @Test
@@ -164,14 +193,11 @@ class CSHasChangeValueTest {
         assert(expected = 1, isNotRecordingAndRecorded)
     }
 
-    private fun testDelegateNullableChildProperty(
-        property: CSProperty<CSValue<CSProperty<Int>>?>,
-        delegateChild: CSHasChangeValue<Int?>
-    ) {
+    private fun testDelegateNullableChildProperty(property: CSProperty<CSValue<CSProperty<Int>>?>,
+                                                  delegateChild: CSHasChangeValue<Int?>) {
         var delegateChildOnChangeValue: Int? = null
         var delegateChildActionValue: Int? = null
-        val delegateChildOnChange =
-            delegateChild.onChange { delegateChildOnChangeValue = it }
+        val delegateChildOnChange = delegateChild.onChange { delegateChildOnChangeValue = it }
         delegateChild.action { delegateChildActionValue = it }
         assert(expected = null, actual = delegateChildOnChangeValue)
         assert(expected = null, actual = delegateChildActionValue)

@@ -144,17 +144,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
                     val value = DelegateValue(value, onChange, function)
                     var childRegistration: CSRegistration? = null
-                    var isInitialized = false
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = nullableChild(parentValue)
-                        if (isInitialized) childItem.also { value(it?.value) }
-                        isInitialized = true
-                        childRegistration = childItem?.onChange(value::invoke)
+                        if (childRegistration != null) childItem.also { value(it?.value) }
+                        childRegistration = childItem?.onChange { value.invoke(it) }
                     }
-                    return CSRegistration(
-                        { parentRegistration }, { childRegistration }
-                    ).registerTo(parent)
+                    return CSRegistration({ parentRegistration }, { childRegistration })
+                        .registerTo(parent)
                 }
             }
         }
