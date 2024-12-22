@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
@@ -17,9 +15,6 @@ import renetik.android.event.property.CSPropertyBase
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
 
-//TODO: Move delegates to CSHasChangeValue+delegate
-// investigate usefulness of parent in all of them
-// as it seems no leaks if no parent used and almost no used..
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
 
@@ -36,15 +31,15 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T> CSHasChangeValue<T>.delegate(
+        fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
-            noinline onChange: ArgFunc<T>? = null,
+            onChange: ArgFunc<T>? = null,
         ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
 
-        inline fun <T, Return> CSHasChangeValue<T>.delegate(
+        fun <T, Return> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
-            crossinline from: (T) -> Return,
-            noinline onChange: ArgFunc<Return>? = null,
+            from: (T) -> Return,
+            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
@@ -55,7 +50,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T> CSHasChangeValue<T>.delegateIsChange(
+        fun <T> CSHasChangeValue<T>.delegateIsChange(
             parent: CSHasRegistrations? = null,
         ): CSHasChangeValue<Boolean> = let { property ->
             object : CSHasChangeValue<Boolean> {
@@ -70,11 +65,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T, V, Return> Pair<CSHasChangeValue<T>,
+        fun <T, V, Return> Pair<CSHasChangeValue<T>,
                 CSHasChangeValue<V>>.delegate(
             parent: CSHasRegistrations? = null,
-            crossinline from: (T, V) -> Return,
-            noinline onChange: ArgFunc<Return>? = null,
+            from: (T, V) -> Return,
+            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return get() = from(first.value, second.value)
             override fun onChange(function: (Return) -> Unit): CSRegistration {
@@ -86,13 +81,13 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T, V, K, Return>
+        fun <T, V, K, Return>
                 Triple<CSHasChangeValue<T>,
                         CSHasChangeValue<V>,
                         CSHasChangeValue<K>>.delegate(
             parent: CSHasRegistrations? = null,
-            crossinline from: (T, V, K) -> Return,
-            noinline onChange: ArgFunc<Return>? = null,
+            from: (T, V, K) -> Return,
+            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return
                 get() = from(first.value, second.value, third.value)
@@ -108,11 +103,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         @JvmName("delegateChild")
-        inline fun <ParentValue, ChildValue>
+        fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegate(
             parent: CSHasRegistrations? = null,
-            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-            noinline onChange: ((ChildValue?) -> Unit)? = null
+            child: (ParentValue) -> CSHasChangeValue<ChildValue>,
+            onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue> = let { property ->
             object : CSHasChangeValue<ChildValue> {
                 override val value: ChildValue get() = child(property.value).value
@@ -137,11 +132,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         @JvmName("delegateNullable")
-        inline fun <ParentValue, ChildValue>
+        fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegateNullable(
             parent: CSHasRegistrations? = null,
-            crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-            noinline onChange: ((ChildValue?) -> Unit)? = null
+            child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+            onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue?> = let { property ->
             object : CSHasChangeValue<ChildValue?> {
                 override val value: ChildValue? get() = child(property.value)?.value
@@ -165,15 +160,15 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T> CSHasChangeValue<T>.hasChangeValue(
-            parent: CSHasDestruct? = null, noinline onChange: ArgFunc<T>? = null,
+        fun <T> CSHasChangeValue<T>.hasChangeValue(
+            parent: CSHasDestruct? = null, onChange: ArgFunc<T>? = null,
         ): CSHasChangeValue<T> = hasChangeValue(parent, from = { it }, onChange)
 
-        inline fun <Argument, Return>
+        fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasDestruct? = null,
-            crossinline from: (Argument) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = let { property ->
             object : CSPropertyBase<Return>(parent, onChange) {
                 override var value: Return = from(property.value)
@@ -184,11 +179,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Argument, Return>
+        fun <Argument, Return>
                 CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasDestruct? = null,
-            crossinline fromWithPrevious: (Argument, Return?) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            fromWithPrevious: (Argument, Return?) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = let { property ->
             object : CSPropertyBase<Return>(parent, onChange) {
                 var previous: Return? = null
@@ -204,11 +199,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Argument, Return : CSHasDestruct>
+        fun <Argument, Return : CSHasDestruct>
                 CSHasChangeValue<Argument>.hasChangeValueDestruct(
             parent: CSHasDestruct? = null,
-            crossinline from: (Argument) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = hasChangeValue(
             parent, fromWithPrevious = { type, previous ->
                 previous?.destruct(); from(type)
@@ -216,11 +211,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         )
 
         @JvmName("hasChangeValueChild")
-        inline fun <ParentValue, Return : Any>
+        fun <ParentValue, Return : Any>
                 CSHasChangeValue<ParentValue>.hasChangeValue(
             parent: CSHasDestruct? = null,
-            crossinline child: (ParentValue) -> CSHasChangeValue<Return>,
-            noinline onChange: ((Return) -> Unit)? = null
+            child: (ParentValue) -> CSHasChangeValue<Return>,
+            onChange: ((Return) -> Unit)? = null
         ): CSHasChangeValue<Return> = let { property ->
             object : CSPropertyBase<Return>(parent, onChange) {
                 var isInitialized = false
@@ -241,11 +236,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <ParentValue, Return>
+        fun <ParentValue, Return>
                 CSHasChangeValue<ParentValue>.hasChangeValueNullable(
             parent: CSHasDestruct? = null,
-            crossinline child: (ParentValue) -> CSHasChangeValue<Return>?,
-            noinline onChange: ((Return?) -> Unit)? = null
+            child: (ParentValue) -> CSHasChangeValue<Return>?,
+            onChange: ((Return?) -> Unit)? = null
         ): CSHasChangeValue<Return?> = let { property ->
             object : CSPropertyBase<Return?>(parent, onChange) {
                 override var value: Return? = null
@@ -259,12 +254,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Argument1, Argument2, Return> hasChangeValue(
+        fun <Argument1, Argument2, Return> hasChangeValue(
             parent: CSHasDestruct? = null,
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
-            crossinline from: (Argument1, Argument2) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument1, Argument2) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> = object : CSPropertyBase<Return>(parent, onChange) {
             override var value: Return = from(item1.value, item2.value)
 
@@ -275,67 +270,67 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Argument1, Argument2, Return>
+        fun <Argument1, Argument2, Return>
                 Pair<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>>.hasChangeValue(
             parent: CSHasDestruct? = null,
-            crossinline from: (Argument1, Argument2) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument1, Argument2) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> =
             hasChangeValue(parent, first, second, from, onChange)
 
-        inline fun <Argument1, Argument2> onChange(
+        fun <Argument1, Argument2> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
-            crossinline onChange: (Argument1, Argument2) -> Unit,
+            onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration = list(item1, item2).onChange {
             onChange(item1.value, item2.value)
         }
 
-        inline fun <Argument1, Argument2>
+        fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
-            crossinline onChange: (Argument1, Argument2) -> Unit,
+            onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration = onChange(first, second, onChange)
 
-        inline fun <Argument1, Argument2>
+        fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
-            crossinline onChange: () -> Unit,
+            onChange: () -> Unit,
         ): CSRegistration = onChange(first, second) { _, _ -> onChange() }
 
-        inline fun <Argument1, Argument2> action(
+        fun <Argument1, Argument2> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
-            crossinline onAction: (Argument1, Argument2) -> Unit,
+            onAction: (Argument1, Argument2) -> Unit,
         ): CSRegistration = list(item1, item2).action {
             onAction(item1.value, item2.value)
         }
 
-        inline fun <Argument1, Argument2>
+        fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
-            crossinline onAction: (Argument1, Argument2) -> Unit,
+            onAction: (Argument1, Argument2) -> Unit,
         ): CSRegistration =
             action(first, second) { first, second -> onAction(first, second) }
 
 
-        inline fun <Argument1, Argument2>
+        fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
-            crossinline onAction: () -> Unit,
+            onAction: () -> Unit,
         ): CSRegistration = action(first, second) { _, _ -> onAction() }
 
 
-        inline fun <Argument1, Argument2>
+        fun <Argument1, Argument2>
                 Pair<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>>.onChangeLaterOnce(
-            crossinline onChange: () -> Unit,
+            onChange: () -> Unit,
         ): CSRegistration = list(first, second).onChangeLaterOnce { onChange() }
 
-        inline fun <Argument1, Argument2, Argument3, Return>
+        fun <Argument1, Argument2, Argument3, Return>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.hasChangeValue(
             parent: CSHasDestruct? = null,
-            crossinline from: (Argument1, Argument2, Argument3) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument1, Argument2, Argument3) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> =
             object : CSPropertyBase<Return>(parent, onChange) {
                 override var value: Return = from(first.value, second.value, third.value)
@@ -348,14 +343,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Return>
+        fun <Argument1, Argument2, Argument3, Argument4, Return>
                 Quadruple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>,
                         CSHasChangeValue<Argument4>>.hasChangeValue(
             parent: CSHasDestruct? = null,
-            crossinline from: (Argument1, Argument2, Argument3, Argument4) -> Return,
-            noinline onChange: ArgFunc<Return>? = null
+            from: (Argument1, Argument2, Argument3, Argument4) -> Return,
+            onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> =
             object : CSPropertyBase<Return>(parent, onChange) {
                 override var value: Return = from(
@@ -370,113 +365,113 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
 
-        inline fun <Argument1, Argument2, Argument3> onChange(
+        fun <Argument1, Argument2, Argument3> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
-            crossinline onChange: (Argument1, Argument2, Argument3) -> Unit,
+            onChange: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = list(item1, item2, item3).onChange {
             onChange(item1.value, item2.value, item3.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChange(
-            crossinline onChange: (Argument1, Argument2, Argument3) -> Unit,
+            onChange: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = onChange(first, second, third, onChange)
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChange(
-            crossinline onChange: () -> Unit,
+            onChange: () -> Unit,
         ): CSRegistration = onChange(first, second, third) { _, _, _ -> onChange() }
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChangeLaterOnce(
-            crossinline onChange: (Argument1, Argument2, Argument3) -> Unit,
+            onChange: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = list(first, second, third)
             .onChangeLaterOnce { onChange(first.value, second.value, third.value) }
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChangeLaterOnce(
-            crossinline onChange: () -> Unit,
+            onChange: () -> Unit,
         ): CSRegistration = list(first, second, third)
             .onChangeLaterOnce { onChange() }
 
-        inline fun <Argument1, Argument2, Argument3> action(
+        fun <Argument1, Argument2, Argument3> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
-            crossinline onAction: (Argument1, Argument2, Argument3) -> Unit,
+            onAction: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = list(item1, item2, item3).action {
             onAction(item1.value, item2.value, item3.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.action(
-            crossinline onAction: (Argument1, Argument2, Argument3) -> Unit,
+            onAction: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = action(first, second, third, onAction)
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.actionLaterOnce(
-            crossinline onAction: (Argument1, Argument2, Argument3) -> Unit,
+            onAction: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = list(first, second, third)
             .actionLaterOnce { onAction(first.value, second.value, third.value) }
 
-        inline fun <Argument1, Argument2, Argument3>
+        fun <Argument1, Argument2, Argument3>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.actionLaterOnce(
-            crossinline onAction: () -> Unit,
+            onAction: () -> Unit,
         ): CSRegistration = actionLaterOnce { _, _, _ -> onAction() }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4> onChange(
+        fun <Argument1, Argument2, Argument3, Argument4> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
             item4: CSHasChangeValue<Argument4>,
-            crossinline onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
+            onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = list(item1, item2, item3, item4).onChange {
             onAction(item1.value, item2.value, item3.value, item4.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4>
+        fun <Argument1, Argument2, Argument3, Argument4>
                 Quadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.onChange(
-            crossinline onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
+            onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = onChange(first, second, third, fourth, onChange)
 
-        inline fun <Argument1, Argument2, Argument3, Argument4> action(
+        fun <Argument1, Argument2, Argument3, Argument4> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
             item4: CSHasChangeValue<Argument4>,
-            crossinline onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
+            onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = list(item1, item2, item3, item4).action {
             onAction(item1.value, item2.value, item3.value, item4.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4>
+        fun <Argument1, Argument2, Argument3, Argument4>
                 Quadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.action(
-            crossinline onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
+            onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = action(first, second, third, fourth, onChange)
 
-        inline fun <Argument1, Argument2, Argument3, Argument4>
+        fun <Argument1, Argument2, Argument3, Argument4>
                 Quadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>
                         >.actionLaterOnce(
-            crossinline onChange: (
+            onChange: (
                 Argument1, Argument2, Argument3, Argument4
             ) -> Unit,
         ): CSRegistration = list(first, second, third, fourth)
@@ -486,47 +481,47 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 )
             }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
             item4: CSHasChangeValue<Argument4>,
             item5: CSHasChangeValue<Argument5>,
-            crossinline onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+            onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = list(item1, item2, item3, item4, item5).onChange {
             onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
                 Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>>.onChange(
-            crossinline onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+            onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = onChange(first, second, third, fourth, fifth, onChange)
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5> action(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
             item4: CSHasChangeValue<Argument4>,
             item5: CSHasChangeValue<Argument5>,
-            crossinline onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+            onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = list(item1, item2, item3, item4, item5).action {
             onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
                 Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>>.action(
-            crossinline onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+            onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = action(first, second, third, fourth, fifth, onChange)
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
                 Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>>.onChangeLaterOnce(
-            crossinline onChange: (
+            onChange: (
                 Argument1, Argument2, Argument3, Argument4, Argument5
             ) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth)
@@ -536,11 +531,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 )
             }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
                 Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>>.actionLaterOnce(
-            crossinline onChange: (
+            onChange: (
                 Argument1, Argument2, Argument3, Argument4, Argument5
             ) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth)
@@ -550,11 +545,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 )
             }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
-            crossinline onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
+            onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth, sixth).onChange {
             onChange(
                 first.value, second.value, third.value, fourth.value, fifth.value,
@@ -562,11 +557,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             )
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.action(
-            crossinline onChange: (
+            onChange: (
                 Argument1, Argument2, Argument3, Argument4, Argument5, Argument6
             ) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth, sixth).action {
@@ -574,13 +569,13 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 fourth.value, fifth.value, sixth.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
                         >.actionLaterOnce(
-            crossinline onChange: (Argument1, Argument2, Argument3,
-                                   Argument4, Argument5, Argument6) -> Unit): CSRegistration {
+            onChange: (Argument1, Argument2, Argument3,
+                       Argument4, Argument5, Argument6) -> Unit): CSRegistration {
             val registrations = CSRegistrationsMap(this)
             var value1: Argument1? = null
             var value2: Argument2? = null
@@ -606,12 +601,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             return registrations
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7>
                 Seventuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>,
                         CSHasChangeValue<Argument7>>.action(
-            crossinline onChange: (
+            onChange: (
                 Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7
             ) -> Unit,
         ): CSRegistration =
