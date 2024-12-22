@@ -113,8 +113,8 @@ class CSHasChangeValueTest {
         testDelegateNullableChildProperty(property, delegateChild)
     }
 
-    class SampleData {
-        val bpm: CSProperty<Int?> = property()
+    class SampleData(val value: Int? = null) {
+        val bpm: CSProperty<Int?> = property(value)
     }
 
     @Test
@@ -122,26 +122,54 @@ class CSHasChangeValueTest {
         val sampleProperty = property<SampleData?>(null)
         val bpmProperty = sampleProperty.delegateNullable(nullableChild = { it?.bpm })
         var bpmPropertyOnChangeValue: Int? = null
+        var onChangeCount = 0
+        val onChangeRegistration = bpmProperty.onChange {
+            bpmPropertyOnChangeValue = it
+            onChangeCount += 1
+        }
         var bpmPropertyActionValue: Int? = null
-        val delegateChildOnChange = bpmProperty.onChange { bpmPropertyOnChangeValue = it }
-        bpmProperty.action { bpmPropertyActionValue = it }
+        var actionCount = 0
+        bpmProperty.action {
+            bpmPropertyActionValue = it
+            actionCount += 1
+        }
+        assert(expected = null, actual = bpmProperty.value)
         assert(expected = null, actual = bpmPropertyOnChangeValue)
         assert(expected = null, actual = bpmPropertyActionValue)
-        sampleProperty assign SampleData()
+        assert(expected = 0, actual = onChangeCount)
+        assert(expected = 1, actual = actionCount)
+
+        onChangeRegistration.paused { sampleProperty assign SampleData() }
+        assert(expected = null, actual = bpmProperty.value)
         assert(expected = null, actual = bpmPropertyOnChangeValue)
         assert(expected = null, actual = bpmPropertyActionValue)
+        assert(expected = 0, actual = onChangeCount)
+        assert(expected = 1, actual = actionCount)
+
         sampleProperty.value?.bpm?.value = 6
+        assert(expected = 6, actual = bpmProperty.value)
         assert(expected = 6, actual = bpmPropertyOnChangeValue)
         assert(expected = 6, actual = bpmPropertyActionValue)
-        delegateChildOnChange.pause()
-        sampleProperty.value?.bpm?.value = 7
+        assert(expected = 1, actual = onChangeCount)
+        assert(expected = 2, actual = actionCount)
+
+        onChangeRegistration.paused {
+            sampleProperty.value?.bpm?.value = 7
+        }
+        assert(expected = 7, actual = bpmProperty.value)
         assert(expected = 6, actual = bpmPropertyOnChangeValue)
         assert(expected = 7, actual = bpmPropertyActionValue)
-        delegateChildOnChange.resume()
-        sampleProperty assign null
-        assert(expected = null, actual = bpmPropertyOnChangeValue)
-        assert(expected = null, actual = bpmPropertyActionValue)
+        assert(expected = 1, actual = onChangeCount)
+        assert(expected = 3, actual = actionCount)
 
+        onChangeRegistration.paused {
+            sampleProperty.value = SampleData(100)
+        }
+        assert(expected = 100, actual = bpmProperty.value)
+        assert(expected = 6, actual = bpmPropertyOnChangeValue)
+        assert(expected = 100, actual = bpmPropertyActionValue)
+        assert(expected = 1, actual = onChangeCount)
+        assert(expected = 4, actual = actionCount)
     }
 
     @Test
@@ -201,7 +229,7 @@ class CSHasChangeValueTest {
         delegateChild.action { delegateChildActionValue = it }
         assert(expected = null, actual = delegateChildOnChangeValue)
         assert(expected = null, actual = delegateChildActionValue)
-        property.value = value(property(7))
+        property assign value(property(7))
         assert(expected = 7, actual = delegateChildOnChangeValue)
         assert(expected = 7, actual = delegateChildActionValue)
         property.value?.value?.value = 6
@@ -212,7 +240,7 @@ class CSHasChangeValueTest {
         assert(expected = 6, actual = delegateChildOnChangeValue)
         assert(expected = 5, actual = delegateChildActionValue)
         delegateChildOnChange.resume()
-        property.value = null
+        property assign null
         assert(expected = null, actual = delegateChildOnChangeValue)
         assert(expected = null, actual = delegateChildActionValue)
     }
