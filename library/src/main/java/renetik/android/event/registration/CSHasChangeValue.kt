@@ -138,18 +138,18 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegateNullable(
             parent: CSHasRegistrations? = null,
-            nullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+            child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
             onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue?> = let { property ->
             object : CSHasChangeValue<ChildValue?> {
-                override val value: ChildValue? get() = nullableChild(property.value)?.value
+                override val value: ChildValue? get() = child(property.value)?.value
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
                     var registration: CSRegistration? = null
                     val value = DelegateValue(value, onChange, function)
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
-                        val childItem = nullableChild(parentValue)
+                        val childItem = child(parentValue)
                         if (registration?.isActive != false) childItem.also { value(it?.value) }
                         childRegistration = childItem?.onChange { value.invoke(it) }
                         registration?.also {
