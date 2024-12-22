@@ -5,6 +5,8 @@ import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.io.Closeable
 
+val CSRegistration?.isActive get() = this?.isActive != false
+
 inline fun CSRegistration.onCancel(crossinline func: Func) = eventCancel.listen { func() }
 
 val CSRegistrationEmpty = object : CSRegistration {
