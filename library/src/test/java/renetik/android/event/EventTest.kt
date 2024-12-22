@@ -127,4 +127,22 @@ class EventTest {
         assertEquals(1, count)
         assertTrue(model.isDestructed)
     }
+
+
+    @Test
+    fun testPauseResume() {
+        val testEvent = event()
+        var count = 0
+        val registration = testEvent.listen { count += 1 }
+        testEvent()
+        assertEquals(1, count)
+        testEvent.pause()
+        registration.pause()
+        registration.resume()
+        testEvent()
+        assertEquals(1, count)
+        testEvent.resume()
+        testEvent()
+        assertEquals(2, count)
+    }
 }
