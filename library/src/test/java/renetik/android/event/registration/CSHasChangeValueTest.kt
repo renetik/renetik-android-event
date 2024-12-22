@@ -170,6 +170,16 @@ class CSHasChangeValueTest {
         assert(expected = 100, actual = bpmPropertyActionValue)
         assert(expected = 1, actual = onChangeCount)
         assert(expected = 4, actual = actionCount)
+
+        onChangeRegistration.paused {
+            sampleProperty.value = SampleData(200)
+            sampleProperty.value?.bpm?.value = 7
+        }
+        assert(expected = 7, actual = bpmProperty.value)
+        assert(expected = 6, actual = bpmPropertyOnChangeValue)
+        assert(expected = 7, actual = bpmPropertyActionValue)
+        assert(expected = 1, actual = onChangeCount)
+        assert(expected = 6, actual = actionCount)
     }
 
     @Test

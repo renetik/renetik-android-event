@@ -3,6 +3,7 @@
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
+import renetik.android.core.kotlin.primitives.ifFalse
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Quadruple
 import renetik.android.core.lang.Quintuple
@@ -14,6 +15,7 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSPropertyBase
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
 
 //TODO: Move delegates to CSHasChangeValue+delegate
@@ -54,7 +56,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <T> CSHasChangeValue<T>.delegateIsChange(
+        fun <T> CSHasChangeValue<T>.delegateIsChange(
             parent: CSHasRegistrations? = null,
         ): CSHasChangeValue<Boolean> = let { property ->
             object : CSHasChangeValue<Boolean> {
@@ -133,25 +135,37 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
 
         @JvmName("delegateNullable")
-        inline fun <ParentValue, ChildValue>
+        fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegateNullable(
             parent: CSHasRegistrations? = null,
-            crossinline nullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-            noinline onChange: ((ChildValue?) -> Unit)? = null
+            nullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+            onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue?> = let { property ->
             object : CSHasChangeValue<ChildValue?> {
                 override val value: ChildValue? get() = nullableChild(property.value)?.value
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
+                    var registration: CSRegistration? = null
                     val value = DelegateValue(value, onChange, function)
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = nullableChild(parentValue)
-                        if (childRegistration != null) childItem.also { value(it?.value) }
+                        if (registration?.isActive != false) childItem.also { value(it?.value) }
                         childRegistration = childItem?.onChange { value.invoke(it) }
+                        registration?.also {
+                            it.isActive.ifFalse { childRegistration!!.pause() }
+                        }
+
                     }
-                    return CSRegistration({ parentRegistration }, { childRegistration })
-                        .registerTo(parent)
+                    registration = CSRegistration(isActive = true, onPause = {
+                        childRegistration?.pause()
+                    }, onResume = {
+                        childRegistration?.resume()
+                    }, onCancel = {
+                        parentRegistration.cancel()
+                        childRegistration?.cancel()
+                    }).registerTo(parent)
+                    return registration
                 }
             }
         }
@@ -232,11 +246,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <ParentValue, Return>
+        fun <ParentValue, Return>
                 CSHasChangeValue<ParentValue>.hasChangeValueNullable(
             parent: CSHasDestruct? = null,
-            crossinline child: (ParentValue) -> CSHasChangeValue<Return>?,
-            noinline onChange: ((Return?) -> Unit)? = null
+            child: (ParentValue) -> CSHasChangeValue<Return>?,
+            onChange: ((Return?) -> Unit)? = null
         ): CSHasChangeValue<Return?> = let { property ->
             object : CSPropertyBase<Return?>(parent, onChange) {
                 override var value: Return? = null
@@ -566,13 +580,13 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 fourth.value, fifth.value, sixth.value)
         }
 
-        inline fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
                         >.actionLaterOnce(
-            crossinline onChange: (Argument1, Argument2, Argument3,
-                                   Argument4, Argument5, Argument6) -> Unit): CSRegistration {
+            onChange: (Argument1, Argument2, Argument3,
+                       Argument4, Argument5, Argument6) -> Unit): CSRegistration {
             val registrations = CSRegistrationsMap(this)
             var value1: Argument1? = null
             var value2: Argument2? = null
@@ -588,12 +602,30 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 value1 = null; value2 = null; value3 = null;
                 value4 = null; value5 = null; value6 = null
             }
-            registrations + first.onChange { value1 = it; laterOnceFunction() }
-            registrations + second.onChange { value2 = it; laterOnceFunction() }
-            registrations + third.onChange { value3 = it; laterOnceFunction() }
-            registrations + fourth.onChange { value4 = it; laterOnceFunction() }
-            registrations + fifth.onChange { value5 = it; laterOnceFunction() }
-            registrations + sixth.onChange { value6 = it; laterOnceFunction() }
+            registrations + first.onChange {
+                value1 = it;
+                laterOnceFunction()
+            }
+            registrations + second.onChange {
+                value2 = it;
+                laterOnceFunction.invoke()
+            }
+            registrations + third.onChange {
+                value3 = it;
+                laterOnceFunction.invoke()
+            }
+            registrations + fourth.onChange {
+                value4 = it;
+                laterOnceFunction.invoke()
+            }
+            registrations + fifth.onChange {
+                value5 = it;
+                laterOnceFunction.invoke()
+            }
+            registrations + sixth.onChange {
+                value6 = it;
+                laterOnceFunction.invoke()
+            }
             laterOnceFunction()
             return registrations
         }
