@@ -3,6 +3,7 @@ package renetik.android.event.common
 import android.content.BroadcastReceiver
 import android.content.Intent.ACTION_HEADSET_PLUG
 import renetik.android.core.extensions.content.register
+import renetik.android.core.extensions.content.unregister
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.core.logging.CSLog.logWarn
 
@@ -31,6 +32,6 @@ class CSHeadsetAudioPlugDetector(
 
     override fun onDestruct() {
         super.onDestruct()
-        unregisterReceiver(receiver)
+        unregister(receiver)
     }
 }

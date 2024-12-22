@@ -49,10 +49,4 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         eventDestruct().clear()
         expectWeaklyReachable("CSContext $this onDestroy")
     }
-
-    override fun registerReceiver(
-        receiver: BroadcastReceiver?, filter: IntentFilter,
-    ): Intent? = register(receiver, filter)
-
-    override fun unregisterReceiver(receiver: BroadcastReceiver) = unregister(receiver)
 }
