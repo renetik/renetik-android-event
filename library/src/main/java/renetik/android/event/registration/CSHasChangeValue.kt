@@ -388,6 +388,41 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
 
+        fun <Argument1, Argument2, Argument3, Argument4, Return>
+                Quadruple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>,
+                        CSHasChangeValue<Argument4>>.hasChangeValue(
+            parent: CSHasDestruct? = null,
+            from: (Quadruple<Argument1, Argument2, Argument3, Argument4>) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> =
+            object : CSPropertyBase<Return>(parent, onChange) {
+                override var value: Return = from(
+                    Quadruple(first.value, second.value, third.value, fourth.value)
+                )
+
+                init {
+                    this + (first to second to third to fourth)
+                        .onChange { item1, item2, item3, item4 ->
+                            value(from(Quadruple(item1, item2, item3, item4)))
+                        }
+                }
+            }
+
+        fun <Argument1, Argument2, Argument3, Argument4>
+                Quadruple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>,
+                        CSHasChangeValue<Argument4>>.hasChangeValue(
+            parent: CSHasDestruct? = null,
+            onChange: ArgFunc<Quadruple<Argument1, Argument2, Argument3, Argument4>>? = null
+        ): CSHasChangeValue<Quadruple<Argument1, Argument2, Argument3, Argument4>> =
+            hasChangeValue(parent, from = { item1, item2, item3, item4 ->
+                Quadruple(item1, item2, item3, item4)
+            }, onChange)
+
+
         fun <Argument1, Argument2, Argument3> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
@@ -566,6 +601,28 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 onChange(
                     first.value, second.value, third.value, fourth.value, fifth.value
                 )
+            }
+
+
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return>
+                Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>>.hasChangeValue(
+            parent: CSHasDestruct? = null,
+            from: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> =
+            object : CSPropertyBase<Return>(parent, onChange) {
+                override var value: Return = from(
+                    first.value, second.value, third.value, fourth.value, fifth.value
+                )
+
+                init {
+                    this + (first to second to third to fourth to fifth)
+                        .onChange { item1, item2, item3, item4, item5 ->
+                            value(from(item1, item2, item3, item4, item5))
+                        }
+                }
             }
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
