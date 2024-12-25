@@ -102,6 +102,29 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        fun <T, V, K, L, Return>
+                Quadruple<CSHasChangeValue<T>,
+                        CSHasChangeValue<V>,
+                        CSHasChangeValue<K>,
+                        CSHasChangeValue<L>>.delegate(
+            parent: CSHasRegistrations? = null,
+            from: (T, V, K, L) -> Return,
+            onChange: ArgFunc<Return>? = null,
+        ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+            override val value: Return
+                get() = from(first.value, second.value, third.value, fourth.value)
+
+            override fun onChange(function: (Return) -> Unit): CSRegistration {
+                val value = DelegateValue(value, onChange, function)
+                return CSRegistration(
+                    first.onChange { value(from(it, second.value, third.value, fourth.value)) },
+                    second.onChange { value(from(first.value, it, third.value, fourth.value)) },
+                    third.onChange { value(from(first.value, second.value, it, fourth.value)) },
+                    fourth.onChange { value(from(first.value, second.value, third.value, it)) }
+                ).registerTo(parent)
+            }
+        }
+
         @JvmName("delegateChild")
         fun <ParentValue, ChildValue>
                 CSHasChangeValue<ParentValue>.delegate(
