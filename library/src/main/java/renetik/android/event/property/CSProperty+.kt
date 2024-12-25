@@ -113,3 +113,5 @@ fun CSProperty<Int>.computedAsPercentOf(
 )
 
 operator fun CSProperty<Boolean>.not() = computed(from = { !it }, to = { !it })
+fun CSProperty<Boolean>.computed(parent: CSHasRegistrations? = null) =
+    computed(parent, from = { it }, to = { it })
