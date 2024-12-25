@@ -2,9 +2,9 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
+import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
-import renetik.android.core.lang.value.CSValue
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.fire
@@ -144,6 +144,21 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     val registrations = CSRegistrationsMap(this)
     val laterOnceFunction = registrations.laterOnceFunc(after) { function() }
     registrations.register(onChange { laterOnceFunction() })
+    return registrations
+}
+
+inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
+    after: Duration = ZERO,
+    crossinline onChange: ArgFunc<Argument>,
+): CSRegistration {
+    val registrations = CSRegistrationsMap(this)
+    var value1: Argument? = null
+    val laterOnceFunction = registrations.laterOnceFunc(after) {
+        if (registrations.isActive) onChange(value1 ?: value)
+        value1 = null;
+    }
+    registrations + onChange { value1 = it; laterOnceFunction() }
+    laterOnceFunction()
     return registrations
 }
 
