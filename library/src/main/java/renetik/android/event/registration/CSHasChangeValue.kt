@@ -329,7 +329,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         fun <Argument1, Argument2>
-                Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
+                Pair<CSHasChangeValue<out Argument1>, CSHasChangeValue<out Argument2>>.action(
             onAction: (Argument1, Argument2) -> Unit,
         ): CSRegistration =
             action(first, second) { first, second -> onAction(first, second) }
