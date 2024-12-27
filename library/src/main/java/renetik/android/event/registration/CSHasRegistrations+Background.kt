@@ -3,7 +3,6 @@ package renetik.android.event.registration
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import renetik.android.core.lang.Func
-import renetik.android.event.CSBackground.background
 
 @Deprecated("Use launch")
 @AnyThread

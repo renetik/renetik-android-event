@@ -1,14 +1,18 @@
 package renetik.android.event
 
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import renetik.android.core.java.util.concurrent.background
 import renetik.android.core.java.util.concurrent.backgroundEach
 import renetik.android.core.java.util.concurrent.cancelInterrupt
 import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.JobRegistration
 import renetik.android.event.registration.start
 import java.util.concurrent.Executors.defaultThreadFactory
 import java.util.concurrent.Executors.newScheduledThreadPool
@@ -24,7 +28,10 @@ object CSBackground {
     var executor: ScheduledExecutorService = createExecutor()
         private set
 
-    var background: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
+    var dispatcher: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
+        private set
+
+    var scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
         private set
 
     fun shutdown() = executor.shutdownAndWait()
@@ -32,14 +39,20 @@ object CSBackground {
     val isOff get() = executor.isShutdown
 
     fun restart() {
+        scope.cancel()
+        dispatcher.close()
         shutdown()
         executor = createExecutor()
-        background = executor.asCoroutineDispatcher()
+        dispatcher = executor.asCoroutineDispatcher()
+        scope = CoroutineScope(SupervisorJob() + dispatcher)
     }
 
     private fun createExecutor(): ScheduledExecutorService = newScheduledThreadPool(3) {
         defaultThreadFactory().newThread(it).apply { name = "CSBackground-$name" }
     }
+
+    fun launch(func: suspend (JobRegistration) -> Unit): JobRegistration =
+        scope.start(func)
 
     inline fun background(
         after: Duration, @WorkerThread crossinline function: (CSRegistration) -> Unit,
