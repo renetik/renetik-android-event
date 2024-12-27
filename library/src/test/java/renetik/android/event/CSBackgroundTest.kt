@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
+import renetik.android.event.CSBackground.background
 import renetik.android.testing.CSAssert.assert
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
