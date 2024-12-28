@@ -422,7 +422,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 Quadruple(item1, item2, item3, item4)
             }, onChange)
 
-
         fun <Argument1, Argument2, Argument3> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
@@ -624,6 +623,17 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         }
                 }
             }
+
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+                Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>>.hasChangeValue(
+            parent: CSHasDestruct? = null,
+            onChange: ArgFunc<Quintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
+        ): CSHasChangeValue<Quintuple<Argument1, Argument2, Argument3, Argument4, Argument5>> =
+            hasChangeValue(parent, from = { item1, item2, item3, item4, item5 ->
+                Quintuple(item1, item2, item3, item4, item5)
+            }, onChange)
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
