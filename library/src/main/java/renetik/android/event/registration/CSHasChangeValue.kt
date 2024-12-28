@@ -663,13 +663,19 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             var value4: Argument4? = null
             var value5: Argument5? = null
             var value6: Argument6? = null
-            val laterOnceFunction = registrations.laterOnceFunc {
-                if (registrations.isActive) onChange(
-                    (value1 ?: first.value), (value2 ?: second.value), (value3 ?: third.value),
-                    (value4 ?: fourth.value), (value5 ?: fifth.value), (value6 ?: sixth.value)
-                )
-                value1 = null; value2 = null; value3 = null;
+            fun clearValues() {
+                value1 = null; value2 = null; value3 = null
                 value4 = null; value5 = null; value6 = null
+            }
+
+            val laterOnceFunction = registrations.laterOnceFunc {
+                if (registrations.isActive) {
+                    onChange(
+                        (value1 ?: first.value), (value2 ?: second.value), (value3 ?: third.value),
+                        (value4 ?: fourth.value), (value5 ?: fifth.value), (value6 ?: sixth.value)
+                    )
+                    clearValues()
+                }
             }
             registrations + first.onChange { value1 = it; laterOnceFunction() }
             registrations + second.onChange { value2 = it; laterOnceFunction.invoke() }
@@ -678,6 +684,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             registrations + fifth.onChange { value5 = it; laterOnceFunction.invoke() }
             registrations + sixth.onChange { value6 = it; laterOnceFunction.invoke() }
             laterOnceFunction()
+            registrations.onCancel(::clearValues)
             return registrations
         }
 
