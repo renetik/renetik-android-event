@@ -37,6 +37,11 @@ fun CSHasRegistrations.launch(
     return newRegistration.getCompleted()
 }
 
+fun CSHasRegistrations.launchWhileActive(
+    dispatcher: CoroutineDispatcher = Main,
+    func: suspend (JobRegistration) -> Unit,
+) = launch(dispatcher) { while (it.isActive) func(it) }
+
 @OptIn(ExperimentalCoroutinesApi::class)
 fun CSHasRegistrations.launch(
     key: String, dispatcher: CoroutineDispatcher = Main,
