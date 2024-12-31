@@ -186,6 +186,13 @@ fun Triple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
     third.onChange(onChange)
 )
 
+fun Triple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.action(
+    onChange: () -> Unit
+): CSRegistration {
+    onChange()
+    return onChange(onChange)
+}
+
 fun Quadruple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
     onChange: () -> Unit
 ): CSRegistration = CSRegistration(
