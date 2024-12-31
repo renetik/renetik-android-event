@@ -10,9 +10,13 @@ import renetik.android.event.common.destruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSLateProperty
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
+import renetik.android.event.registration.CSHasChangeValue.Companion.emptyNullable
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
+
+val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
+    get() = this?.delegate(from = { it }) ?: emptyNullable()
 
 suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     if (!condition(value)) suspendCancellableCoroutine { coroutine ->
@@ -28,11 +32,9 @@ suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     }
 }
 
-inline fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> =
-    isSetTo(null)
+inline fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> = isSetTo(null)
 
-inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> =
-    !isSetTo(null)
+inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> = !isSetTo(null)
 
 inline infix fun <T> CSHasChangeValue<T>.isSetTo(value: T): CSHasChangeValue<Boolean> =
     delegate(from = { it == value })
@@ -54,9 +56,7 @@ fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
     return onChange(function)
 }
 
-fun <T> CSHasChangeValue<T>.actionLaunch(
-    function: suspend (T) -> Unit
-): CSRegistration {
+fun <T> CSHasChangeValue<T>.actionLaunch(function: suspend (T) -> Unit): CSRegistration {
     val registrations = CSRegistrationsMap(this)
     registrations + action { param ->
         registrations + Main.launch { function(param) }
@@ -90,8 +90,7 @@ fun <T> CSHasChangeValue<T>.actionFromTo(
     return onChange { function(value, it); value = it }
 }
 
-fun <T> CSHasChangeValue<T?>.onNull(function: () -> Unit) =
-    onChange { if (it == null) function() }
+fun <T> CSHasChangeValue<T?>.onNull(function: () -> Unit) = onChange { if (it == null) function() }
 
 fun <T> CSHasChangeValue<T?>.onNotNull(function: () -> Unit) =
     onChange { if (it != null) function() }
@@ -117,9 +116,8 @@ fun <Value> CSHasChangeValue<Value>.hasValue(
 ): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
 @JvmName("onChangeChildHasValue")
-inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
-    crossinline valueChild: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    noinline onChange: (ChildValue) -> Unit): CSRegistration {
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(crossinline valueChild: (ParentValue) -> CSHasChangeValue<ChildValue>,
+                                                                            noinline onChange: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action {
         childRegistration?.cancel()
@@ -132,9 +130,8 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 }
 
 @JvmName("onChangeChild")
-inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
-    crossinline child: (ParentValue) -> CSHasChange<ChildValue>,
-    noinline onChange: (ChildValue) -> Unit): CSRegistration {
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(crossinline child: (ParentValue) -> CSHasChange<ChildValue>,
+                                                                            noinline onChange: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action {
         childRegistration?.cancel()
@@ -147,9 +144,8 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 }
 
 @JvmName("onChangeChildNullable")
-inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
-    crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-    crossinline onChange: (ChildValue) -> Unit): CSRegistration {
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+                                                                            crossinline onChange: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
@@ -181,9 +177,8 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 }
 
 @JvmName("actionChild")
-inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
-    crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-    crossinline action: (ChildValue) -> Unit): CSRegistration {
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>,
+                                                                          crossinline action: (ChildValue) -> Unit): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
@@ -195,9 +190,8 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
     })
 }
 
-inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
-    crossinline nullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-    crossinline onChange: ((ChildValue?) -> Unit)): CSRegistration {
+inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(crossinline nullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+                                                                          crossinline onChange: ((ChildValue?) -> Unit)): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
@@ -215,10 +209,8 @@ inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(list: MutableLis
                                                                 noinline function: (index: Int) -> Item): CSRegistration =
     action { value -> list.update(value, function) }
 
-fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
-    parent: CSHasRegistrations? = null,
-    createInstance: (V) -> Instance
-): CSValue<Instance> where Instance : CSHasDestruct =
+fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(parent: CSHasRegistrations? = null,
+                                                          createInstance: (V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
     object : CSValue<Instance> {
         var instance: Instance? = null
         override val value: Instance
@@ -231,19 +223,15 @@ fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
             }
     }
 
-fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
-    property: () -> CSHasChangeValue<V>,
-    createInstance: (V) -> Instance
-): CSValue<Instance> where Instance : CSHasDestruct =
+fun <V, Instance> CSHasRegistrations.lazyDestructFactory(property: () -> CSHasChangeValue<V>,
+                                                         createInstance: (V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
     lazyFactory(property) { previousInstance, param ->
         previousInstance?.onDestruct()
         createInstance(param)
     }
 
-fun <V, Instance> CSHasRegistrations.lazyFactory(
-    property: () -> CSHasChangeValue<V>,
-    createInstance: (Instance?, V) -> Instance
-): CSValue<Instance> where Instance : CSHasDestruct =
+fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValue<V>,
+                                                 createInstance: (Instance?, V) -> Instance): CSValue<Instance> where Instance : CSHasDestruct =
     object : CSValue<Instance> {
         var instance: Instance? = null
         override val value: Instance

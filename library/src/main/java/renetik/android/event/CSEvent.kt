@@ -10,6 +10,18 @@ interface CSEvent<T> : CSHasChange<T> {
         fun <T> event(): CSEvent<T> = CSEventImpl()
 
         fun event(): CSEvent<Unit> = CSEventImpl()
+
+        val Empty: CSEvent<Unit> = empty()
+
+        fun <T> empty(): CSEvent<T> = object : CSEvent<T> {
+            override fun pause() = Unit
+            override fun resume() = Unit
+            override val isListened: Boolean = false
+            override fun clear() = Unit
+            override fun onChange(function: (T) -> Unit) = CSRegistration.Empty
+            override fun fire(argument: T) = Unit
+            override fun listen(function: (argument: T) -> Unit) = CSRegistration.Empty
+        }
     }
 
     fun pause()

@@ -17,6 +17,10 @@ import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
+        fun <T> emptyNullable() = object : CSHasChangeValue<T?> {
+            override val value: T? = null
+            override fun onChange(function: (T?) -> Unit) = CSRegistration.Empty
+        }
 
         class DelegateValue<Return>(
             var value: Return, val onChange: ArgFunc<Return>? = null,
