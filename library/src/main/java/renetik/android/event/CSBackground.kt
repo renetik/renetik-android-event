@@ -28,31 +28,31 @@ object CSBackground {
     var executor: ScheduledExecutorService = createExecutor()
         private set
 
-    var dispatcher: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
-        private set
+//    var dispatcher: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
+//        private set
 
-    var scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
-        private set
+//    var scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+//        private set
 
     fun shutdown() = executor.shutdownAndWait()
 
     val isOff get() = executor.isShutdown
 
     fun restart() {
-        scope.cancel()
-        dispatcher.close()
+//        scope.cancel()
+//        dispatcher.close()
         shutdown()
         executor = createExecutor()
-        dispatcher = executor.asCoroutineDispatcher()
-        scope = CoroutineScope(SupervisorJob() + dispatcher)
+//        dispatcher = executor.asCoroutineDispatcher()
+//        scope = CoroutineScope(SupervisorJob() + dispatcher)
     }
 
     private fun createExecutor(): ScheduledExecutorService = newScheduledThreadPool(3) {
         defaultThreadFactory().newThread(it).apply { name = "CSBackground-$name" }
     }
 
-    fun launch(func: suspend (JobRegistration) -> Unit): JobRegistration =
-        scope.start(func)
+//    fun launch(func: suspend (JobRegistration) -> Unit): JobRegistration =
+//        scope.start(func)
 
     inline fun background(
         after: Duration, @WorkerThread crossinline function: (CSRegistration) -> Unit,
