@@ -85,21 +85,21 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        fun <T, V, Return> Pair<CSHasChangeValue<T>?,
-                CSHasChangeValue<V>>.delegateFirstNull(
-            parent: CSHasRegistrations? = null,
-            from: (T?, V) -> Return,
-            onChange: ArgFunc<Return>? = null,
-        ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
-            override val value: Return get() = from(first?.value, second.value)
-            override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = DelegateValue(value, onChange, function)
-                return CSRegistration(
-                    first?.onChange { value(from(it, second.value)) },
-                    second.onChange { value(from(first?.value, it)) },
-                ).registerTo(parent)
-            }
-        }
+//        fun <T, V, Return> Pair<CSHasChangeValue<T>?,
+//                CSHasChangeValue<V>>.delegateFirstNull(
+//            parent: CSHasRegistrations? = null,
+//            from: (T?, V) -> Return,
+//            onChange: ArgFunc<Return>? = null,
+//        ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+//            override val value: Return get() = from(first?.value, second.value)
+//            override fun onChange(function: (Return) -> Unit): CSRegistration {
+//                val value = DelegateValue(value, onChange, function)
+//                return CSRegistration(
+//                    first?.onChange { value(from(it, second.value)) },
+//                    second.onChange { value(from(first?.value, it)) },
+//                ).registerTo(parent)
+//            }
+//        }
 
         fun <T, V, K, Return>
                 Triple<CSHasChangeValue<T>,
