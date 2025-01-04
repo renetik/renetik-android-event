@@ -3,6 +3,7 @@ package renetik.android.event.property
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.util.CSLater.onMain
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.reflect.KProperty
 
 class CSSafePropertyImpl<T>(
     parent: CSHasDestruct,
@@ -10,6 +11,12 @@ class CSSafePropertyImpl<T>(
 ) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
 
     private val field = AtomicReference(value)
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.value = value
+    }
 
     fun getAndSet(newValue: T): T {
         val previous = field.getAndSet(newValue)

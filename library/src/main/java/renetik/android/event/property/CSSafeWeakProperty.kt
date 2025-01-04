@@ -4,6 +4,7 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.util.CSLater.onMain
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.reflect.KProperty
 
 class CSSafeWeakProperty<T>(
     parent: CSHasDestruct,
@@ -11,8 +12,13 @@ class CSSafeWeakProperty<T>(
     onChange: ((value: T?) -> Unit)? = null
 ) : CSPropertyBase<T?>(parent, onChange), CSSafeProperty<T?> {
 
-    private val _value = AtomicReference<WeakReference<T?>?>(null)
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T? = value
 
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        this.value = value
+    }
+
+    private val _value = AtomicReference<WeakReference<T?>?>(null)
 
     override fun value(newValue: T?, fire: Boolean) {
         //This was proposed by Gemini and ChaGpt after long conversation..
