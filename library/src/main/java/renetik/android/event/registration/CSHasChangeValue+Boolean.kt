@@ -3,6 +3,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
@@ -38,6 +39,16 @@ fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit): CSRegistration =
 
 fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
+
+fun CSHasChangeValue<Boolean>.delegateIsTrue(parent: CSHasRegistrations? = null) =
+    delegate(parent, from = { it })
+
+@JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue")
+fun CSHasChangeValue<Boolean?>.delegateIsTrue(parent: CSHasRegistrations? = null) =
+    delegate(parent, from = { it == true })
+
+fun CSHasChangeValue<Boolean>.delegateIsFalse(parent: CSHasRegistrations? = null) =
+    delegate(parent, from = { !it })
 
 val CSHasChangeValue<Boolean>.eventIsTrue: CSHasChange<Unit>
     get() = object : CSHasChange<Unit> {
