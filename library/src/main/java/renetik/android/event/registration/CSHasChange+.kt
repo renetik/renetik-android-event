@@ -1,5 +1,6 @@
 package renetik.android.event.registration
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.ArgFunc
@@ -87,9 +88,10 @@ fun CSHasChange<Boolean>.onTrueLaunch(
 }
 
 fun CSHasChange<Boolean>.onFalseLaunch(
+    dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + onFalse { it + Main.launch { function() } }
+    it + onFalse { it + dispatcher.launch { function() } }
 }
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
