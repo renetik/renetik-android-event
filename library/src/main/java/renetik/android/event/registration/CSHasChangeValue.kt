@@ -8,9 +8,11 @@ import renetik.android.core.lang.Seventuple
 import renetik.android.core.lang.Sixtuple
 import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
+import renetik.android.core.lang.variable.assign
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
 import renetik.android.event.common.destruct
+import renetik.android.event.property.CSProperty.Companion.lateProperty
 import renetik.android.event.property.CSPropertyBase
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.properties.Delegates.notNull
@@ -47,6 +49,20 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    val value = DelegateValue(value, onChange, function)
+                    return property.onChange { value(from(it)) }.registerTo(parent)
+                }
+            }
+        }
+
+        fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
+            parent: CSHasRegistrations? = null,
+            from: (List<Argument>) -> Return,
+            onChange: ArgFunc<Return>? = null,
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSHasChangeValue<Return> {
+                override val value: Return get() = from(property.map { it.value })
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
                     val value = DelegateValue(value, onChange, function)
                     return property.onChange { value(from(it)) }.registerTo(parent)
@@ -385,6 +401,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         }
                 }
             }
+
+        fun <Argument, Return> List<CSHasChangeValue<Argument>>.hasChangeValue(
+            parent: CSHasRegistrations, from: (List<Argument>) -> Return
+        ): CSHasChangeValue<Return> = lateProperty<Return>().also { property ->
+            parent + action { list -> property assign from(list) }
+        }
 
         fun <Argument1, Argument2, Argument3, Argument4, Return>
                 Quadruple<CSHasChangeValue<Argument1>,
@@ -733,5 +755,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     fifth.value, sixth.value, seventh.value
                 )
             }
+
+        inline fun <T : CSHasChangeValue<Value>, Value> List<T>.onChange(
+            crossinline function: ArgFunc<List<Value>>
+        ): CSRegistration {
+            val registrations = CSRegistrationsMap(this)
+            forEach { item ->
+                registrations.register(item.onChange {
+                    if (registrations.isActive) function(map { it.value })
+                })
+            }
+            return registrations
+        }
+
+        inline fun <T : CSHasChangeValue<Value>, Value> List<T>.action(
+            crossinline function: ArgFunc<List<Value>>
+        ): CSRegistration {
+            function(map { it.value })
+            return onChange(function)
+        }
     }
 }
