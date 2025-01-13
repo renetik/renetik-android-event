@@ -90,12 +90,12 @@ fun <T> CSHasChangeValue<T>.actionFromTo(
     return onChange { function(value, it); value = it }
 }
 
-fun <T> CSHasChangeValue<T?>.onNull(function: () -> Unit) = onChange { if (it == null) function() }
+fun <T> CSHasChangeValue<out T?>.onNull(function: () -> Unit) = onChange { if (it == null) function() }
 
-fun <T> CSHasChangeValue<T?>.onNotNull(function: () -> Unit) =
+fun <T> CSHasChangeValue<out T?>.onNotNull(function: () -> Unit) =
     onChange { if (it != null) function() }
 
-fun <T> CSHasChangeValue<T?>.onNotNull(function: (T) -> Unit) =
+fun <T> CSHasChangeValue<out T?>.onNotNull(function: (T) -> Unit) =
     onChange { if (it != null) function(it) }
 
 fun <T> CSHasChangeValue<T?>.actionNull(function: () -> Unit): CSRegistration =
@@ -243,19 +243,19 @@ fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValu
             }
     }
 
-val CSHasChangeValue<Any?>.eventIsNull: CSHasChange<Unit>
+val CSHasChangeValue<out Any?>.eventIsNull: CSHasChange<Unit>
     get() = object : CSHasChange<Unit> {
         override fun onChange(function: (Unit) -> Unit) =
             this@eventIsNull.onNull { function(Unit) }
     }
 
-val CSHasChangeValue<Any?>.eventIsNotNull: CSHasChange<Unit>
+val CSHasChangeValue<out Any?>.eventIsNotNull: CSHasChange<Unit>
     get() = object : CSHasChange<Unit> {
         override fun onChange(function: (Unit) -> Unit) =
             this@eventIsNotNull.onNotNull { _ -> function(Unit) }
     }
 
-fun <T> CSHasChangeValue<T?>.eventIsNotNull(): CSHasChange<T> =
+fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> =
     object : CSHasChange<T> {
         override fun onChange(function: (T) -> Unit) =
             this@eventIsNotNull.onNotNull(function)
