@@ -242,3 +242,21 @@ fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValu
                 return instance!!
             }
     }
+
+val CSHasChangeValue<Any?>.eventIsNull: CSHasChange<Unit>
+    get() = object : CSHasChange<Unit> {
+        override fun onChange(function: (Unit) -> Unit) =
+            this@eventIsNull.onNull { function(Unit) }
+    }
+
+val CSHasChangeValue<Any?>.eventIsNotNull: CSHasChange<Unit>
+    get() = object : CSHasChange<Unit> {
+        override fun onChange(function: (Unit) -> Unit) =
+            this@eventIsNotNull.onNotNull { _ -> function(Unit) }
+    }
+
+fun <T> CSHasChangeValue<T?>.eventIsNotNull(): CSHasChange<T> =
+    object : CSHasChange<T> {
+        override fun onChange(function: (T) -> Unit) =
+            this@eventIsNotNull.onNotNull(function)
+    }
