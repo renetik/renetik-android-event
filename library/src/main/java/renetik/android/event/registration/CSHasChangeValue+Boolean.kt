@@ -69,3 +69,16 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
 }
 
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
+
+fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
+    registration: () -> CSRegistration?): CSRegistration =
+    actionTrue { untilFalse(registration()) }
+
+fun CSHasChangeValue<Boolean>.untilFalse(
+    registration: CSRegistration): CSRegistration =
+    onFalse { registration.cancel() }
+
+@JvmName("untilFalseCSRegistrationNullable")
+fun CSHasChangeValue<Boolean>.untilFalse(
+    registration: CSRegistration?): CSRegistration? =
+    registration?.let(::untilFalse)
