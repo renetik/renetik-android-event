@@ -248,13 +248,7 @@ val CSHasChangeValue<out Any?>.eventIsNull: CSHasChange<Unit>
     get() = delegate(from = { it == null }).eventIsTrue
 
 val CSHasChangeValue<out Any?>.eventIsNotNull: CSHasChange<Unit>
-    get() {
-        val self = this
-        return object : CSHasChange<Unit> {
-            override fun onChange(function: (Unit) -> Unit): CSRegistration =
-                self.eventIsNotNull().onChange { function(Unit) }
-        }
-    }
+    get() = delegate(from = { it != null }).eventIsTrue
 
 fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> {
     val self = this
