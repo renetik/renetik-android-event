@@ -90,7 +90,8 @@ fun <T> CSHasChangeValue<T>.actionFromTo(
     return onChange { function(value, it); value = it }
 }
 
-fun <T> CSHasChangeValue<out T?>.onNull(function: () -> Unit) = onChange { if (it == null) function() }
+fun <T> CSHasChangeValue<out T?>.onNull(function: () -> Unit) =
+    onChange { if (it == null) function() }
 
 fun <T> CSHasChangeValue<out T?>.onNotNull(function: () -> Unit) =
     onChange { if (it != null) function() }
@@ -244,19 +245,30 @@ fun <V, Instance> CSHasRegistrations.lazyFactory(property: () -> CSHasChangeValu
     }
 
 val CSHasChangeValue<out Any?>.eventIsNull: CSHasChange<Unit>
-    get() = object : CSHasChange<Unit> {
-        override fun onChange(function: (Unit) -> Unit) =
-            this@eventIsNull.onNull { function(Unit) }
-    }
+    get() = delegate(from = { it == null }).eventIsTrue
 
 val CSHasChangeValue<out Any?>.eventIsNotNull: CSHasChange<Unit>
-    get() = object : CSHasChange<Unit> {
-        override fun onChange(function: (Unit) -> Unit) =
-            this@eventIsNotNull.onNotNull { _ -> function(Unit) }
+    get() {
+        val self = this
+        return object : CSHasChange<Unit> {
+            override fun onChange(function: (Unit) -> Unit): CSRegistration =
+                self.eventIsNotNull().onChange { function(Unit) }
+        }
     }
 
-fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> =
-    object : CSHasChange<T> {
-        override fun onChange(function: (T) -> Unit) =
-            this@eventIsNotNull.onNotNull(function)
+fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> {
+    val self = this
+    return object : CSHasChange<T> {
+        override fun onChange(function: (T) -> Unit): CSRegistration {
+            var wasNotNull: Boolean? = null
+            return self.onChange {
+                if (it != null) {
+                    if (wasNotNull != true) {
+                        function(it)
+                        wasNotNull = true
+                    }
+                } else wasNotNull = false
+            }
+        }
     }
+}

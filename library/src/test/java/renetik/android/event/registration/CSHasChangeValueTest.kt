@@ -254,4 +254,32 @@ class CSHasChangeValueTest {
         assert(expected = null, actual = delegateChildOnChangeValue)
         assert(expected = null, actual = delegateChildActionValue)
     }
+
+    @Test
+    fun delegateEventIsNull() {
+        val property = property<Int?>(null)
+        var eventIsNullCount = 0
+        property.eventIsNull.onChange { eventIsNullCount += 1 }
+        var eventIsNotNullCount = 0
+        property.eventIsNotNull.onChange { eventIsNotNullCount += 1 }
+        var eventIsNotNullCount2 = 0
+        property.eventIsNotNull().onChange { eventIsNotNullCount2 += 1 }
+
+        property assign 5
+        assert(expected = 0, actual = eventIsNullCount)
+        assert(expected = 1, actual = eventIsNotNullCount)
+        assert(expected = 1, actual = eventIsNotNullCount2)
+        property assign 6
+        assert(expected = 0, actual = eventIsNullCount)
+        assert(expected = 1, actual = eventIsNotNullCount)
+        assert(expected = 1, actual = eventIsNotNullCount2)
+        property assign null
+        assert(expected = 1, actual = eventIsNullCount)
+        assert(expected = 1, actual = eventIsNotNullCount)
+        assert(expected = 1, actual = eventIsNotNullCount2)
+        property assign 5
+        assert(expected = 1, actual = eventIsNullCount)
+        assert(expected = 2, actual = eventIsNotNullCount)
+        assert(expected = 2, actual = eventIsNotNullCount2)
+    }
 }
