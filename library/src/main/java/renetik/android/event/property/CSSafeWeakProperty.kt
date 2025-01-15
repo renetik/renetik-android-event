@@ -9,8 +9,8 @@ import kotlin.reflect.KProperty
 class CSSafeWeakProperty<T>(
     parent: CSHasDestruct,
     value: T? = null,
-    onChange: ((value: T?) -> Unit)? = null
-) : CSPropertyBase<T?>(parent, onChange), CSSafeProperty<T?> {
+    onChangeUnsafe: ((value: T?) -> Unit)? = null
+) : CSPropertyBase<T?>(parent, onChangeUnsafe), CSSafeProperty<T?> {
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T? = value
 
@@ -27,24 +27,32 @@ class CSSafeWeakProperty<T>(
             if (current?.get() == newValue) return
             val weakReference = WeakReference(newValue)
             if (_value.compareAndSet(current, weakReference)) {
-                onMain { onValueChanged(newValue) }
+                onValueChanged(newValue)
                 return
             }
         }
+    }
+
+    init {
+        value?.let { this.value = it }
+    }
+
+    @Volatile
+    override var isChanged = false
+
+    override fun fireChange() = value.let {
+        onChange?.invoke(it)
+        onMain { eventChange.fire(it) }
     }
 
     override var value: T?
         get() = _value.get()?.get()
         set(value) = this.value(value)
 
-    init {
-        value?.let { this.value = it }
-    }
-
     companion object {
         fun <T> CSHasDestruct.safeWeakProperty(
             value: T? = null,
-            onChange: ((value: T?) -> Unit)? = null
-        ): CSProperty<T?> = CSSafeWeakProperty(this, value, onChange)
+            onChangeUnsafe: ((value: T?) -> Unit)? = null
+        ): CSProperty<T?> = CSSafeWeakProperty(this, value, onChangeUnsafe)
     }
 }
