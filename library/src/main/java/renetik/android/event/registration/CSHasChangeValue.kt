@@ -37,6 +37,19 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+//        class DelegateChange<Return>(
+//            var value: Return, val onChange: ArgFunc<Return>? = null,
+//            val function: (Return) -> Unit
+//        ) {
+//            operator fun invoke(newValue: Return) {
+//                if (value != newValue) {
+//                    value = newValue
+//                    onChange?.invoke(newValue)
+//                    function(newValue)
+//                }
+//            }
+//        }
+
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
             onChange: ArgFunc<T>? = null,
@@ -180,6 +193,31 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         if (registration.isActive) childItem.also { value(it.value) }
                         childRegistration = childItem.onChange {
                             if (registration.isActive) value(it)
+                        }
+                    }
+                    return CSRegistration(isActive = true, onCancel = {
+                        parentRegistration.cancel()
+                        childRegistration?.cancel()
+                    }).also { registration = it }.registerTo(parent)
+                }
+            }
+        }
+
+        @JvmName("delegateChild")
+        fun <ParentValue, ChildValue>
+                CSHasChangeValue<ParentValue>.delegateChange(
+            parent: CSHasRegistrations? = null,
+            child: (ParentValue) -> CSHasChange<ChildValue>,
+        ): CSHasChange<ChildValue> = let { property ->
+            object : CSHasChange<ChildValue> {
+                override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
+                    var registration: CSRegistration? = null
+                    var childRegistration: CSRegistration? = null
+                    val parentRegistration = property.action { parentValue ->
+                        childRegistration?.cancel()
+                        val childItem = child(parentValue)
+                        childRegistration = childItem.onChange {
+                            if (registration.isActive) function(it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
