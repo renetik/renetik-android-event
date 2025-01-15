@@ -157,7 +157,7 @@ inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
     var value1: Argument? = null
     val laterOnceFunction = registrations.laterOnceFunc(after) {
         if (registrations.isActive) onChange(value1 ?: value)
-        value1 = null;
+        value1 = null
     }
     registrations + onChange { value1 = it; laterOnceFunction() }
     laterOnceFunction()
