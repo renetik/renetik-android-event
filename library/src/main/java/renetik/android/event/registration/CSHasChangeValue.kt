@@ -24,6 +24,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (T?) -> Unit) = CSRegistration.Empty
         }
 
+        fun <T> empty(value: T) = object : CSHasChangeValue<T> {
+            override val value: T = value
+            override fun onChange(function: (T) -> Unit) = CSRegistration.Empty
+        }
+
         class DelegateValue<Return>(
             var value: Return, val onChange: ArgFunc<Return>? = null,
             val function: (Return) -> Unit
