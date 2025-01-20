@@ -62,16 +62,12 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
     @Synchronized
     @AnyThread
     override fun cancel() {
+        if (isCanceled) return
         if (isCancelling) {
             logWarnTrace { "Already cancelling:$this" }
             return
         }
         isCancelling = true
-
-        if (isCanceled) {
-            logWarnTrace { "Already canceled:$this" }
-            return
-        }
         registrationMap.onEach { it.value.cancel() }.clear()
         isCanceled = true
         eventCancel.fire()
