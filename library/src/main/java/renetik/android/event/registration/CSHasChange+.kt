@@ -139,6 +139,13 @@ inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
     function()
 }
 
+inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
+    crossinline function: (Argument) -> Unit,
+): CSRegistration = onChange { registration, argument ->
+    registration.cancel()
+    function(argument)
+}
+
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     after: Duration,
     crossinline function: Func,
