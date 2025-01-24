@@ -1,12 +1,7 @@
 package renetik.android.event.common
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
-import android.content.IntentFilter
-import renetik.android.core.extensions.content.register
-import renetik.android.core.extensions.content.unregister
 import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logErrorTrace
