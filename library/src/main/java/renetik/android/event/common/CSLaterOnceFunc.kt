@@ -9,15 +9,15 @@ import kotlin.time.Duration
 
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
-    val function: () -> Unit,
+    val function: suspend () -> Unit,
     val after: Int = 0,
 ) : CSFunc {
 
     companion object {
-        fun CSHasRegistrations.laterOnceFunc(after: Duration, function: () -> Unit) =
+        fun CSHasRegistrations.laterOnceFunc(after: Duration, function: suspend () -> Unit) =
             CSLaterOnceFunc(this, function, after.inWholeMilliseconds.toInt())
 
-        fun CSHasRegistrations.laterOnceFunc(function: () -> Unit) =
+        fun CSHasRegistrations.laterOnceFunc(function: suspend () -> Unit) =
             CSLaterOnceFunc(this, function)
     }
 
