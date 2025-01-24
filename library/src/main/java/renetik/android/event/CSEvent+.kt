@@ -58,3 +58,11 @@ fun <EventArg, PropertyType> CSEvent<EventArg>.delegate(
     listen { property.value = from() }.also { parent?.register(it) }
     return property
 }
+
+fun <EventArg, PropertyType> CSEvent<EventArg>.delegateLate(
+    parent: CSHasRegistrations? = null, from: () -> PropertyType
+): CSHasChangeValue<PropertyType?> {
+    val property = CSProperty.property<PropertyType?>(null)
+    listen { property.value = from() }.also { parent?.register(it) }
+    return property
+}
