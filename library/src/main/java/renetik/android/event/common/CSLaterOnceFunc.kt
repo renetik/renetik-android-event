@@ -10,7 +10,7 @@ import kotlin.time.Duration
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
     val function: suspend () -> Unit,
-    val after: Int = 0,
+    private val after: Int = 0,
 ) : CSFunc {
 
     companion object {
@@ -27,27 +27,3 @@ class CSLaterOnceFunc(
         registration = parent.launch { delay(after.toLong()); function() }
     }
 }
-
-//class CSLaterOnceFuncOld(
-//    private val parent: CSHasRegistrations,
-//    private val function: () -> Unit,
-//    val after: Int = 0,
-//) : CSFunc {
-//
-//    companion object {
-//        fun CSHasRegistrations.laterOnce(after: Int = 0, function: () -> Unit) =
-//            CSLaterOnceFunc(this, function, after)
-//    }
-//
-//    private var isInvoking = false
-//
-//    override operator fun invoke() {
-//        if (!isInvoking) {
-//            isInvoking = true
-//            parent.registerLater(after) {
-//                function()
-//                isInvoking = false
-//            }
-//        }
-//    }
-//}
