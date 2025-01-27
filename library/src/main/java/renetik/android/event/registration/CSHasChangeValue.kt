@@ -42,19 +42,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-//        class DelegateChange<Return>(
-//            var value: Return, val onChange: ArgFunc<Return>? = null,
-//            val function: (Return) -> Unit
-//        ) {
-//            operator fun invoke(newValue: Return) {
-//                if (value != newValue) {
-//                    value = newValue
-//                    onChange?.invoke(newValue)
-//                    function(newValue)
-//                }
-//            }
-//        }
-
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
             onChange: ArgFunc<T>? = null,
@@ -118,22 +105,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 ).registerTo(parent)
             }
         }
-
-//        fun <T, V, Return> Pair<CSHasChangeValue<T>?,
-//                CSHasChangeValue<V>>.delegateFirstNull(
-//            parent: CSHasRegistrations? = null,
-//            from: (T?, V) -> Return,
-//            onChange: ArgFunc<Return>? = null,
-//        ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
-//            override val value: Return get() = from(first?.value, second.value)
-//            override fun onChange(function: (Return) -> Unit): CSRegistration {
-//                val value = DelegateValue(value, onChange, function)
-//                return CSRegistration(
-//                    first?.onChange { value(from(it, second.value)) },
-//                    second.onChange { value(from(first?.value, it)) },
-//                ).registerTo(parent)
-//            }
-//        }
 
         fun <T, V, K, Return>
                 Triple<CSHasChangeValue<T>,
@@ -333,6 +304,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun value(newValue: Return, fire: Boolean) {
                     if (isInitialized && value == newValue) return
                     value = newValue
+                    isInitialized = true
                     onValueChanged(newValue, fire)
                 }
             }

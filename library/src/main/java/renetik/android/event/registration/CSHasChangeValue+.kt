@@ -15,6 +15,13 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeVa
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 
+@JvmName("destructPreviousNullable")
+fun <T : CSHasDestruct, P : CSHasChangeValue<T?>> P.destructPrevious() =
+    apply { onChangeFrom { it?.destruct() } }
+
+fun <T : CSHasDestruct, P : CSHasChangeValue<T>> P.destructPrevious() =
+    apply { onChangeFrom { it.destruct() } }
+
 val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
     get() = this?.delegate(from = { it }) ?: emptyNullable()
 
