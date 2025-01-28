@@ -3,7 +3,6 @@ package renetik.android.event.property
 import renetik.android.core.kotlin.primitives.percentOf
 import renetik.android.core.kotlin.primitives.toPercentOf
 import renetik.android.core.lang.ArgFunc
-import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
@@ -11,7 +10,6 @@ import renetik.android.event.registration.action
 import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
 import kotlin.math.roundToInt
-import kotlin.properties.Delegates.notNull
 
 //fun <T> CSProperty<T?>.lateProperty(): CSProperty<T> =
 //    delegate(from = { it!! }, to = { it })TODO: We dont have such delegate..
@@ -36,33 +34,6 @@ fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
     }
     return CSRegistration(thisOnChange, propertyOnChange)
 }
-
-//inline fun <T, V : Any> CSProperty<T>.delegate(
-//    parent: CSHasDestruct? = null,
-//    crossinline from: (T) -> V,
-//    crossinline to: (V) -> T,
-//    noinline onChange: ArgFunc<V>? = null,
-//) = let { property ->
-//    object : CSPropertyBase<V>(parent, onChange) {
-//        var isInitialized = false
-//        override var value: V by notNull()
-//
-////        override var value: V
-////            get() = from(property.value)
-////            set(value) = property assign to(value)
-//
-//        init {
-//            property.onChange { value(from(it)) }
-//        }
-//
-//        override fun value(newValue: V, fire: Boolean) {
-//            if (isInitialized && value == newValue) return
-//            value = newValue
-//            isInitialized = true
-//            onValueChanged(newValue, fire)
-//        }
-//    }
-//}
 
 inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
