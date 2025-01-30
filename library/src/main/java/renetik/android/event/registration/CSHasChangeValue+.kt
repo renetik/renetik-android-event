@@ -52,6 +52,14 @@ inline infix fun <T> CSHasChangeValue<T>.isNotSetTo(value: T): CSHasChangeValue<
 inline fun <reified T> CSHasChangeValue<*>.isOfType(): CSHasChangeValue<Boolean> =
     delegate(from = { it is T })
 
+inline fun <reified T> CSHasChangeValue<*>.asType(): CSHasChangeValue<T?> =
+    delegate(from = { it as? T })
+
+inline fun <reified T> CSHasChangeValue<*>.onType(
+    crossinline function: (T) -> Unit): CSRegistration = onChange {
+    (it as? T)?.also { type -> function(type) }
+}
+
 inline fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     val lateProperty = (this as? CSLateProperty<T>)
     if (lateProperty != null) lateProperty.lateValue?.let(function)
