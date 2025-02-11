@@ -30,13 +30,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         class DelegateValue<Return>(
-            var value: Return, val onChange: ArgFunc<Return>? = null,
-            val function: (Return) -> Unit
+            var value: Return, val function: (Return) -> Unit
         ) {
             operator fun invoke(newValue: Return) {
                 if (value != newValue) {
                     value = newValue
-                    onChange?.invoke(newValue)
                     function(newValue)
                 }
             }
@@ -44,18 +42,16 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
-            onChange: ArgFunc<T>? = null,
-        ): CSHasChangeValue<T> = delegate(parent, from = { it }, onChange)
+        ): CSHasChangeValue<T> = delegate(parent, from = { it })
 
         fun <T, Return> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
             from: (T) -> Return,
-            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = DelegateValue(value, onChange, function)
+                    val value = DelegateValue(value, function)
                     return property.onChange { value(from(it)) }.registerTo(parent)
                 }
             }
@@ -64,12 +60,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (List<Argument>) -> Return,
-            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = let { property ->
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.map { it.value })
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = DelegateValue(value, onChange, function)
+                    val value = DelegateValue(value, function)
                     return property.onChange { value(from(it)) }.registerTo(parent)
                 }
             }
@@ -94,11 +89,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 CSHasChangeValue<V>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (T, V) -> Return,
-            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return get() = from(first.value, second.value)
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = DelegateValue(value, onChange, function)
+                val value = DelegateValue(value, function)
                 return CSRegistration(
                     first.onChange { value(from(it, second.value)) },
                     second.onChange { value(from(first.value, it)) },
@@ -112,13 +106,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<K>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (T, V, K) -> Return,
-            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return
                 get() = from(first.value, second.value, third.value)
 
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = DelegateValue(value, onChange, function)
+                val value = DelegateValue(value, function)
                 return CSRegistration(
                     first.onChange { value(from(it, second.value, third.value)) },
                     second.onChange { value(from(first.value, it, third.value)) },
@@ -134,13 +127,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<L>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (T, V, K, L) -> Return,
-            onChange: ArgFunc<Return>? = null,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return
                 get() = from(first.value, second.value, third.value, fourth.value)
 
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = DelegateValue(value, onChange, function)
+                val value = DelegateValue(value, function)
                 return CSRegistration(
                     first.onChange { value(from(it, second.value, third.value, fourth.value)) },
                     second.onChange { value(from(first.value, it, third.value, fourth.value)) },
@@ -155,12 +147,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 CSHasChangeValue<ParentValue>.delegate(
             parent: CSHasRegistrations? = null,
             child: (ParentValue) -> CSHasChangeValue<ChildValue>,
-            onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue> = let { property ->
             object : CSHasChangeValue<ChildValue> {
                 override val value: ChildValue get() = child(property.value).value
                 override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
-                    val value = DelegateValue(value, onChange, function)
+                    val value = DelegateValue(value, function)
                     var registration: CSRegistration? = null
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
@@ -209,12 +200,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 CSHasChangeValue<ParentValue>.delegateNullable(
             parent: CSHasRegistrations? = null,
             child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
-            onChange: ((ChildValue?) -> Unit)? = null
         ): CSHasChangeValue<ChildValue?> = let { property ->
             object : CSHasChangeValue<ChildValue?> {
                 override val value: ChildValue? get() = child(property.value)?.value
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
-                    val value = DelegateValue(value, onChange, function)
+                    val value = DelegateValue(value, function)
                     var registration: CSRegistration? = null
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
