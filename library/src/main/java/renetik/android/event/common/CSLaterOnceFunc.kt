@@ -67,31 +67,31 @@ class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
     private val dispatcher: CoroutineDispatcher = Main,
     val function: suspend () -> Unit,
-    private val after: Int = 0,
+    private val after: Duration = Duration.ZERO,
 ) : CSFunc {
 
     companion object {
         fun CSHasRegistrations.laterOnceFunc(
             after: Duration, function: suspend () -> Unit) =
-            Debouncer(this, Main, function, after)
+            CSLaterOnceFunc(this, Main, function, after)
 
         fun CSHasRegistrations.laterOnceFunc(
             dispatcher: CoroutineDispatcher = Main,
             after: Duration, function: suspend () -> Unit) =
-            Debouncer(this, dispatcher, function, after)
+            CSLaterOnceFunc(this, dispatcher, function, after)
 
         fun CSHasRegistrations.laterOnceFunc(
             dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
-            Debouncer(this, dispatcher, function)
+            CSLaterOnceFunc(this, dispatcher, function)
 
         fun CSHasRegistrations.laterOnceFunc(
             function: suspend () -> Unit) =
-            Debouncer(this, Main, function)
+            CSLaterOnceFunc(this, Main, function)
     }
 
     var registration: CSRegistration? = null
     override operator fun invoke() {
         registration?.cancel()
-        registration = parent.launch(dispatcher) { delay(after.toLong()); function() }
+        registration = parent.launch(dispatcher) { delay(after); function() }
     }
 }
