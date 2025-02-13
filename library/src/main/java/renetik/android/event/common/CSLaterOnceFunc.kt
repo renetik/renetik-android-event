@@ -2,11 +2,10 @@ package renetik.android.event.common
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.collectLatest
 import renetik.android.core.lang.CSFunc
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
@@ -42,19 +41,23 @@ class Throttler(
     }
 }
 
-
-@OptIn(FlowPreview::class)
 class Debouncer(
     parent: CSHasRegistrations,
     dispatcher: CoroutineDispatcher = Main,
     private val action: suspend () -> Unit,
     private val after: Duration = Duration.ZERO,
 ) : CSFunc {
-    private val flow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val flow = MutableSharedFlow<Unit>(
+        replay = 1, extraBufferCapacity = 0,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     init {
         parent.launch(dispatcher) {
-            flow.debounce(after).collect { action() }
+            flow.collectLatest {
+                delay(after)
+                action()
+            }
         }
     }
 
@@ -73,20 +76,20 @@ class CSLaterOnceFunc(
     companion object {
         fun CSHasRegistrations.laterOnceFunc(
             after: Duration, function: suspend () -> Unit) =
-            CSLaterOnceFunc(this, Main, function, after)
+            Debouncer(this, Main, function, after)
 
         fun CSHasRegistrations.laterOnceFunc(
             dispatcher: CoroutineDispatcher = Main,
             after: Duration, function: suspend () -> Unit) =
-            CSLaterOnceFunc(this, dispatcher, function, after)
+            Debouncer(this, dispatcher, function, after)
 
         fun CSHasRegistrations.laterOnceFunc(
             dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
-            CSLaterOnceFunc(this, dispatcher, function)
+            Debouncer(this, dispatcher, function)
 
         fun CSHasRegistrations.laterOnceFunc(
             function: suspend () -> Unit) =
-            CSLaterOnceFunc(this, Main, function)
+            Debouncer(this, Main, function)
     }
 
     var registration: CSRegistration? = null
