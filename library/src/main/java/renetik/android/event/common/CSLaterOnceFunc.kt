@@ -10,6 +10,7 @@ import renetik.android.core.lang.CSFunc
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.launch
+import java.lang.ref.WeakReference
 import kotlin.time.Duration
 
 /**
@@ -20,8 +21,9 @@ class Throttler(
     parent: CSHasRegistrations,
     dispatcher: CoroutineDispatcher = Main,
     private val after: Duration = Duration.ZERO,
-    private val action: suspend () -> Unit,
+    action: suspend () -> Unit,
 ) : CSFunc {
+    private val action = WeakReference(action)
     private val flow = MutableSharedFlow<Unit>(
         replay = 0, extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -30,7 +32,7 @@ class Throttler(
     init {
         parent.launch(dispatcher) {
             flow.collect {
-                action()
+                this.action.get()?.invoke()
                 if (after > Duration.ZERO) delay(after)
             }
         }
@@ -44,9 +46,11 @@ class Throttler(
 class Debouncer(
     parent: CSHasRegistrations,
     dispatcher: CoroutineDispatcher = Main,
-    private val action: suspend () -> Unit,
+    action: suspend () -> Unit,
     private val after: Duration = Duration.ZERO,
 ) : CSFunc {
+    private val action = WeakReference(action)
+
     private val flow = MutableSharedFlow<Unit>(
         replay = 1, extraBufferCapacity = 0,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -56,7 +60,7 @@ class Debouncer(
         parent.launch(dispatcher) {
             flow.collectLatest {
                 delay(after)
-                action()
+                this.action.get()?.invoke()
             }
         }
     }
@@ -69,7 +73,7 @@ class Debouncer(
 class CSLaterOnceFunc(
     private val parent: CSHasRegistrations,
     private val dispatcher: CoroutineDispatcher = Main,
-    val function: suspend () -> Unit,
+    action: suspend () -> Unit,
     private val after: Duration = Duration.ZERO,
 ) : CSFunc {
 
@@ -92,9 +96,14 @@ class CSLaterOnceFunc(
             Debouncer(this, Main, function)
     }
 
+    private val action = WeakReference(action)
+
     var registration: CSRegistration? = null
     override operator fun invoke() {
         registration?.cancel()
-        registration = parent.launch(dispatcher) { delay(after); function() }
+        registration = parent.launch(dispatcher) {
+            delay(after)
+            this.action.get()?.invoke()
+        }
     }
 }
