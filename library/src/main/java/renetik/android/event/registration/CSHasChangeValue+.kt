@@ -281,14 +281,14 @@ fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> {
     val self = this
     return object : CSHasChange<T> {
         override fun onChange(function: (T) -> Unit): CSRegistration {
-            var wasNotNull: Boolean? = null
+            var wasNull: Boolean = value == null
             return self.onChange {
                 if (it != null) {
-                    if (wasNotNull != true) {
+                    if (wasNull) {
                         function(it)
-                        wasNotNull = true
+                        wasNull = false
                     }
-                } else wasNotNull = false
+                } else wasNull = true
             }
         }
     }
