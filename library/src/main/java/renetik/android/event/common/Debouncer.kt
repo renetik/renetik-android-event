@@ -28,13 +28,12 @@ class Debouncer(
     )
 
     init {
-        val sss = parent.launch(dispatcher) {
+        parent.launch(dispatcher) {
             flow.collectLatest {
                 delay(after)
                 action()
             }
-        }
-        sss.onCancel { this.action = null }
+        }.onCancel { this.action = null }
     }
 
     override operator fun invoke() {
