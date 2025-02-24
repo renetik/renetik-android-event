@@ -17,20 +17,20 @@ class CSLaterOnceFunc(
 ) : CSFunc {
 
     companion object {
-        fun CSHasRegistrations.debouncer(
+        fun CSHasRegistrations.laterOnce(
             after: Duration, function: suspend () -> Unit) =
             CSLaterOnceFunc(this, Main, function, after)
 
-        fun CSHasRegistrations.debouncer(
+        fun CSHasRegistrations.laterOnce(
             dispatcher: CoroutineDispatcher = Main,
             after: Duration, function: suspend () -> Unit) =
             CSLaterOnceFunc(this, dispatcher, function, after)
 
-        fun CSHasRegistrations.debouncer(
+        fun CSHasRegistrations.laterOnce(
             dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
             CSLaterOnceFunc(this, dispatcher, function)
 
-        fun CSHasRegistrations.debouncer(
+        fun CSHasRegistrations.laterOnce(
             function: suspend () -> Unit) =
             CSLaterOnceFunc(this, Main, function)
     }

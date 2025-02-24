@@ -1,7 +1,7 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.Func
-import renetik.android.event.common.CSLaterOnceFunc.Companion.debouncer
+import renetik.android.event.common.Debouncer.Companion.debouncer
 
 inline fun <T : CSHasChange<*>> List<T>.onChange(
     crossinline function: Func
