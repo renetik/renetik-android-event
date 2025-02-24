@@ -2,6 +2,7 @@ package renetik.android.event.common
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,10 +15,29 @@ import kotlin.time.Duration
 
 class Debouncer(
     parent: CSHasRegistrations,
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    dispatcher: CoroutineDispatcher = Main,
     action: suspend () -> Unit,
     private val after: Duration = Duration.ZERO,
 ) : CSFunc {
+
+    companion object {
+        fun CSHasRegistrations.debouncer(
+            after: Duration, function: suspend () -> Unit) =
+            Debouncer(this, Main, function, after)
+
+        fun CSHasRegistrations.debouncer(
+            dispatcher: CoroutineDispatcher = Main,
+            after: Duration, function: suspend () -> Unit) =
+            Debouncer(this, dispatcher, function, after)
+
+        fun CSHasRegistrations.debouncer(
+            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
+            Debouncer(this, dispatcher, function)
+
+        fun CSHasRegistrations.debouncer(
+            function: suspend () -> Unit) =
+            Debouncer(this, Main, function)
+    }
 
     @Volatile
     var action: (suspend () -> Unit)? = action

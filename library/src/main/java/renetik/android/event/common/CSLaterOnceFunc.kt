@@ -19,20 +19,20 @@ class CSLaterOnceFunc(
     companion object {
         fun CSHasRegistrations.debouncer(
             after: Duration, function: suspend () -> Unit) =
-            Debouncer(this, Main, function, after)
+            CSLaterOnceFunc(this, Main, function, after)
 
         fun CSHasRegistrations.debouncer(
             dispatcher: CoroutineDispatcher = Main,
             after: Duration, function: suspend () -> Unit) =
-            Debouncer(this, dispatcher, function, after)
+            CSLaterOnceFunc(this, dispatcher, function, after)
 
         fun CSHasRegistrations.debouncer(
             dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
-            Debouncer(this, dispatcher, function)
+            CSLaterOnceFunc(this, dispatcher, function)
 
         fun CSHasRegistrations.debouncer(
             function: suspend () -> Unit) =
-            Debouncer(this, Main, function)
+            CSLaterOnceFunc(this, Main, function)
     }
 
     var registration: CSRegistration? = null
