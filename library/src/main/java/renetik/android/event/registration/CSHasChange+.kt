@@ -7,7 +7,7 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.Quadruple
 import renetik.android.event.CSEvent
-import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
+import renetik.android.event.common.CSLaterOnceFunc.Companion.debouncer
 import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.time.Duration
@@ -151,7 +151,7 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     crossinline function: Func,
 ): CSRegistration {
     val registrations = CSRegistrationsMap(this)
-    val laterOnceFunction = registrations.laterOnceFunc(after) { function() }
+    val laterOnceFunction = registrations.debouncer(after) { function() }
     registrations.register(onChange { laterOnceFunction() })
     return registrations
 }
@@ -162,7 +162,7 @@ inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
 ): CSRegistration {
     val registrations = CSRegistrationsMap(this)
     var value1: Argument? = null
-    val laterOnceFunction = registrations.laterOnceFunc(after) {
+    val laterOnceFunction = registrations.debouncer(after) {
         if (registrations.isActive) onChange(value1 ?: value)
         value1 = null
     }

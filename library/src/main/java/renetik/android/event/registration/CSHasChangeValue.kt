@@ -10,7 +10,7 @@ import renetik.android.core.lang.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.CSLaterOnceFunc.Companion.laterOnceFunc
+import renetik.android.event.common.CSLaterOnceFunc.Companion.debouncer
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
 import renetik.android.event.property.CSPropertyBase
@@ -725,7 +725,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 value4 = null; value5 = null; value6 = null
             }
 
-            val laterOnceFunction = registrations.laterOnceFunc {
+            val laterOnceFunction = registrations.debouncer {
                 if (registrations.isActive) {
                     onChange(
                         (value1 ?: first.value), (value2 ?: second.value), (value3 ?: third.value),
