@@ -30,8 +30,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         class DelegateValue<Return>(
-            var value: Return, val function: (Return) -> Unit
+            private var value: Return,
+            private val function: (Return) -> Unit,
+            parent: CSHasRegistrations? = null,
         ) {
+            val isActive = parent?.registrations?.isActive != false
+
             operator fun invoke(newValue: Return) {
                 if (value != newValue) {
                     value = newValue
@@ -92,10 +96,16 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return get() = from(first.value, second.value)
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = DelegateValue(value, function)
+                val value = DelegateValue(value, function, parent)
                 return CSRegistration(
-                    first.onChange { value(from(it, second.value)) },
-                    second.onChange { value(from(first.value, it)) },
+                    first.onChange {
+                        if (value.isActive)
+                            value(from(it, second.value))
+                    },
+                    second.onChange {
+                        if (value.isActive)
+                            value(from(first.value, it))
+                    },
                 ).registerTo(parent)
             }
         }
