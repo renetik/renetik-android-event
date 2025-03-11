@@ -5,3 +5,5 @@ interface CSHasRegistrations {
 
     val registrations: CSRegistrationsMap
 }
+
+val CSHasRegistrations?.isActive: Boolean get() = this?.registrations?.isActive != false
