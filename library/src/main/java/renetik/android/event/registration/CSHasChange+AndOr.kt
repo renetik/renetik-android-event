@@ -1,5 +1,6 @@
 package renetik.android.event.registration
 
+import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
@@ -7,6 +8,11 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 @JvmName("CSHasChangeValueBooleanAndCSHasChangeValueBoolean")
 infix fun CSHasChangeValue<Boolean>.and(other: CSHasChangeValue<Boolean>) =
     (this to other).delegate(from = { first, second -> first && second })
+
+
+@JvmName("CSHasChangeValueBooleanAndCSHasChangeValueBooleanNullable")
+infix fun CSHasChangeValue<Boolean>.and(other: CSHasChangeValue<Boolean?>) =
+    (this to other).delegate(from = { first, second -> first && second.isTrue })
 
 @JvmName("CSHasChangeAndCSValue")
 infix fun CSHasChange<*>.and(other: CSValue<Boolean>): CSHasChange<Unit> {
