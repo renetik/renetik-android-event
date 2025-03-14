@@ -17,7 +17,8 @@ abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
         val service: CSService = this@CSService
     }
 
-    override fun onBind(intent: Intent) = CSServiceBinder()
+    private val binder = CSServiceBinder()
+    override fun onBind(intent: Intent) = binder
 
     final override val registrations by lazy { CSRegistrationsMap(this) }
     final override val eventDestruct = event<Unit>()
