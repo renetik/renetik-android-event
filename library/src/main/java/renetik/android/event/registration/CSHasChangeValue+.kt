@@ -128,7 +128,7 @@ inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
     onChange { if (this.value == value) onChange() }
 
 fun <Value> CSHasChangeValue<Value>.hasValue(
-    parent: CSHasDestruct? = null, value: Value,
+    parent: CSHasRegistrations? = null, value: Value,
 ): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
 @JvmName("onChangeChildHasValue")
