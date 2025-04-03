@@ -1,12 +1,11 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
+import renetik.android.core.lang.Func
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun CSRegistration.registerTo(registrations: CSHasRegistrations?): CSRegistration =
     registrations?.register(this) ?: this
-
-//operator fun CSRegistrations.plus(registration: CSRegistration): CSRegistration =
-//    register(registration)
 
 @AnyThread
 fun CSHasRegistrations.register(registration: CSRegistration): CSRegistration =
@@ -54,3 +53,7 @@ operator fun CSHasRegistrations.plus(
 operator fun CSHasRegistrations.plus(
     registration: Pair<String, CSRegistration?>
 ): CSRegistration? = register(registration.first, registration.second)
+
+
+fun CSHasRegistrations.onCancel(function: Func): CSRegistration =
+    register(CSRegistration(onCancel = { function() }))
