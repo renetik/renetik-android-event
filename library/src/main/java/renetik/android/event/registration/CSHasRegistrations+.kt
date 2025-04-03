@@ -54,6 +54,5 @@ operator fun CSHasRegistrations.plus(
     registration: Pair<String, CSRegistration?>
 ): CSRegistration? = register(registration.first, registration.second)
 
-
 fun CSHasRegistrations.onCancel(function: Func): CSRegistration =
     register(CSRegistration(onCancel = { function() }))
