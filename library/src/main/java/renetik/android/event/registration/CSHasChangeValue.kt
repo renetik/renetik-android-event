@@ -375,6 +375,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration = onChange(first, second, onChange)
 
+        fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
+            onChange: (Argument1, Argument2) -> Unit,
+        ): CSRegistration = list(first, second, third).onChange {
+            onChange(first.value, second.value)
+        }
+
         fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
             onChange: () -> Unit,
         ): CSRegistration = onChange(first, second) { _, _ -> onChange() }
@@ -415,6 +421,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 init {
                     this + (first to second to third).onChange { item1, item2, item3 ->
                         value(from(item1, item2, item3))
+                    }
+                }
+            }
+
+        fun <Argument1, Argument2, Return>
+                Triple<CSHasChangeValue<Argument1>,
+                        CSHasChangeValue<Argument2>,
+                        CSHasChange<*>>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument1, Argument2) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> =
+            object : CSHasChangeValueBase<Return>(parent, onChange) {
+                override var value: Return = from(first.value, second.value)
+
+                init {
+                    this + (first to second to third).onChange { item1, item2 ->
+                        value(from(item1, item2))
                     }
                 }
             }
