@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import renetik.android.core.lang.CSFunc
 import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.event.registration.launch
 import renetik.android.event.registration.onCancel
+import renetik.android.event.registration.plus
 import kotlin.time.Duration
 
 class CSDebouncer(
@@ -57,6 +59,9 @@ class CSDebouncer(
                 action()
             }
         }.onCancel { this.action = null }
+        parent + CSRegistration(onCancel = {
+            this.action = null
+        })
     }
 
     override operator fun invoke() {
