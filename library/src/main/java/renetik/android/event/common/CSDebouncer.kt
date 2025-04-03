@@ -59,9 +59,6 @@ class CSDebouncer(
                 this.action?.invoke()
             }
         }.onCancel { this.action = null }
-        parent + CSRegistration(onCancel = {
-            this.action = null
-        })
     }
 
     override operator fun invoke() {
