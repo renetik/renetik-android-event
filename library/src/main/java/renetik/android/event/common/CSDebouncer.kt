@@ -56,7 +56,7 @@ class CSDebouncer(
         parent.launch(dispatcher) {
             flow.collectLatest {
                 delay(after)
-                action()
+                this.action?.invoke()
             }
         }.onCancel { this.action = null }
         parent + CSRegistration(onCancel = {
