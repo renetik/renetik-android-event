@@ -21,25 +21,29 @@ class CSDebouncer(
 
     companion object {
         fun CSHasRegistrations.debouncer(
-            after: Duration, function: suspend () -> Unit) =
+            after: Duration, function: suspend () -> Unit
+        ) =
             CSDebouncer(this, Main, function, after)
 
         fun CSHasRegistrations.debouncer(
             dispatcher: CoroutineDispatcher = Main,
-            after: Duration, function: suspend () -> Unit) =
+            after: Duration, function: suspend () -> Unit
+        ) =
             CSDebouncer(this, dispatcher, function, after)
 
         fun CSHasRegistrations.debouncer(
-            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
+            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit
+        ) =
             CSDebouncer(this, dispatcher, function)
 
         fun CSHasRegistrations.debouncer(
-            function: suspend () -> Unit) =
+            function: suspend () -> Unit
+        ) =
             CSDebouncer(this, Main, function)
     }
 
     @Volatile
-    var action: (suspend () -> Unit)? = action
+    private var action: (suspend () -> Unit)? = action
 
     private val flow = MutableSharedFlow<Unit>(
         replay = 1, extraBufferCapacity = 0,
