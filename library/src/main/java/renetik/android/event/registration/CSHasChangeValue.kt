@@ -2,10 +2,10 @@ package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFunc
-import renetik.android.core.lang.tuples.Quadruple
-import renetik.android.core.lang.tuples.Quintuple
-import renetik.android.core.lang.tuples.Seventuple
-import renetik.android.core.lang.tuples.Sixtuple
+import renetik.android.core.lang.tuples.CSQuadruple
+import renetik.android.core.lang.tuples.CSQuintuple
+import renetik.android.core.lang.tuples.CSSeventuple
+import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.variable.assign
@@ -123,7 +123,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        fun <T, V, K, L, Return> Quadruple<CSHasChangeValue<T>,
+        fun <T, V, K, L, Return> CSQuadruple<CSHasChangeValue<T>,
                 CSHasChangeValue<V>, CSHasChangeValue<K>, CSHasChangeValue<L>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (T, V, K, L) -> Return,
@@ -452,7 +452,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
 
         fun <Argument1, Argument2, Argument3, Argument4, Return>
-                Quadruple<CSHasChangeValue<Argument1>,
+                CSQuadruple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>,
                         CSHasChangeValue<Argument4>>.hasChangeValue(
@@ -473,36 +473,36 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
 
         fun <Argument1, Argument2, Argument3, Argument4, Return>
-                Quadruple<CSHasChangeValue<Argument1>,
+                CSQuadruple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>,
                         CSHasChangeValue<Argument4>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
-            from: (Quadruple<Argument1, Argument2, Argument3, Argument4>) -> Return,
+            from: (CSQuadruple<Argument1, Argument2, Argument3, Argument4>) -> Return,
             onChange: ArgFunc<Return>? = null
         ): CSHasChangeValue<Return> =
             object : CSHasChangeValueBase<Return>(parent, onChange) {
                 override var value: Return =
-                    from(Quadruple(first.value, second.value, third.value, fourth.value))
+                    from(CSQuadruple(first.value, second.value, third.value, fourth.value))
 
                 init {
                     this + (first to second to third to fourth)
                         .onChange { item1, item2, item3, item4 ->
-                            value(from(Quadruple(item1, item2, item3, item4)))
+                            value(from(CSQuadruple(item1, item2, item3, item4)))
                         }
                 }
             }
 
         fun <Argument1, Argument2, Argument3, Argument4>
-                Quadruple<CSHasChangeValue<Argument1>,
+                CSQuadruple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>,
                         CSHasChangeValue<Argument4>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
-            onChange: ArgFunc<Quadruple<Argument1, Argument2, Argument3, Argument4>>? = null
-        ): CSHasChangeValue<Quadruple<Argument1, Argument2, Argument3, Argument4>> =
+            onChange: ArgFunc<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null
+        ): CSHasChangeValue<CSQuadruple<Argument1, Argument2, Argument3, Argument4>> =
             hasChangeValue(parent, from = { item1, item2, item3, item4 ->
-                Quadruple(item1, item2, item3, item4)
+                CSQuadruple(item1, item2, item3, item4)
             }, onChange)
 
         fun <Argument1, Argument2, Argument3> onChange(
@@ -581,7 +581,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onAction(item1.value, item2.value, item3.value, item4.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4> Quadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.onChange(
+        fun <Argument1, Argument2, Argument3, Argument4> CSQuadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.onChange(
             onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = onChange(first, second, third, fourth, onChange)
 
@@ -595,11 +595,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onAction(item1.value, item2.value, item3.value, item4.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4> Quadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.action(
+        fun <Argument1, Argument2, Argument3, Argument4> CSQuadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.action(
             onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = action(first, second, third, fourth, onChange)
 
-        fun <Argument1, Argument2, Argument3, Argument4> Quadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.actionLaterOnce(
+        fun <Argument1, Argument2, Argument3, Argument4> CSQuadruple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>>.actionLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
         ): CSRegistration = list(first, second, third, fourth).actionLaterOnce {
             onChange(first.value, second.value, third.value, fourth.value)
@@ -616,7 +616,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChange(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChange(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = onChange(first, second, third, fourth, fifth, onChange)
 
@@ -631,24 +631,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.action(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.action(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = action(first, second, third, fourth, fifth, onChange)
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChangeLaterOnce(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChangeLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth).onChangeLaterOnce {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.actionLaterOnce(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.actionLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth).actionLaterOnce {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value)
         }
 
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return> Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.hasChangeValue(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
             from: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
             onChange: ArgFunc<Return>? = null
@@ -664,27 +664,27 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> Quintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.hasChangeValue(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
-            onChange: ArgFunc<Quintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
-        ): CSHasChangeValue<Quintuple<Argument1, Argument2, Argument3, Argument4, Argument5>> =
+            onChange: ArgFunc<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
+        ): CSHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>> =
             hasChangeValue(parent, from = { item1, item2, item3, item4, item5 ->
-                Quintuple(item1, item2, item3, item4, item5)
+                CSQuintuple(item1, item2, item3, item4, item5)
             }, onChange)
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth, sixth).onChange {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.action(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.action(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth, sixth).action {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> Sixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.actionLaterOnce(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.actionLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
         ): CSRegistration {
             val registrations = CSRegistrationsMap(this)
@@ -722,7 +722,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7>
-                Seventuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                CSSeventuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>,
                         CSHasChangeValue<Argument7>>.action(

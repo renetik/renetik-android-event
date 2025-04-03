@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
-import renetik.android.core.lang.tuples.Quadruple
+import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.CSEvent
 import renetik.android.event.common.Debouncer.Companion.debouncer
 import renetik.android.event.fire
@@ -202,7 +202,7 @@ fun Triple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.action(
     return onChange(onChange)
 }
 
-fun Quadruple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
+fun CSQuadruple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.onChange(
     onChange: () -> Unit
 ): CSRegistration = CSRegistration(
     first.onChange(onChange), second.onChange(onChange),
