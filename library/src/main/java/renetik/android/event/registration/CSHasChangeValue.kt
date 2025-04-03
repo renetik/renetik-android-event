@@ -2,11 +2,11 @@ package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFunc
-import renetik.android.core.lang.Quadruple
-import renetik.android.core.lang.Quintuple
-import renetik.android.core.lang.Seventuple
-import renetik.android.core.lang.Sixtuple
-import renetik.android.core.lang.to
+import renetik.android.core.lang.tuples.Quadruple
+import renetik.android.core.lang.tuples.Quintuple
+import renetik.android.core.lang.tuples.Seventuple
+import renetik.android.core.lang.tuples.Sixtuple
+import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.CSEvent.Companion.event

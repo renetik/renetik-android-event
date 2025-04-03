@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
-import renetik.android.core.lang.Quadruple
+import renetik.android.core.lang.tuples.Quadruple
 import renetik.android.event.CSEvent
 import renetik.android.event.common.Debouncer.Companion.debouncer
 import renetik.android.event.fire
