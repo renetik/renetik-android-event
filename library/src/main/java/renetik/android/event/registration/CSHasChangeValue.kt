@@ -11,7 +11,7 @@ import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.Debouncer.Companion.debouncer
+import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration

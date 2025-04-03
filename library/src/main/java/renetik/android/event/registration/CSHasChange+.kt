@@ -7,7 +7,7 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.CSEvent
-import renetik.android.event.common.Debouncer.Companion.debouncer
+import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.fire
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.time.Duration

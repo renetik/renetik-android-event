@@ -1,7 +1,6 @@
 package renetik.android.event.common
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
@@ -13,7 +12,7 @@ import renetik.android.event.registration.launch
 import renetik.android.event.registration.onCancel
 import kotlin.time.Duration
 
-class Debouncer(
+class CSDebouncer(
     parent: CSHasRegistrations,
     dispatcher: CoroutineDispatcher = Main,
     action: suspend () -> Unit,
@@ -23,20 +22,20 @@ class Debouncer(
     companion object {
         fun CSHasRegistrations.debouncer(
             after: Duration, function: suspend () -> Unit) =
-            Debouncer(this, Main, function, after)
+            CSDebouncer(this, Main, function, after)
 
         fun CSHasRegistrations.debouncer(
             dispatcher: CoroutineDispatcher = Main,
             after: Duration, function: suspend () -> Unit) =
-            Debouncer(this, dispatcher, function, after)
+            CSDebouncer(this, dispatcher, function, after)
 
         fun CSHasRegistrations.debouncer(
             dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
-            Debouncer(this, dispatcher, function)
+            CSDebouncer(this, dispatcher, function)
 
         fun CSHasRegistrations.debouncer(
             function: suspend () -> Unit) =
-            Debouncer(this, Main, function)
+            CSDebouncer(this, Main, function)
     }
 
     @Volatile

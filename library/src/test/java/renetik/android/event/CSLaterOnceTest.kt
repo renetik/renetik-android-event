@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import renetik.android.event.common.Debouncer.Companion.debouncer
+import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.testing.CSAssert.assert
