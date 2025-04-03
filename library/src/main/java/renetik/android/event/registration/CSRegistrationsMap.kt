@@ -5,10 +5,12 @@ import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.Func
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
+import renetik.android.event.listen
 import java.util.concurrent.atomic.AtomicInteger
 
 class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegistrations {
@@ -150,4 +152,6 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     override fun toString(): String =
         "${super.toString()} parent:$parent " + "size:$size isActive:$isActive isCanceled:$isCanceled"
+
+    fun onCancel(function: Func) = eventCancel.listen(function)
 }
