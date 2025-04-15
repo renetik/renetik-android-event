@@ -40,7 +40,7 @@ class CSSafePropertyImpl<T>(
 
     override fun fireChange() = value.let {
         onChange?.invoke(it)
-        onMain { eventChange.fire(it) }
+        if (eventChange.isListened) onMain { eventChange.fire(it) }
     }
 
     override var value: T
