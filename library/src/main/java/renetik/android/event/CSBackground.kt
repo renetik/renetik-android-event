@@ -1,18 +1,12 @@
 package renetik.android.event
 
 import androidx.annotation.WorkerThread
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
 import renetik.android.core.java.util.concurrent.background
 import renetik.android.core.java.util.concurrent.backgroundEach
 import renetik.android.core.java.util.concurrent.cancelInterrupt
 import renetik.android.core.java.util.concurrent.shutdownAndWait
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import renetik.android.event.registration.JobRegistration
 import renetik.android.event.registration.start
 import java.util.concurrent.Executors.defaultThreadFactory
 import java.util.concurrent.Executors.newScheduledThreadPool
@@ -71,8 +65,7 @@ object CSBackground {
 
 
     inline fun backgroundEach(
-        after: Int, period: Int = after,
-        start: Boolean = true,
+        after: Int, period: Int = after, start: Boolean = true,
         @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
         var task: ScheduledFuture<*> by notNull()
@@ -87,4 +80,3 @@ object CSBackground {
         return registration
     }
 }
-
