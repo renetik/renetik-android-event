@@ -170,13 +170,13 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
 
 @JvmName("onChangeChildNullable")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
-    crossinline child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+    crossinline valueChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
     crossinline onChange: (ChildValue) -> Unit
 ): CSRegistration {
     var childRegistration: CSRegistration? = null
     val parentRegistration = action { parentValue ->
         childRegistration?.cancel()
-        childRegistration = child(parentValue)?.onChange { childValue ->
+        childRegistration = valueChild(parentValue)?.onChange { childValue ->
             onChange(childValue)
         }
     }
