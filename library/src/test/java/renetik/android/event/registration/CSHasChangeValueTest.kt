@@ -90,8 +90,10 @@ class CSHasChangeValueTest {
         testDelegateChildProperty(property, delegateChild)
     }
 
-    private fun testDelegateChildProperty(delegatedProperty: CSProperty<CSValue<CSProperty<Int>>>,
-                                          testedProperty: CSHasChangeValue<Int>) {
+    private fun testDelegateChildProperty(
+        delegatedProperty: CSProperty<CSValue<CSProperty<Int>>>,
+        testedProperty: CSHasChangeValue<Int>
+    ) {
         var delegateChildValue1: Int? = null
         var delegateChildValue2: Int? = null
         testedProperty.onChange { delegateChildValue1 = it }
@@ -231,8 +233,10 @@ class CSHasChangeValueTest {
         assert(expected = 1, isNotRecordingAndRecorded)
     }
 
-    private fun testDelegateNullableChildProperty(property: CSProperty<CSValue<CSProperty<Int>>?>,
-                                                  delegateChild: CSHasChangeValue<Int?>) {
+    private fun testDelegateNullableChildProperty(
+        property: CSProperty<CSValue<CSProperty<Int>>?>,
+        delegateChild: CSHasChangeValue<Int?>
+    ) {
         var delegateChildOnChangeValue: Int? = null
         var delegateChildActionValue: Int? = null
         val delegateChildOnChange = delegateChild.onChange { delegateChildOnChangeValue = it }
@@ -281,5 +285,26 @@ class CSHasChangeValueTest {
         assert(expected = 1, actual = eventIsNullCount)
         assert(expected = 2, actual = eventIsNotNullCount)
         assert(expected = 2, actual = eventIsNotNullCount2)
+    }
+
+    @Test
+    fun testPairDelegateFrom() {
+        val propertyInt = property(0)
+        val propertyBool = property(false)
+        val pair = propertyInt to propertyBool
+        var invocationCount = 0
+        val pairDelegate = pair.delegate(from = { int, bool ->
+            invocationCount += 1
+            "$int-$bool"
+        })
+        assert(0, invocationCount)
+        assert("0-false", pairDelegate.value)
+        assert(1, invocationCount)
+        propertyInt assign 1
+        assert("1-false", pairDelegate.value)
+        assert(2, invocationCount)
+        propertyBool assign true
+        assert("1-true", pairDelegate.value)
+        assert(3, invocationCount)
     }
 }
