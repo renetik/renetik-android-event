@@ -1,7 +1,6 @@
 package renetik.android.event
 
 import renetik.android.core.kotlin.primitives.isTrue
-import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
 import renetik.android.core.logging.CSLog.logDebugTrace
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl

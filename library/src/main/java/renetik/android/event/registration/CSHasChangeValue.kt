@@ -10,8 +10,8 @@ import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
@@ -230,13 +230,13 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             abstract override var value: Return
             val eventChange by lazy { event<Return>() }
             override fun onChange(function: (Return) -> Unit) = eventChange.listen(function)
-            protected open fun value(newValue: Return) {
+            open fun value(newValue: Return) {
                 if (value == newValue) return
                 value = newValue
                 onValueChanged(newValue)
             }
 
-            protected fun onValueChanged(newValue: Return) {
+            fun onValueChanged(newValue: Return) {
                 onChange?.invoke(newValue)
                 eventChange.fire(newValue)
             }
