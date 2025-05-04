@@ -3,6 +3,7 @@ package renetik.android.event.property
 import renetik.android.core.kotlin.primitives.percentOf
 import renetik.android.core.kotlin.primitives.toPercentOf
 import renetik.android.core.lang.ArgFunc
+import renetik.android.core.lang.variable.assign
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
@@ -25,13 +26,13 @@ fun <T : CSProperty<*>> T.paused(
 }
 
 fun <T> CSProperty<T>.connect(property: CSProperty<T>): CSRegistration {
-    value = property.value
+    this assign property
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange: CSRegistration = onChange { value ->
-        propertyOnChange.paused { property.value = value }
+        propertyOnChange.paused { property assign value }
     }
     propertyOnChange = property.onChange { value ->
-        thisOnChange.paused { this.value = value }
+        thisOnChange.paused { this assign value }
     }
     return CSRegistration(thisOnChange, propertyOnChange)
 }
@@ -45,10 +46,10 @@ inline fun <T, V> CSProperty<T>.computed(
     val property: CSProperty<V> = property(from(value), onChange)
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange = onChange {
-        propertyOnChange.paused { property.value = from(value) }
+        propertyOnChange.paused { property assign from(value) }
     }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
-        thisOnChange.paused { value = to(it) }
+        thisOnChange.paused { this assign to(it) }
     }
     return property
 }
@@ -73,7 +74,7 @@ inline fun <T, V> CSProperty<T>.computed(
     val property: CSProperty<V> = property(get(value), onChange)
     lateinit var propertyOnChange: CSRegistration
     val thisOnChange = onChange {
-        propertyOnChange.paused { property.value = get(value) }
+        propertyOnChange.paused { property assign get(value) }
     }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
         thisOnChange.paused { set(this, it) }
@@ -91,13 +92,13 @@ inline fun <T, V> CSHasChangeValue<T>.computed(
     var fromAction: CSRegistration? = null
     val thisOnChange = onChange {
         fromAction = child(value).action {
-            propertyOnChange.paused { property.value(it) }
+            propertyOnChange.paused { property assign it }
         }.let {
             parent?.register(fromAction, it) ?: run { fromAction?.cancel(); it }
         }
     }.also { parent?.register(it) }
     propertyOnChange = property.onChange {
-        thisOnChange.paused { child(value).value(it) }
+        thisOnChange.paused { child(value) assign it }
     }
     return property
 }
