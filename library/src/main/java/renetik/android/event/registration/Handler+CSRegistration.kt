@@ -25,7 +25,8 @@ inline fun Handler.laterEach(
     registration = CSRegistration(
         onResume = { postAtTime(runnable, token, uptimeMillis() + after.toLong()) },
         onCancel = { removeCallbacksAndMessages(token) }
-    ).start()
+    )
+    registration.start()
     return registration
 }
 
