@@ -11,5 +11,5 @@ interface CSHasDestruct {
     fun onDestruct()
 }
 
-fun CSHasDestruct.isDestruct(): CSHasChangeValue<Boolean> =
-    eventDestruct.delegate { isDestructed }
+val CSHasDestruct.isDestruct: CSHasChangeValue<Boolean>
+    get() = eventDestruct.delegate { isDestructed }
