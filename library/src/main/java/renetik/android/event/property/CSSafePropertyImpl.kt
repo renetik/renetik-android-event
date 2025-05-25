@@ -18,13 +18,13 @@ class CSSafePropertyImpl<T>(
         this.value = value
     }
 
-    fun getAndSet(newValue: T): T {
+    override fun getAndSet(newValue: T): T {
         val previous = field.getAndSet(newValue)
         if (previous != newValue) onValueChanged(newValue)
         return previous
     }
 
-    fun compareAndSet(value: T, newValue: T): Boolean {
+    override fun compareAndSet(value: T, newValue: T): Boolean {
         val isSet = field.compareAndSet(value, newValue)
         if (isSet) onValueChanged(newValue)
         return isSet

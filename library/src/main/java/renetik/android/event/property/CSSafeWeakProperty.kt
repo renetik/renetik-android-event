@@ -20,6 +20,40 @@ class CSSafeWeakProperty<T>(
 
     private val _value = AtomicReference<WeakReference<T?>?>(null)
 
+    override fun getAndSet(newValue: T?): T? {
+        while (true) {
+            val currentRef = _value.get()
+            val oldValue = currentRef?.get()
+            // if they’re already equal, still go through the CAS so that we consistently
+            // return the oldValue, but we’ll still fire onValueChanged if CAS succeeds.
+            val newRef = WeakReference<T?>(newValue)
+            if (_value.compareAndSet(currentRef, newRef)) {
+                // only fire if it actually changed under the hood
+                onValueChanged(newValue)
+                return oldValue
+            }
+            // otherwise, retry
+        }
+    }
+
+    override fun compareAndSet(value: T?, newValue: T?): Boolean {
+        while (true) {
+            val currentRef = _value.get()
+            val observed = currentRef?.get()
+            if (observed != value) {
+                // fast-fail if the wrapped value doesn’t match
+                return false
+            }
+            // prepare the new weak ref
+            val newRef = WeakReference<T?>(newValue)
+            if (_value.compareAndSet(currentRef, newRef)) {
+                onValueChanged(newValue)
+                return true
+            }
+            // otherwise, another thread raced us; retry
+        }
+    }
+
     override fun value(newValue: T?, fire: Boolean) {
         //This was proposed by Gemini and ChaGpt after long conversation..
         while (true) {
