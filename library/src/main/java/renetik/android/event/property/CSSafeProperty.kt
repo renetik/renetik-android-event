@@ -18,6 +18,6 @@ interface CSSafeProperty<T> : CSSafeHasChangeValue<T>, CSSafeVariable<T>, CSProp
         fun <T> CSProperty<T>.safe(
             parent: CSHasDestruct, @AnyThread onChangeUnsafe: ((value: T) -> Unit)? = null
         ): CSSafeProperty<T> = CSSafePropertyImpl(parent, value, onChangeUnsafe)
-            .also { it + connect(this) }
+            .also { it + it.connect(this) }
     }
 }
