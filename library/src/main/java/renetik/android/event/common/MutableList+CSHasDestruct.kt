@@ -1,16 +1,30 @@
 package renetik.android.event.common
 
 import renetik.android.core.kotlin.primitives.update
+import renetik.android.event.registration.CSHasChangeValue
+import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.action
+import renetik.android.event.registration.plus
 
 fun <Item : CSHasDestruct> MutableList<Item>.update(
-    value: Int, function: (index: Int) -> Item) = size.update(value,
-    onAdd = { index -> add(function(index)) },
+    count: Int, function: (index: Int) -> Item
+) = size.update(count,
+    onAdd = { index -> this += function(index) },
     onRemove = { index -> removeAt(index).destruct() })
 
+fun <T : CSHasDestruct> MutableList<T>.factory(
+    parent: CSHasRegistrations,
+    count: CSHasChangeValue<Int>, create: (Int) -> T
+) {
+    parent + count.action { count -> update(count, create) }
+}
+
 fun <Item : CSHasDestruct> MutableList<Item>.updateOnAdd(
-    value: Int, function: (index: Int) -> Item) = size.update(value,
+    value: Int, function: (index: Int) -> Item
+) = size.update(value,
     onAdd = { index -> add(function(index)) })
 
 fun <Item : CSHasDestruct> MutableList<Item>.updateOnRemove(
-    value: Int, function: (index: Int) -> Item) = size.update(value,
+    value: Int, function: (index: Int) -> Item
+) = size.update(value,
     onRemove = { index -> add(function(index)) })
