@@ -15,7 +15,7 @@ fun <Item : CSHasDestruct> MutableList<Item>.update(
 fun <T : CSHasDestruct> MutableList<T>.factory(
     parent: CSHasRegistrations,
     count: CSHasChangeValue<Int>, create: (Int) -> T
-) {
+) = apply {
     parent + count.action { count -> update(count, create) }
 }
 
