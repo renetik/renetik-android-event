@@ -10,43 +10,32 @@ import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.launch
 import kotlin.time.Duration
 
-/**
- * A generic throttler that limits how often an action is executed.
- *
- * The throttler accepts parameterized calls and ensures that the provided action is not
- * triggered more than once within a specified period (the throttle interval). Once an action
- * is executed, any subsequent invocations received within the throttle delay are ignored or
- * queued based on the throttling mechanism.
- *
- * This class uses a MutableSharedFlow to collect parameterized invocations and processes each
- * one sequentially. After executing the action with the given parameter, it waits for the defined
- * throttle period (if any) before processing the next incoming event.
- *
- * Use cases for a throttler include limiting high-frequency events (like scroll or resize events)
- * so that processing happens only once every few milliseconds or seconds, even if many events occur.
- */
 class Throttler<T>(
     parent: CSHasRegistrations,
-    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    dispatcher: CoroutineDispatcher = Main,
     private val action: suspend (T) -> Unit,
     private val after: Duration = Duration.ZERO,
 ) : (T) -> Unit {  // Now the class itself is a function that takes T
     companion object {
         fun CSHasRegistrations.throttler(
-            after: Duration, function: suspend () -> Unit) =
+            after: Duration, function: suspend () -> Unit
+        ) =
             Throttler<Unit>(this, Main, { function() }, after)
 
         fun CSHasRegistrations.throttler(
             dispatcher: CoroutineDispatcher = Main,
-            after: Duration, function: suspend () -> Unit) =
+            after: Duration, function: suspend () -> Unit
+        ) =
             Throttler<Unit>(this, dispatcher, { function() }, after)
 
         fun CSHasRegistrations.throttler(
-            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit) =
+            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit
+        ) =
             Throttler<Unit>(this, dispatcher, { function() })
 
         fun CSHasRegistrations.throttler(
-            function: suspend () -> Unit) =
+            function: suspend () -> Unit
+        ) =
             Throttler<Unit>(this, Main, { function() })
 
         fun <T> CSHasRegistrations.throttler(
