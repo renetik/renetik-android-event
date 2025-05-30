@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -7,28 +9,34 @@ import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import kotlin.Result.Companion.success
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
+// isTrue|isFalse|onFalse can changed on other thread
 suspend fun CSHasChangeValue<Boolean>.waitIsTrue() {
     if (isFalse) suspendCancellableCoroutine {
-        var registration: CSRegistration? = null
-        registration = onTrue {
-            registration?.cancel()
-            registration = null
+        val registration = AtomicReference<CSRegistration?>(null)
+        fun resume() = registration.exchange(null)?.apply {
+            cancel()
             it.resumeWith(success(Unit))
         }
-        it.invokeOnCancellation { registration?.cancel() }
+        registration.store(onTrue { resume() })
+        if (isTrue) resume()
+        it.invokeOnCancellation { registration.exchange(null)?.cancel() }
     }
 }
 
+// isTrue|isFalse|onFalse can changed on other thread
 suspend fun CSHasChangeValue<Boolean>.waitIsFalse() {
     if (isTrue) suspendCancellableCoroutine {
-        var registration: CSRegistration? = null
-        registration = onFalse {
-            registration?.cancel()
-            registration = null
+        val registration = AtomicReference<CSRegistration?>(null)
+        fun resume() = registration.exchange(null)?.apply {
+            cancel()
             it.resumeWith(success(Unit))
         }
-        it.invokeOnCancellation { registration?.cancel() }
+        registration.store(onFalse { resume() })
+        if (isFalse) resume()
+        it.invokeOnCancellation { registration.exchange(null)?.cancel() }
     }
 }
 
@@ -71,14 +79,17 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
 
 fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
-    registration: () -> CSRegistration?): CSRegistration =
+    registration: () -> CSRegistration?
+): CSRegistration =
     actionTrue { untilFalse(registration()) }
 
 fun CSHasChangeValue<Boolean>.untilFalse(
-    registration: CSRegistration): CSRegistration =
+    registration: CSRegistration
+): CSRegistration =
     onFalse { registration.cancel() }
 
 @JvmName("untilFalseCSRegistrationNullable")
 fun CSHasChangeValue<Boolean>.untilFalse(
-    registration: CSRegistration?): CSRegistration? =
+    registration: CSRegistration?
+): CSRegistration? =
     registration?.let(::untilFalse)
