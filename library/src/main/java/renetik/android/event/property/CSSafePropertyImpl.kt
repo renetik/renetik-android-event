@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KProperty
 
 class CSSafePropertyImpl<T>(
-    parent: CSHasDestruct,
+    parent: CSHasDestruct?,
     value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
 ) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
 
