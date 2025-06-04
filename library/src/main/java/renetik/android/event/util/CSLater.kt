@@ -28,5 +28,5 @@ object CSLater {
     //TODO: Move to CSHasRegistrations+MainHandler
     inline fun CSHasRegistrations.later(
         after: Duration, crossinline function: () -> Unit,
-    ) = later(after.inWholeMilliseconds.toInt(), function)
+    ): CSRegistration = later(after.inWholeMilliseconds.toInt(), function)
 }
