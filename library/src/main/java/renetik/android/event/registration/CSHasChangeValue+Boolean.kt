@@ -8,6 +8,7 @@ import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -80,16 +81,22 @@ operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
 
 fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     registration: () -> CSRegistration?
-): CSRegistration =
-    actionTrue { untilFalse(registration()) }
+): CSRegistration {
+    var untilFalseRegistration: CSRegistration? = null
+    val actionTrueRegistration = actionTrue {
+        untilFalseRegistration = untilFalse(registration())
+    }
+    return CSRegistration {
+        actionTrueRegistration.cancel()
+        untilFalseRegistration?.cancel()
+    }
+}
 
 fun CSHasChangeValue<Boolean>.untilFalse(
     registration: CSRegistration
-): CSRegistration =
-    onFalse { registration.cancel() }
+): CSRegistration = onFalse { registration.cancel() }
 
 @JvmName("untilFalseCSRegistrationNullable")
 fun CSHasChangeValue<Boolean>.untilFalse(
     registration: CSRegistration?
-): CSRegistration? =
-    registration?.let(::untilFalse)
+): CSRegistration? = registration?.let { untilFalse(it) }
