@@ -9,14 +9,9 @@ class CSSafePropertyImpl<T>(
     parent: CSHasDestruct?,
     value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
 ) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
-
     private val field = AtomicReference(value)
-
     override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
-
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        this.value = value
-    }
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = value(value)
 
     override fun getAndSet(newValue: T): T {
         val previous = field.getAndSet(newValue)
