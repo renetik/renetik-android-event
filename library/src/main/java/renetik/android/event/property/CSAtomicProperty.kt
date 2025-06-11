@@ -28,7 +28,7 @@ class CSAtomicProperty<T>(
         this.value = value
     }
 
-    fun getAndSet(newValue: T): T {
+    override fun getAndSet(newValue: T): T {
         val previous = field.getAndSet(newValue)
         if (previous != newValue) onValueChanged(newValue)
         return previous
