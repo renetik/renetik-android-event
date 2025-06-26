@@ -146,6 +146,19 @@ inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
     function(argument)
 }
 
+inline fun <Argument> CSHasChange<out Argument?>.onChangeNotNullOnce(
+    crossinline function: (Argument) -> Unit,
+): CSRegistration = onChange { registration, argument ->
+    if (argument != null) {
+        registration.cancel()
+        function(argument)
+    }
+}
+
+inline fun <Argument> CSHasChangeValue<out Argument?>.actionNotNullOnce(
+    crossinline function: (Argument) -> Unit,
+): CSRegistration? = value?.let { function(it); return null } ?: onChangeNotNullOnce(function)
+
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     after: Duration,
     crossinline function: Func,
