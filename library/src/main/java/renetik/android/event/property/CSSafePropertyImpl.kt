@@ -1,5 +1,6 @@
 package renetik.android.event.property
 
+import renetik.android.core.lang.atomic.CSAtomic
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.util.CSLater.onMain
 import java.util.concurrent.atomic.AtomicReference
@@ -46,6 +47,16 @@ class CSSafePropertyImpl<T>(
         fun <T> CSHasDestruct.safeProperty(
             value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
         ) = CSSafePropertyImpl(this, value, onChangeUnsafe)
+
+        fun <T> CSHasDestruct.safeProperty(
+            value: T, onChangeUnsafe: ((previous: T, current: T) -> Unit)
+        ): CSSafePropertyImpl<T> {
+            var previous by CSAtomic(value)
+            return CSSafePropertyImpl(this, value, {
+                onChangeUnsafe(previous, it)
+                previous = it
+            })
+        }
     }
 }
 
