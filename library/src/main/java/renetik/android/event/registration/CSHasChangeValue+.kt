@@ -247,7 +247,7 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
 inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
     list: MutableList<Item>,
     noinline function: (index: Int) -> Item
-): CSRegistration = action { value -> list.update(value, function) }
+): CSRegistration = action { value -> list.update(value, function = function) }
 
 fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
     parent: CSHasRegistrations? = null,
