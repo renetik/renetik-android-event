@@ -6,6 +6,7 @@ import renetik.android.core.lang.CSEnvironment.app
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.fire
 import renetik.android.event.invoke
 import renetik.android.event.registration.CSRegistrationsMap
 
@@ -41,7 +42,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
         }
         isDestructed = true
         registrations.cancel()
-        eventDestruct().clear()
+        eventDestruct.fire().clear()
         expectWeaklyReachable("CSContext $this onDestroy")
     }
 }

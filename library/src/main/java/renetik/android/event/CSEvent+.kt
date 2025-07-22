@@ -9,7 +9,9 @@ import renetik.android.event.registration.register
 
 fun CSEvent<Unit>.fire() = apply { fire(Unit) }
 
-operator fun CSEvent<Unit>.invoke() = apply { fire(Unit) }
+operator fun CSEvent<Unit>.invoke() {
+    fire(Unit)
+}
 
 operator fun <T> CSEvent<T>.invoke(param: T) = apply { fire(param) }
 
