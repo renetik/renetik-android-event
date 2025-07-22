@@ -9,6 +9,7 @@ import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.fire
+import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -27,6 +28,12 @@ fun <T> CSHasChange<T>.onChangeLaunch(
     function: suspend (T) -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
     it + onChange { param -> it + Main.launch { function(param) } }
+}
+
+fun <T> CSHasChange<T>.actionLaunch(
+    function: suspend () -> Unit
+): CSRegistration = CSRegistrationsMap(this).also {
+    it + action { it + Main.launch { function() } }
 }
 
 fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
