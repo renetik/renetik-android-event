@@ -2,14 +2,18 @@ package renetik.android.event.property
 
 import renetik.android.core.lang.atomic.CSAtomic
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.util.CSLater.onMain
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KProperty
 
 class CSSafePropertyImpl<T>(
-    parent: CSHasDestruct? = null,
+    parent: CSHasDestruct,
     value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
 ) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
+
+    init {
+        eventChange.firingOnMain(parent)
+    }
+
     private val field = AtomicReference(value)
     override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = value(value)
@@ -36,7 +40,7 @@ class CSSafePropertyImpl<T>(
 
     override fun fireChange() = value.let {
         onChange?.invoke(it)
-        if (eventChange.isListened) onMain { eventChange.fire(it) }
+        if (eventChange.isListened) eventChange.fire(it)
     }
 
     override var value: T

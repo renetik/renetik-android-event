@@ -7,9 +7,8 @@ interface CSEvent<T> : CSHasChange<T> {
 
     companion object {
         @JvmName("eventWithArgument")
-        fun <T> event(): CSEvent<T> = CSEventImpl()
-
-        fun event(): CSEvent<Unit> = CSEventImpl()
+        fun <T> event() = CSEventImpl<T>()
+        fun event() = CSEventImpl<Unit>()
 
         val Empty: CSEvent<Unit> = empty()
 

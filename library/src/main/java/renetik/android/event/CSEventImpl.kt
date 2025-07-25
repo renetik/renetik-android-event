@@ -2,12 +2,16 @@ package renetik.android.event
 
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.logging.CSLog.logDebugTrace
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
+import renetik.android.event.util.CSLater.onMain
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
 class CSEventImpl<T> : CSEvent<T> {
+    private var onMainParent: CSHasDestruct? = null
+    fun firingOnMain(parent: CSHasDestruct) = apply { onMainParent = parent }
     private val listeners = CopyOnWriteArrayList<CSEventListener<T>>()
 
     @Volatile
@@ -25,7 +29,9 @@ class CSEventImpl<T> : CSEvent<T> {
         }
         try {
             listeners.forEach { listener ->
-                if (listener.isActive) listener.invoke(argument)
+                if (listener.isActive)
+                    onMainParent?.onMain { listener(argument) }
+                        ?: listener(argument)
             }
         } finally {
             firing.set(false)
