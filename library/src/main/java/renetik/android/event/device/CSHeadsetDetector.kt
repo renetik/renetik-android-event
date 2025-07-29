@@ -30,6 +30,7 @@ import renetik.android.core.extensions.content.isPermissionsGranted
 import renetik.android.core.extensions.content.unregister
 import renetik.android.core.lang.CSHandler.threadHandler
 import renetik.android.core.lang.variable.assign
+import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.event.common.CSContext
 import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
 import renetik.android.event.registration.CSHasChangeValue
@@ -108,5 +109,10 @@ class CSHeadsetDetector(parent: CSContext) : CSContext(parent),
         context.unregister(btwBroadcastReceiver)
         audioManager.unregisterAudioDeviceCallback(deviceCallback)
         super.onDestruct()
+    }
+
+    init {
+        isDeviceHeadset.onChange { logDebug { "isDeviceHeadset:$it" } }
+        isBtHeadset.onChange { logDebug { "isBtHeadset:$it" } }
     }
 }
