@@ -34,7 +34,7 @@ inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
 }
 
 inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
-    crossinline function: Func
+    crossinline function: () -> Unit
 ): CSRegistrations {
     val registrations = CSRegistrationsMap(this)
     val laterOnceFunction = registrations.debouncer {

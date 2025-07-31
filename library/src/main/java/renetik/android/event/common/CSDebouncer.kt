@@ -11,6 +11,7 @@ import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.launch
 import renetik.android.event.registration.onCancel
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A debouncer class to delay action execution until a period of inactivity.
@@ -28,7 +29,7 @@ class CSDebouncer(
     parent: CSHasRegistrations,
     dispatcher: CoroutineDispatcher = Main,
     action: suspend () -> Unit,
-    private val after: Duration = Duration.ZERO,
+    private val after: Duration = 1.milliseconds,
 ) : CSFunc {
 
     companion object {
