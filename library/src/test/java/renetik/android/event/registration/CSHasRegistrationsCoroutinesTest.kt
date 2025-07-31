@@ -15,7 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import renetik.android.core.lang.result.context
+import renetik.android.core.lang.result.invoke
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
@@ -106,7 +106,7 @@ class CSHasRegistrationsCoroutinesTest {
         model.launch {
             count += 1
             wait1.waitIsFalse()
-            Main.context {
+            Main {
                 count += 1
                 wait2.waitIsFalse()
                 Main.launch {
@@ -134,10 +134,10 @@ class CSHasRegistrationsCoroutinesTest {
         val registration = parent.launch {
             count += 1
             wait1.waitIsFalse()
-            Main.context {
+            Main {
                 count += 1
                 wait2.waitIsFalse()
-                Main.context {
+                Main {
                     count += 1
                     assert(3, count)
                 }
