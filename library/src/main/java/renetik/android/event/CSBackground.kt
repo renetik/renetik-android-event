@@ -1,6 +1,13 @@
 package renetik.android.event
 
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import renetik.android.core.java.util.concurrent.background
 import renetik.android.core.java.util.concurrent.backgroundEach
 import renetik.android.core.java.util.concurrent.cancelInterrupt
@@ -22,23 +29,23 @@ object CSBackground {
     var executor: ScheduledExecutorService = createExecutor()
         private set
 
-//    var dispatcher: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
-//        private set
+    var dispatcher: ExecutorCoroutineDispatcher = executor.asCoroutineDispatcher()
+        private set
 
-//    var scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
-//        private set
+    var scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+        private set
 
     fun shutdown() = executor.shutdownAndWait()
 
     val isOff get() = executor.isShutdown
 
     fun restart() {
-//        scope.cancel()
-//        dispatcher.close()
+        scope.cancel()
+        dispatcher.close()
         shutdown()
         executor = createExecutor()
-//        dispatcher = executor.asCoroutineDispatcher()
-//        scope = CoroutineScope(SupervisorJob() + dispatcher)
+        dispatcher = executor.asCoroutineDispatcher()
+        scope = CoroutineScope(SupervisorJob() + dispatcher)
     }
 
     private fun createExecutor(): ScheduledExecutorService = newScheduledThreadPool(3) {
@@ -76,6 +83,26 @@ object CSBackground {
                     if (registration.isActive) function(registration)
                 }
             }, onPause = { task.cancelInterrupt() }
+        ).apply { if (start) start() }
+        return registration
+    }
+
+    inline fun backgroundEachLaunch(
+        after: Int, period: Int = after, start: Boolean = true,
+        @WorkerThread crossinline function: suspend () -> Unit,
+    ): CSRegistration {
+        val childJob = SupervisorJob()
+        val childScope = CoroutineScope(scope.coroutineContext + childJob)
+        var task: ScheduledFuture<*> by notNull()
+        val registration: CSRegistration = CSRegistration(
+            onResume = { registration ->
+                task = executor.backgroundEach(period.toLong(), max(after.toLong(), 1)) {
+                    if (registration.isActive) childScope.launch { function() }
+                }
+            }, onPause = {
+                task.cancelInterrupt()
+                childJob.cancelChildren()
+            }
         ).apply { if (start) start() }
         return registration
     }
