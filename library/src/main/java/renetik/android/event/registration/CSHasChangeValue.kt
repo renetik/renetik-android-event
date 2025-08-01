@@ -607,6 +607,15 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onChange(first.value, second.value, third.value, fourth.value)
         }
 
+
+        fun <Argument1, Argument2, Argument3, Argument4> CSQuadruple<CSHasChangeValue<Argument1>,
+                CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
+                CSHasChangeValue<Argument4>>.onChangeLaterOnce(
+            onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
+        ): CSRegistration = list(first, second, third, fourth).onChangeLaterOnce {
+            onChange(first.value, second.value, third.value, fourth.value)
+        }
+
         fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
