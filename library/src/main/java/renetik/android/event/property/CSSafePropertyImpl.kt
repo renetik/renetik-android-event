@@ -56,10 +56,10 @@ class CSSafePropertyImpl<T>(
             value: T, onChangeUnsafe: ((previous: T, current: T) -> Unit)
         ): CSSafePropertyImpl<T> {
             var previous by CSAtomic(value)
-            return CSSafePropertyImpl(this, value, {
+            return CSSafePropertyImpl(this, value) {
                 onChangeUnsafe(previous, it)
                 previous = it
-            })
+            }
         }
     }
 }
