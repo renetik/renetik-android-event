@@ -31,9 +31,10 @@ fun <T> CSHasChange<T>.onChangeLaunch(
 }
 
 fun <T> CSHasChange<T>.actionLaunch(
+    dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + action { it + Main.launch { function() } }
+    it + action { it + dispatcher.launch { function() } }
 }
 
 fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
@@ -70,12 +71,14 @@ fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
 }
 
 fun <T> CSHasChangeValue<T>.actionLaunch(
-    parent: CSHasRegistrations, function: suspend (T) -> Unit,
+    parent: CSHasRegistrations,
+    dispatcher: CoroutineDispatcher = Main,
+    function: suspend (T) -> Unit,
 ): CSRegistration {
     var previous: JobRegistration? = null
     var current: JobRegistration? = null
     val onChangeRegistration = action { param ->
-        current = parent.launch { registration ->
+        current = parent.launch(dispatcher) { registration ->
             previous?.waitToFinish()
             previous = registration
             function(param)

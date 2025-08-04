@@ -18,8 +18,7 @@ interface CSSafeHasChangeValue<T> : CSSafeValue<T>, CSHasChangeValue<T> {
             parent: CSHasDestruct,
             onChange: ArgFunc<T>? = null
         ): CSSafeHasChangeValue<T> = let { property ->
-            object : CSPropertyBase<T>(parent, onChange),
-                CSSafeHasChangeValue<T> {
+            object : CSPropertyBase<T>(parent, onChange), CSSafeHasChangeValue<T> {
                 @Volatile
                 override var value: T = property.value
                 override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
