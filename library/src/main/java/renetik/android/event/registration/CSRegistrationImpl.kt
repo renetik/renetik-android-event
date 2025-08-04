@@ -16,7 +16,7 @@ open class CSRegistrationImpl(
     final override var isCanceled: Boolean = false
         private set
 
-    override val eventCancel = event()
+    override val eventCancel by lazy { event().firingOnMain(this) }
 
     @Synchronized
     @AnyThread

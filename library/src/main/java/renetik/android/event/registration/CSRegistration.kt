@@ -5,12 +5,15 @@ import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.CSHasCancel
 import renetik.android.core.lang.Func
 import renetik.android.event.CSEvent
+import renetik.android.event.common.CSHasDestruct
 import java.io.Closeable
 
-interface CSRegistration : CSHasCancel, Closeable {
+interface CSRegistration : CSHasCancel, Closeable, CSHasDestruct {
     val isActive: Boolean
     val isCanceled: Boolean
     val eventCancel: CSEvent<Unit>
+    override val isDestructed: Boolean get() = isCanceled
+    override val eventDestruct: CSEvent<Unit> get() = eventCancel
 
     @AnyThread
     fun resume()
