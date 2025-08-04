@@ -11,7 +11,8 @@ import kotlin.time.Duration
  * looks like doesn't remove runnable immediately
  */
 inline fun Handler.laterEach(
-    after: Int, period: Int = after, crossinline function: Func,
+    after: Int, period: Int = after,
+    start: Boolean = true, crossinline function: Func,
 ): CSRegistration {
     val token = object {}
     lateinit var registration: CSRegistration
@@ -26,9 +27,13 @@ inline fun Handler.laterEach(
         onResume = { postAtTime(runnable, token, uptimeMillis() + after.toLong()) },
         onCancel = { removeCallbacksAndMessages(token) }
     )
-    registration.start()
+    if (start) registration.start()
     return registration
 }
+
+inline fun Handler.laterEach(
+    after: Int, period: Int = after, crossinline function: Func,
+) = laterEach(after, period, start = true, function)
 
 inline fun Handler.later(after: Int, crossinline function: Func): CSRegistration {
     val token = object {}
@@ -51,8 +56,15 @@ inline fun Handler.later(crossinline function: Func): CSRegistration {
 }
 
 inline fun Handler.laterEach(
+    after: Duration, period: Duration = after,
+    start: Boolean = true, crossinline function: Func,
+) = laterEach(after.inWholeMilliseconds.toInt(),
+    period.inWholeMilliseconds.toInt(), start, function)
+
+inline fun Handler.laterEach(
     after: Duration, period: Duration = after, crossinline function: Func,
-) = laterEach(after.inWholeMilliseconds.toInt(), period.inWholeMilliseconds.toInt(), function)
+) = laterEach(after.inWholeMilliseconds.toInt(),
+    period.inWholeMilliseconds.toInt(), start = true, function)
 
 inline fun Handler.later(after: Duration, crossinline function: Func) =
     later(after.inWholeMilliseconds.toInt(), function)
