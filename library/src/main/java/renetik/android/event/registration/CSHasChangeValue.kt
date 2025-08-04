@@ -263,6 +263,20 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        fun <Argument, Return> CSHasChangeValue<Argument>.safeHasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument) -> Return,
+            onChange: ArgFunc<Return>? = null
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSHasChangeValueBase<Return>(parent, onChange) {
+                @Volatile override var value: Return = from(property.value)
+
+                init {
+                    this + property.onChange { value(from(it)) }
+                }
+            }
+        }
+
         fun <Argument, Return> CSHasChangeValue<Argument>.hasChangeValue(
             parent: CSHasRegistrations? = null,
             fromWithPrevious: (Argument, Return?) -> Return,
