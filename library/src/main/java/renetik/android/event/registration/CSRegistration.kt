@@ -14,6 +14,7 @@ interface CSRegistration : CSHasCancel, Closeable, CSHasDestruct {
     val eventCancel: CSEvent<Unit>
     override val isDestructed: Boolean get() = isCanceled
     override val eventDestruct: CSEvent<Unit> get() = eventCancel
+    override fun onDestruct() = Unit
 
     @AnyThread
     fun resume()
