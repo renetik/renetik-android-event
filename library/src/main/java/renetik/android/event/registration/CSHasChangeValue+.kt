@@ -69,7 +69,7 @@ inline fun <reified T> CSHasChangeValue<*>.asType(): CSHasChangeValue<T?> =
 
 inline fun <reified T> CSHasChangeValue<*>.onType(
     crossinline function: (T) -> Unit
-): CSRegistration = onChange {
+): CSRegistration = action {
     (it as? T)?.also { type -> function(type) }
 }
 
