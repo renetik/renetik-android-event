@@ -2,6 +2,7 @@ package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFunc
+import renetik.android.core.lang.notNull
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSeventuple
@@ -15,7 +16,6 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import kotlin.properties.Delegates.notNull
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
@@ -307,9 +307,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 previous?.destruct(); from(type)
             }, onChange)
 
+
         @JvmName("hasChangeValueChild")
-        fun <ParentValue, Return : Any>
-                CSHasChangeValue<ParentValue>.hasChangeValue(
+        fun <ParentValue, Return> CSHasChangeValue<ParentValue>.hasChangeValue(
             parent: CSHasRegistrations? = null,
             child: (ParentValue) -> CSHasChangeValue<Return>,
             onChange: ((Return) -> Unit)? = null
