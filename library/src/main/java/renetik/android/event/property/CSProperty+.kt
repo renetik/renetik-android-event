@@ -13,9 +13,6 @@ import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
 import kotlin.math.roundToInt
 
-val <T> CSProperty<T>.optional: CSProperty<T?>
-    get() = property(value) { it?.also(::value) }
-
 fun <T : CSProperty<*>> T.fire() = apply { fireChange() }
 fun <T : CSProperty<*>> T.paused(
     fire: Boolean = true, function: (T).() -> Unit
