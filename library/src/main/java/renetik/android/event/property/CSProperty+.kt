@@ -13,8 +13,8 @@ import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
 import kotlin.math.roundToInt
 
-//fun <T> CSProperty<T?>.lateProperty(): CSProperty<T> =
-//    delegate(from = { it!! }, to = { it })TODO: We dont have such delegate..
+val <T> CSProperty<T>.optional: CSProperty<T?>
+    get() = property(value) { it?.also(::value) }
 
 fun <T : CSProperty<*>> T.fire() = apply { fireChange() }
 fun <T : CSProperty<*>> T.paused(
