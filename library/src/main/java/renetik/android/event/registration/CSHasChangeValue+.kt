@@ -47,6 +47,9 @@ inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> = !is
 inline infix fun <T> CSHasChangeValue<T>.isSetTo(value: T): CSHasChangeValue<Boolean> =
     delegate(from = { it == value })
 
+inline infix fun <T> CSHasChangeValue<T>.isEqualTo(other: CSHasChangeValue<T>): CSHasChangeValue<Boolean> =
+    (this to other).delegate(from = { first, second -> first == second })
+
 inline infix fun <T> CSHasChangeValue<T>.isTrue(
     crossinline condition: (T) -> Boolean
 ): CSHasChangeValue<Boolean> = delegate(from = { condition(it) })
