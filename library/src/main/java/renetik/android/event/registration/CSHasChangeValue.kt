@@ -548,9 +548,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument3>>.onChangeLaterOnce(
             onChange: (Argument1, Argument2, Argument3) -> Unit,
         ): CSRegistration = list(first, second, third).onChangeLaterOnce {
-            onChange(first.value,
-                second.value,
-                third.value)
+            onChange(first.value, second.value, third.value)
         }
 
         fun <Argument1, Argument2, Argument3>
