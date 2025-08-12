@@ -34,6 +34,7 @@ inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
 }
 
 inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
+    isActionNow: Boolean = false,
     crossinline function: () -> Unit
 ): CSRegistrations {
     val registrations = CSRegistrationsMap(this)
@@ -41,6 +42,10 @@ inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
         if (registrations.isActive) function()
     }
     forEach { registrations + it.onChange { laterOnceFunction() } }
-    laterOnceFunction()
+    if (isActionNow) function() else laterOnceFunction()
     return registrations
 }
+
+inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
+    crossinline function: () -> Unit
+) = actionLaterOnce(isActionNow = false, function)
