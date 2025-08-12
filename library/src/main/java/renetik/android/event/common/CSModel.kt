@@ -28,7 +28,7 @@ open class CSModel(
         isDestructed = true
         registrations.cancel()
         eventDestruct.fire().clear()
-        expectWeaklyReachable("$className $this onDestroy")
+        expectWeaklyReachable { "$className $this onDestruct" }
     }
 }
 

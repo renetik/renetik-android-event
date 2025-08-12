@@ -32,7 +32,7 @@ abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
         isDestructed = true
         registrations.cancel()
         eventDestruct.fire().clear()
-        expectWeaklyReachable("$className $this onDestroy")
+        expectWeaklyReachable { "$className $this onDestruct" }
     }
 
     override fun onDestroy() {
