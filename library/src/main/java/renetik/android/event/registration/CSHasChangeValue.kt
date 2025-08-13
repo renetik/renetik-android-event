@@ -315,25 +315,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             parent: CSHasRegistrations? = null,
             child: (ParentValue) -> CSHasChangeValue<Return>,
             onChange: ((Return) -> Unit)? = null
-        ): CSHasChangeValue<Return> =
-            let { property ->
-                object : CSHasChangeValueBase<Return>(parent, onChange) {
-                    var isInitialized = false
-                    override var value: Return by notNull()
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSHasChangeValueBase<Return>(parent, onChange) {
+                var isInitialized = false
+                override var value: Return by notNull()
 
-                    init {
-                        this + property.action(
-                            child = { child(it) }, action = { value(it) })
-                    }
+                init {
+                    this + property.action(
+                        child = { child(it) }, action = { value(it) })
+                }
 
-                    override fun value(newValue: Return) {
-                        if (isInitialized && value == newValue) return
-                        value = newValue
-                        isInitialized = true
-                        onValueChanged(newValue)
-                    }
+                override fun value(newValue: Return) {
+                    if (isInitialized && value == newValue) return
+                    value = newValue
+                    isInitialized = true
+                    onValueChanged(newValue)
                 }
             }
+        }
 
         fun <ParentValue, Return>
                 CSHasChangeValue<ParentValue>.hasChangeValueNullable(
