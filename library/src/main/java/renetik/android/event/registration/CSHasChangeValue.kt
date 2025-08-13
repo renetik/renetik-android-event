@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.collections.list
@@ -19,12 +21,12 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
-        fun <T> emptyNullable() = object : CSHasChangeValue<T?> {
+        inline fun <T> emptyNullable() = object : CSHasChangeValue<T?> {
             override val value: T? = null
             override fun onChange(function: (T?) -> Unit) = CSRegistration.Empty
         }
 
-        fun <T> empty(value: T) = object : CSHasChangeValue<T> {
+        inline fun <T> empty(value: T) = object : CSHasChangeValue<T> {
             override val value: T = value
             override fun onChange(function: (T) -> Unit) = CSRegistration.Empty
         }

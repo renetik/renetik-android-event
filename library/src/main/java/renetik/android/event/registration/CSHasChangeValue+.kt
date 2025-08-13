@@ -17,16 +17,16 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 import kotlin.Result.Companion.success
 
 @JvmName("destructPreviousNullable")
-fun <T : CSHasDestruct, P : CSHasChangeValue<T?>> P.destructPrevious() =
+inline fun <T : CSHasDestruct, P : CSHasChangeValue<T?>> P.destructPrevious() =
     apply { onChangeFrom { it?.destruct() } }
 
-fun <T : CSHasDestruct, P : CSHasChangeValue<T>> P.destructPrevious() =
+inline fun <T : CSHasDestruct, P : CSHasChangeValue<T>> P.destructPrevious() =
     apply { onChangeFrom { it.destruct() } }
 
-val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
+inline val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
     get() = this?.delegate(from = { it }) ?: emptyNullable()
 
-suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
+suspend inline fun <T> CSHasChangeValue<T>.waitFor(crossinline condition: (T) -> Boolean) {
     if (!condition(value)) suspendCancellableCoroutine { coroutine ->
         var registration: CSRegistration? = null
         registration = onChange {
@@ -82,14 +82,14 @@ inline fun <T> CSHasChangeValue<T>.onValue(function: (T) -> Unit) {
     else function(value)
 }
 
-fun <T> CSHasChangeValue<T>.action(function: (T) -> Unit): CSRegistration {
+inline fun <T> CSHasChangeValue<T>.action(noinline function: (T) -> Unit): CSRegistration {
     onValue(function)
     return onChange(function)
 }
 
-fun <T> CSHasChangeValue<T>.actionLaunch(
+inline fun <T> CSHasChangeValue<T>.actionLaunch(
     dispatcher: CoroutineDispatcher = Main,
-    function: suspend (T) -> Unit): CSRegistration {
+    crossinline function: suspend (T) -> Unit): CSRegistration {
     val registrations = CSRegistrationsMap(this)
     registrations + action { param ->
         registrations + dispatcher.launch { function(param) }
@@ -97,48 +97,48 @@ fun <T> CSHasChangeValue<T>.actionLaunch(
     return registrations
 }
 
-fun <T> CSHasChangeValue<T>.onChangeFrom(
-    function: (from: T) -> Unit,
+inline fun <T> CSHasChangeValue<T>.onChangeFrom(
+    crossinline function: (from: T) -> Unit,
 ): CSRegistration {
     var value = this.value
     return onChange { function(value); value = it }
 }
 
-fun <T> CSHasChangeValue<T?>.onChangeNotNull(
-    function: (from: T) -> Unit,
+inline fun <T> CSHasChangeValue<T?>.onChangeNotNull(
+    crossinline function: (from: T) -> Unit,
 ): CSRegistration = onChange { it?.let(function) }
 
-fun <T> CSHasChangeValue<T>.onChangeFromTo(
-    function: (from: T, to: T) -> Unit,
+inline fun <T> CSHasChangeValue<T>.onChangeFromTo(
+    crossinline function: (from: T, to: T) -> Unit,
 ): CSRegistration {
     var value = this.value
     return onChange { function(value, it); value = it }
 }
 
-fun <T> CSHasChangeValue<T>.actionFromTo(
-    function: (from: T?, to: T) -> Unit,
+inline fun <T> CSHasChangeValue<T>.actionFromTo(
+    crossinline function: (from: T?, to: T) -> Unit,
 ): CSRegistration {
     function(null, value)
     var value = this.value
     return onChange { function(value, it); value = it }
 }
 
-fun <T> CSHasChangeValue<out T?>.onNull(function: () -> Unit) =
+inline fun <T> CSHasChangeValue<out T?>.onNull(crossinline function: () -> Unit) =
     onChange { if (it == null) function() }
 
-fun <T> CSHasChangeValue<out T?>.onNotNull(function: () -> Unit) =
+inline fun <T> CSHasChangeValue<out T?>.onNotNull(crossinline function: () -> Unit) =
     onChange { if (it != null) function() }
 
-fun <T> CSHasChangeValue<out T?>.onNotNull(function: (T) -> Unit) =
+inline fun <T> CSHasChangeValue<out T?>.onNotNull(crossinline function: (T) -> Unit) =
     onChange { if (it != null) function(it) }
 
-fun <T> CSHasChangeValue<T?>.actionNull(function: () -> Unit): CSRegistration =
+inline fun <T> CSHasChangeValue<T?>.actionNull(crossinline function: () -> Unit) =
     action { if (it == null) function() }
 
-fun <T> CSHasChangeValue<T?>.actionNotNull(function: () -> Unit) =
+inline fun <T> CSHasChangeValue<T?>.actionNotNull(crossinline function: () -> Unit) =
     action { if (it != null) function() }
 
-fun <T> CSHasChangeValue<T?>.actionNotNull(function: (T) -> Unit) =
+inline fun <T> CSHasChangeValue<T?>.actionNotNull(crossinline function: (T) -> Unit) =
     action { if (it != null) function(it) }
 
 inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
@@ -146,7 +146,7 @@ inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
 ): CSRegistration =
     onChange { if (this.value == value) onChange() }
 
-fun <Value> CSHasChangeValue<Value>.hasValue(
+inline fun <Value> CSHasChangeValue<Value>.hasValue(
     parent: CSHasRegistrations? = null, value: Value,
 ): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
