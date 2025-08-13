@@ -2,6 +2,7 @@ package renetik.android.event
 
 import renetik.android.core.lang.Func
 import renetik.android.event.property.CSProperty
+import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
@@ -56,7 +57,7 @@ fun CSEvent<*>.paused(function: Func) {
 fun <EventArg, PropertyType> CSEvent<EventArg>.delegate(
     parent: CSHasRegistrations? = null, from: () -> PropertyType
 ): CSHasChangeValue<PropertyType> {
-    val property = CSProperty.property(from())
+    val property = property(from())
     listen { property.value = from() }.also { parent?.register(it) }
     return property
 }
@@ -64,7 +65,7 @@ fun <EventArg, PropertyType> CSEvent<EventArg>.delegate(
 fun <EventArg, PropertyType> CSEvent<EventArg>.delegateLate(
     parent: CSHasRegistrations? = null, from: () -> PropertyType
 ): CSHasChangeValue<PropertyType?> {
-    val property = CSProperty.property<PropertyType?>(null)
+    val property = property<PropertyType?>(null)
     listen { property.value = from() }.also { parent?.register(it) }
     return property
 }

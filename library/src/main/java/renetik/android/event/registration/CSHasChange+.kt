@@ -104,6 +104,14 @@ fun CSHasChange<Boolean>.onFalseLaunch(
     it + onFalse { it + dispatcher.launch { function() } }
 }
 
+
+fun CSHasChangeValue<Boolean>.actionFalseLaunch(
+    dispatcher: CoroutineDispatcher = Main,
+    function: suspend () -> Unit
+): CSRegistration = CSRegistrationsMap(this).also {
+    it + actionFalse { it + dispatcher.launch { function() } }
+}
+
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
     suspendCancellableCoroutine { coroutine ->
         var registration: CSRegistration? = null
