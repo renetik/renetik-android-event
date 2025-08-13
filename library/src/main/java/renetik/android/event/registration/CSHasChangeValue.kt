@@ -347,7 +347,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     init {
                         this + property.action(
                             nullableChild = { child(it) },
-                            onChange = { value(it) })
+                            action = ::value)
                     }
                 }
             }
