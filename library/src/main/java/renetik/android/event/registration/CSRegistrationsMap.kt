@@ -5,6 +5,7 @@ import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
@@ -72,7 +73,8 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         isCancelling = true
         registrationMap.onEach { it.value.cancel() }.clear()
         isCanceled = true
-        eventCancel.fire()
+        eventCancel.fire().clear()
+        expectWeaklyReachable { "$className $this cancel" }
     }
 
     @Synchronized
