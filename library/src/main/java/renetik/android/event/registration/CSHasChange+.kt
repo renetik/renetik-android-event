@@ -25,16 +25,17 @@ fun CSHasChange<Boolean>.onFalse(function: () -> Unit): CSRegistration =
     onChange { param -> if (!param) function() }
 
 fun <T> CSHasChange<T>.onChangeLaunch(
+    dispatcher: CoroutineDispatcher = Main,
     function: suspend (T) -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + onChange { param -> it + Main.launch { function(param) } }
+    it + onChange { param -> it.launch(dispatcher) { function(param) } }
 }
 
 fun <T> CSHasChange<T>.actionLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + action { it + dispatcher.launch { function() } }
+    it + action { it.launch(dispatcher) { function() } }
 }
 
 fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
@@ -92,24 +93,24 @@ fun <T> CSHasChangeValue<T>.actionLaunch(
 }
 
 fun CSHasChange<Boolean>.onTrueLaunch(
+    dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + onTrue { it + Main.launch { function() } }
+    it + onTrue { it.launch(dispatcher) { function() } }
 }
 
 fun CSHasChange<Boolean>.onFalseLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + onFalse { it + dispatcher.launch { function() } }
+    it + onFalse { it.launch(dispatcher) { function() } }
 }
-
 
 fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(this).also {
-    it + actionFalse { it + dispatcher.launch { function() } }
+    it + actionFalse { it.launch(dispatcher) { function() } }
 }
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =

@@ -92,7 +92,7 @@ inline fun <T> CSHasChangeValue<T>.actionLaunch(
     crossinline function: suspend (T) -> Unit): CSRegistration {
     val registrations = CSRegistrationsMap(this)
     registrations + action { param ->
-        registrations + dispatcher.launch { function(param) }
+        registrations.launch(dispatcher) { function(param) }
     }
     return registrations
 }
