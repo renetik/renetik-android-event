@@ -65,12 +65,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (List<Argument>) -> Return,
-        ): CSHasChangeValue<Return> = let { property ->
+        ): CSHasChangeValue<Return> = let { properties ->
             object : CSHasChangeValue<Return> {
-                override val value: Return get() = from(property.map { it.value })
+                override val value: Return get() = from(properties.map { it.value })
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
                     val value = ValueFunction(value, function)
-                    return property.onChange {
+                    return properties.onChange {
                         if (parent.isActive) value(from(it))
                     }.registerTo(parent)
                 }
@@ -764,14 +764,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         inline fun <T : CSHasChangeValue<Value>, Value> List<T>.onChange(
             crossinline function: ArgFunc<List<Value>>
-        ): CSRegistration {
-            val registrations = CSRegistrationsMap(this)
-            forEach { item ->
-                registrations.register(item.onChange {
+        ): CSRegistration = CSRegistrationsMap(this).also { registrations ->
+            forEach { item: CSHasChangeValue<Value> ->
+                registrations + item.onChange {
                     if (registrations.isActive) function(map { it.value })
-                })
+                }
             }
-            return registrations
         }
 
         inline fun <T : CSHasChangeValue<Value>, Value> List<T>.action(
