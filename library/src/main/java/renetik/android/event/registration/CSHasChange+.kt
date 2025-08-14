@@ -188,6 +188,20 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     return registrations
 }
 
+inline fun <Argument> CSHasChangeValue<Argument>.onChangeLaterOnce(
+    after: Duration = ZERO,
+    crossinline onChange: ArgFunc<Argument>,
+): CSRegistration {
+    val registrations = CSRegistrationsMap(this)
+    var value1: Argument? = null
+    val laterOnceFunction = registrations.debouncer(after) {
+        if (registrations.isActive) onChange(value1 ?: value)
+        value1 = null
+    }
+    registrations + onChange { value1 = it; laterOnceFunction() }
+    return registrations
+}
+
 inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
     after: Duration = ZERO,
     crossinline onChange: ArgFunc<Argument>,
