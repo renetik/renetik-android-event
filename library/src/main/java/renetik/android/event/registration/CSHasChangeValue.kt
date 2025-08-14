@@ -422,6 +422,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onChange: () -> Unit,
         ): CSRegistration = list(first, second).onChangeLaterOnce { onChange() }
 
+        fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChangeLaterOnce(
+            onChange: (Argument1, Argument2) -> Unit,
+        ): CSRegistration =
+            list(first, second).onChangeLaterOnce { onChange(first.value, second.value) }
+
         fun <Argument1, Argument2, Argument3, Return>
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
