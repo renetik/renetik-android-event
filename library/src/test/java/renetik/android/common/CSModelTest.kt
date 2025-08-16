@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
-import renetik.android.event.common.onDestructed
+import renetik.android.event.registration.invoke
 
 class CSModelTest {
     @Test
@@ -13,7 +13,7 @@ class CSModelTest {
         assertEquals(0, parent.registrations.size)
         val child = CSModel(parent)
         var isDestructedCount = 0
-        child.onDestructed { isDestructedCount += 1 }
+        child.eventDestruct { isDestructedCount += 1 }
         assertEquals(0, parent.registrations.size)
         assertEquals(1, child.registrations.size)
         child.destruct()
@@ -29,7 +29,7 @@ class CSModelTest {
         assertEquals(0, parent.registrations.size)
         val child = CSModel(parent)
         var isDestructedCount = 0
-        child.onDestructed { isDestructedCount += 1 }
+        child.eventDestruct { isDestructedCount += 1 }
         assertEquals(0, parent.registrations.size)
         assertEquals(1, child.registrations.size)
         parent.destruct()

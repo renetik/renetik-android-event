@@ -11,8 +11,9 @@ import renetik.android.event.registration.plus
 
 fun <T : CSHasDestruct> T.destruct() = onDestruct()
 
-inline fun CSHasDestruct.onDestructed(crossinline func: Func): CSRegistration =
+inline fun CSHasDestruct.onDestructed(crossinline func: Func){
     eventDestruct.listen(func)
+}
 
 inline fun CSHasDestruct.onDestructed(
     parent: CSHasRegistrations, crossinline func: Func
