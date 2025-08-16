@@ -30,7 +30,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     private var isCancelling: Boolean = false
 
-    internal val map: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
+    val map: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
     private val counter = AtomicInteger(0)
     private fun createUniqueId() = "${counter.incrementAndGet()}:${parent.className}-$nanoTime"
 
