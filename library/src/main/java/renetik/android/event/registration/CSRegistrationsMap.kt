@@ -30,7 +30,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     private var isCancelling: Boolean = false
 
-    private val registrationMap: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
+    internal val map: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
     private val counter = AtomicInteger(0)
     private fun createUniqueId() = "${counter.incrementAndGet()}:${parent.className}-$nanoTime"
 
@@ -39,7 +39,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
             logWarnTrace { "Already canceled:$parent" }
             return
         }
-        registrationMap.forEach { it.value.setActive(isActive) }
+        map.forEach { it.value.setActive(isActive) }
     }
 
     @Synchronized
@@ -71,7 +71,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
             return
         }
         isCancelling = true
-        registrationMap.onEach { it.value.cancel() }.clear()
+        map.onEach { it.value.cancel() }.clear()
         isCanceled = true
         eventCancel.fire().clear()
         expectWeaklyReachable { "$className $this cancel" }
@@ -96,7 +96,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         return registration?.let { add(createUniqueId(), it) }
     }
 
-    fun isActive(key: String): Boolean = registrationMap[key]?.isActive.isTrue
+    fun isActive(key: String): Boolean = map[key]?.isActive.isTrue
 
     @Synchronized
     @AnyThread
@@ -109,7 +109,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
         if (registration.isCanceled) return registration
         if (isCanceled) return registration.also { it.cancel() }
-        registrationMap[key] = registration
+        map[key] = registration
         return object : CSRegistration {
             override val isActive: Boolean get() = registration.isActive
             override val isCanceled: Boolean get() = registration.isCanceled
@@ -131,7 +131,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         remove(key)
     }
 
-    private fun remove(key: String) = registrationMap.remove(key)?.cancel()
+    private fun remove(key: String) = map.remove(key)?.cancel()
 
     @Synchronized
     @AnyThread
@@ -140,7 +140,7 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
             registration.cancel()
             return
         }
-        val wasPresent = registrationMap.removeValue(registration)
+        val wasPresent = map.removeValue(registration)
         if (registration.isCanceled && !wasPresent) return
         if (!wasPresent) logWarnTrace { "Registration not found:$registration" }
         if (registration.isCanceled) return
@@ -148,9 +148,9 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
         if (isCanceled) logWarnTrace { "Already canceled:$this" }
     }
 
-    val size: Int get() = registrationMap.size
+    val size: Int get() = map.size
 
-    fun clear() = registrationMap.cancelRegistrations()
+    fun clear() = map.cancelRegistrations()
 
     override fun toString(): String =
         "${super.toString()} parent:$parent " + "size:$size isActive:$isActive isCanceled:$isCanceled"
