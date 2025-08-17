@@ -152,17 +152,25 @@ inline fun <Argument> CSHasChange<Argument>.onChange(
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
+    parent: CSHasRegistrations? = null,
     crossinline function: () -> Unit,
-): CSRegistration = onChange { registration: CSRegistration ->
-    registration.cancel()
-    function()
+) {
+    var registration: CSRegistration? = null
+    registration = onChange {
+        registration?.cancel()
+        function()
+    }.registerTo(parent)
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
+    parent: CSHasRegistrations? = null,
     crossinline function: (Argument) -> Unit,
-): CSRegistration = onChange { registration, argument ->
-    registration.cancel()
-    function(argument)
+) {
+    var registration: CSRegistration? = null
+    registration = onChange { argument ->
+        registration?.cancel()
+        function(argument)
+    }.registerTo(parent)
 }
 
 inline fun <Argument> CSHasChange<out Argument?>.onChangeNotNullOnce(

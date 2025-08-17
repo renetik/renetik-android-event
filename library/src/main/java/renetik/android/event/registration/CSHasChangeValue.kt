@@ -62,6 +62,21 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        inline fun <Return> CSHasChange<Unit>.delegate(
+            parent: CSHasRegistrations? = null,
+            crossinline from: () -> Return,
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSHasChangeValue<Return> {
+                override val value: Return get() = from()
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    val value = ValueFunction(value, function)
+                    return property.onChange {
+                        if (parent.isActive) value(from())
+                    }.registerTo(parent)
+                }
+            }
+        }
+
         fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (List<Argument>) -> Return,

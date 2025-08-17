@@ -8,11 +8,11 @@ import renetik.android.event.fire
 open class CSRegistrationImpl(
     isActive: Boolean = false
 ) : CSRegistration {
-    @get:Synchronized
+    @Volatile
     final override var isActive: Boolean = isActive
         private set
 
-    @get:Synchronized
+    @Volatile
     final override var isCanceled: Boolean = false
         private set
 
