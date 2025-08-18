@@ -84,6 +84,7 @@ fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
 ): CSRegistration {
     var untilFalseRegistration: CSRegistration? = null
     val actionTrueRegistration = actionTrue {
+        untilFalseRegistration?.cancel()
         untilFalseRegistration = untilFalse(registration())
     }
     return CSRegistration {
