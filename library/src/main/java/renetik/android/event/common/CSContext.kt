@@ -28,9 +28,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
 
     // Returning wrapped context as there is no use of this wrapped in child anywhere....
     final override val context: Context get() = baseContext
-
-    final override val registrations by lazy { CSRegistrationsMap(this) }
-
+    final override val registrations = CSRegistrationsMap(className)
     final override val eventDestruct = event<Unit>()
     final override var isDestructed = false
         private set

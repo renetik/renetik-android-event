@@ -3,6 +3,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
+import renetik.android.core.kotlin.className
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.Func
 import renetik.android.core.lang.tuples.CSQuadruple
@@ -27,14 +28,14 @@ fun CSHasChange<Boolean>.onFalse(function: () -> Unit): CSRegistration =
 fun <T> CSHasChange<T>.onChangeLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend (T) -> Unit
-): CSRegistration = CSRegistrationsMap(this).also {
+): CSRegistration = CSRegistrationsMap(className).also {
     it + onChange { param -> it.launch(dispatcher) { function(param) } }
 }
 
 fun <T> CSHasChange<T>.actionLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
-): CSRegistration = CSRegistrationsMap(this).also {
+): CSRegistration = CSRegistrationsMap(className).also {
     it + action { it.launch(dispatcher) { function() } }
 }
 
@@ -95,21 +96,21 @@ fun <T> CSHasChangeValue<T>.actionLaunch(
 fun CSHasChange<Boolean>.onTrueLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
-): CSRegistration = CSRegistrationsMap(this).also {
+): CSRegistration = CSRegistrationsMap(className).also {
     it + onTrue { it.launch(dispatcher) { function() } }
 }
 
 fun CSHasChange<Boolean>.onFalseLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
-): CSRegistration = CSRegistrationsMap(this).also {
+): CSRegistration = CSRegistrationsMap(className).also {
     it + onFalse { it.launch(dispatcher) { function() } }
 }
 
 fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
-): CSRegistration = CSRegistrationsMap(this).also {
+): CSRegistration = CSRegistrationsMap(className).also {
     it + actionFalse { it.launch(dispatcher) { function() } }
 }
 
@@ -190,7 +191,7 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     after: Duration,
     crossinline function: Func,
 ): CSRegistration {
-    val registrations = CSRegistrationsMap(this)
+    val registrations = CSRegistrationsMap(className)
     val laterOnceFunction = registrations.debouncer(after) { function() }
     registrations.register(onChange { laterOnceFunction() })
     return registrations
@@ -200,7 +201,7 @@ inline fun <Argument> CSHasChangeValue<Argument>.onChangeLaterOnce(
     after: Duration = ZERO,
     crossinline onChange: ArgFunc<Argument>,
 ): CSRegistration {
-    val registrations = CSRegistrationsMap(this)
+    val registrations = CSRegistrationsMap(className)
     var value1: Argument? = null
     val laterOnceFunction = registrations.debouncer(after) {
         if (registrations.isActive) onChange(value1 ?: value)
@@ -214,7 +215,7 @@ inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
     after: Duration = ZERO,
     crossinline onChange: ArgFunc<Argument>,
 ): CSRegistration {
-    val registrations = CSRegistrationsMap(this)
+    val registrations = CSRegistrationsMap(className)
     var value1: Argument? = null
     val laterOnceFunction = registrations.debouncer(after) {
         if (registrations.isActive) onChange(value1 ?: value)

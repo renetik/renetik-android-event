@@ -14,8 +14,7 @@ import renetik.android.event.fire
 import renetik.android.event.listen
 import java.util.concurrent.atomic.AtomicInteger
 
-class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
-    private val id: String = "${parent.className}:$parent"
+class CSRegistrationsMap(val id: String) : CSRegistrations, CSHasRegistrations {
     override val registrations: CSRegistrationsMap = this
 
     @get:Synchronized

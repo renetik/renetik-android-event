@@ -2,6 +2,7 @@
 
 package renetik.android.event.registration
 
+import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFunc
 import renetik.android.core.lang.notNull
@@ -732,7 +733,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.actionLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
         ): CSRegistration {
-            val registrations = CSRegistrationsMap(this)
+            val registrations = CSRegistrationsMap(className)
             var value1: Argument1? = null
             var value2: Argument2? = null
             var value3: Argument3? = null
@@ -783,7 +784,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         inline fun <T : CSHasChangeValue<Value>, Value> List<T>.onChange(
             crossinline function: ArgFunc<List<Value>>
-        ): CSRegistration = CSRegistrationsMap(this).also { registrations ->
+        ): CSRegistration = CSRegistrationsMap(className).also { registrations ->
             forEach { item: CSHasChangeValue<Value> ->
                 registrations + item.onChange {
                     if (registrations.isActive) function(map { it.value })

@@ -5,6 +5,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
+import renetik.android.core.kotlin.className
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
@@ -90,7 +91,7 @@ inline fun <T> CSHasChangeValue<T>.action(noinline function: (T) -> Unit): CSReg
 inline fun <T> CSHasChangeValue<T>.actionLaunch(
     dispatcher: CoroutineDispatcher = Main,
     crossinline function: suspend (T) -> Unit): CSRegistration {
-    val registrations = CSRegistrationsMap(this)
+    val registrations = CSRegistrationsMap(className)
     registrations + action { param ->
         registrations.launch(dispatcher) { function(param) }
     }
