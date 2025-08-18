@@ -2,7 +2,10 @@
 
 package renetik.android.event.registration
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
+import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.isFalse
@@ -72,9 +75,23 @@ fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
     return onTrue(function)
 }
 
+fun CSHasChangeValue<Boolean>.actionTrueLaunch(
+    dispatcher: CoroutineDispatcher = Main,
+    function: () -> Unit
+): CSRegistration = CSRegistrationsMap(className).also {
+    it + actionTrue { it.launch(dispatcher) { function() } }
+}
+
 fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
     if (isFalse) function()
     return onFalse(function)
+}
+
+fun CSHasChangeValue<Boolean>.actionFalseLaunch(
+    dispatcher: CoroutineDispatcher = Main,
+    function: () -> Unit
+): CSRegistration = CSRegistrationsMap(className).also {
+    it + actionFalse { it.launch(dispatcher) { function() } }
 }
 
 operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
