@@ -77,7 +77,7 @@ fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
 
 fun CSHasChangeValue<Boolean>.actionTrueLaunch(
     dispatcher: CoroutineDispatcher = Main,
-    function: () -> Unit
+    function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + actionTrue { it.launch(dispatcher) { function() } }
 }
@@ -89,7 +89,7 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
 
 fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     dispatcher: CoroutineDispatcher = Main,
-    function: () -> Unit
+    function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + actionFalse { it.launch(dispatcher) { function() } }
 }
