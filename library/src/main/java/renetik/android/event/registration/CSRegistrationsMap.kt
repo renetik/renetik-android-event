@@ -14,8 +14,8 @@ import renetik.android.event.fire
 import renetik.android.event.listen
 import java.util.concurrent.atomic.AtomicInteger
 
-class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegistrations {
-
+class CSRegistrationsMap(parent: Any) : CSRegistrations, CSHasRegistrations {
+    private val id: String = "${parent.className}:$parent"
     override val registrations: CSRegistrationsMap = this
 
     @get:Synchronized
@@ -32,11 +32,11 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
 
     val map: MutableMap<String, CSRegistration> by lazy(::mutableMapOf)
     private val counter = AtomicInteger(0)
-    private fun createUniqueId() = "${counter.incrementAndGet()}:${parent.className}-$nanoTime"
+    private fun createUniqueId() = "${counter.incrementAndGet()}-$id-$nanoTime"
 
     private fun onActiveChange(isActive: Boolean) {
         if (isCanceled) {
-            logWarnTrace { "Already canceled:$parent" }
+            logWarnTrace { "Already canceled id:$id" }
             return
         }
         map.forEach { it.value.setActive(isActive) }
@@ -60,21 +60,6 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
             return
         }
         if (isActive) isActive = false
-    }
-
-    @Synchronized
-    @AnyThread
-    override fun cancel() {
-        if (isCanceled) return
-        if (isCancelling) {
-            logWarnTrace { "Already cancelling:$this" }
-            return
-        }
-        isCancelling = true
-        map.onEach { it.value.cancel() }.clear()
-        isCanceled = true
-        eventCancel.fire().clear()
-        expectWeaklyReachable { "$className $this cancel" }
     }
 
     @Synchronized
@@ -153,7 +138,22 @@ class CSRegistrationsMap(private val parent: Any) : CSRegistrations, CSHasRegist
     fun clear() = map.cancelRegistrations()
 
     override fun toString(): String =
-        "${super.toString()} parent:$parent " + "size:$size isActive:$isActive isCanceled:$isCanceled"
+        "${super.toString()} id:$id size:$size isActive:$isActive isCanceled:$isCanceled"
 
     fun onCancel(function: Func) = eventCancel.listen(function)
+
+    @Synchronized
+    @AnyThread
+    override fun cancel() {
+        if (isCanceled) return
+        if (isCancelling) {
+            logWarnTrace { "Already cancelling:$this" }
+            return
+        }
+        isCancelling = true
+        map.onEach { it.value.cancel() }.clear()
+        isCanceled = true
+        eventCancel.fire().clear()
+        expectWeaklyReachable { "$className $this cancel" }
+    }
 }
