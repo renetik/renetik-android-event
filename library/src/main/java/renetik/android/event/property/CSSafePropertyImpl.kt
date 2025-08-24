@@ -11,7 +11,7 @@ class CSSafePropertyImpl<T>(
 ) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
 
     init {
-        eventChange.firingOnMain(parent)
+        eventChange.onMain(parent)
     }
 
     private val field = AtomicReference(value)

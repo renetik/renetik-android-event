@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class CSEventImpl<T> : CSEvent<T> {
     private var onMainParent: CSHasDestruct? = null
-    fun firingOnMain(parent: CSHasDestruct) = apply { onMainParent = parent }
+    fun onMain(parent: CSHasDestruct) = apply { onMainParent = parent }
     private val listeners = CopyOnWriteArrayList<CSEventListener<T>>()
 
     @Volatile
