@@ -2,6 +2,7 @@ package renetik.android.event
 
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.logging.CSLog.logDebugTrace
+import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
@@ -24,7 +25,7 @@ class CSEventImpl<T> : CSEvent<T> {
     override fun fire(argument: T) {
         if (paused) return
         if (!firing.compareAndSet(false, true)) {
-            logDebugTrace { "Event fired while firing" }
+            logErrorTrace { "Event fired while firing" }
             return
         }
         try {
