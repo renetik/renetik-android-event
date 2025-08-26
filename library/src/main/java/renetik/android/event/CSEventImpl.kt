@@ -1,7 +1,7 @@
 package renetik.android.event
 
 import renetik.android.core.kotlin.primitives.isTrue
-import renetik.android.core.logging.CSLog.logDebugTrace
+import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSRegistration
@@ -31,8 +31,11 @@ class CSEventImpl<T> : CSEvent<T> {
         try {
             listeners.forEach { listener ->
                 if (listener.isActive)
-                    onMainParent?.onMain { listener(argument) }
-                        ?: listener(argument)
+                    onMainParent?.onMain {
+                        runCatching { listener(argument) }.onFailure(::logError)
+                    } ?: run {
+                        runCatching { listener(argument) }.onFailure(::logError)
+                    }
             }
         } finally {
             firing.set(false)
