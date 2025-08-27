@@ -3,6 +3,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -23,6 +24,7 @@ import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
 import renetik.android.testing.CSAssert.assert
 import renetik.android.testing.TestApplication
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -152,6 +154,19 @@ class CSHasRegistrationsCoroutinesTest {
         wait2.setFalse()
         advanceUntilIdle()
         assert(2, count)
+    }
+
+
+    @Test
+    fun testRegistrationKeyLaunchCancel() = runTest {
+        val parent = CSModel()
+        assert(0, parent.registrations.size)
+        parent.launch("test key") { delay(5.milliseconds) }
+        assert(1, parent.registrations.size)
+        parent.launch("test key") { delay(5.milliseconds) }
+        assert(1, parent.registrations.size)
+        delay(10.milliseconds)
+        assert(0, parent.registrations.size)
     }
 
 }
