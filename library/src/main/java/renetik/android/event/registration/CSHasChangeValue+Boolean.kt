@@ -16,6 +16,9 @@ import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
+suspend fun CSHasChangeValue<Boolean>.suspendIfFalse() = waitIsTrue()
+suspend fun CSHasChangeValue<Boolean>.suspendIfTrue() = waitIsFalse()
+
 // isTrue|isFalse|onFalse can changed on other thread
 suspend fun CSHasChangeValue<Boolean>.waitIsTrue() {
     if (isFalse) suspendCancellableCoroutine {
