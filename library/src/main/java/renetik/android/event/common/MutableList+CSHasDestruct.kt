@@ -12,8 +12,15 @@ fun <T : CSHasDestruct> MutableList<T>.update(
     count: Int, eventAdded: CSEvent<T>? = null,
     eventRemoved: CSEvent<Int>? = null, function: (index: Int) -> T
 ) = size.update(count,
-    onAdd = { index -> this += function(index).also { eventAdded?.invoke(it) } },
-    onRemove = { index -> removeAt(index).destruct().also { eventRemoved?.invoke(index) } })
+    onAdd = { index ->
+        val item = function(index)
+        this += item
+        eventAdded?.invoke(item)
+    },
+    onRemove = { index ->
+        removeAt(index).destruct()
+            .also { eventRemoved?.invoke(index) }
+    })
 
 fun <T : CSHasDestruct> MutableList<T>.factory(
     parent: CSHasRegistrations,

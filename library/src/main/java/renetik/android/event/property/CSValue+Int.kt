@@ -8,11 +8,11 @@ import renetik.android.event.common.destruct
 
 fun CSValue<Int>.update(
     newCount: Int, onAdd: ArgFunc<Int>? = null, onRemove: ArgFunc<Int>? = null
-) = value.update(newCount, onAdd, onRemove)
+): Unit = value.update(newCount, onAdd, onRemove)
 
 fun <Item : CSHasDestruct> CSValue<Int>.update(
     list: MutableList<Item>, function: (index: Int) -> Item
-) = list.size.update(value,
+): Unit = list.size.update(value,
     onAdd = { index -> list.add(function(index)) },
     onRemove = { index -> list.removeAt(index).destruct() })
 
