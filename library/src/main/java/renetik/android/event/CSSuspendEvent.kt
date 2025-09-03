@@ -3,12 +3,19 @@ package renetik.android.event
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
+import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
-class CSSuspendEvent<T> {
+class CSSuspendEvent<T> : CSHasChange<T> {
+    companion object {
+        @JvmName("eventWithArgument")
+        fun <T> suspendEvent() = CSSuspendEvent<T>()
+        fun suspendEvent() = CSSuspendEvent<Unit>()
+    }
+
     private val listeners = CopyOnWriteArrayList<CSSuspendEventListener<T>>()
 
     @Volatile
@@ -45,6 +52,8 @@ class CSSuspendEvent<T> {
     fun resume() {
         paused = false
     }
+
+    override fun onChange(function: (T) -> Unit): CSRegistration = listen(function)
 
     fun onChange(function: suspend (T) -> Unit): CSRegistration = listen(function)
 

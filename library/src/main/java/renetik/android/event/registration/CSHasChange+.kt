@@ -32,6 +32,13 @@ fun <T> CSHasChange<T>.onChangeLaunch(
     it + onChange { param -> it.launch(dispatcher) { function(param) } }
 }
 
+fun <T> CSHasChange<T>.onChangeLaunch(
+    key: String, dispatcher: CoroutineDispatcher = Main,
+    function: suspend (T) -> Unit
+): CSRegistration = CSRegistrationsMap(className).also {
+    it + onChange { param -> it.launch(key, dispatcher) { function(param) } }
+}
+
 fun <T> CSHasChange<T>.actionLaunch(
     dispatcher: CoroutineDispatcher = Main,
     function: suspend () -> Unit
