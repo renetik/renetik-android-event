@@ -59,12 +59,14 @@ class CSHasRegistrationsCoroutinesTest {
         model.launchIfNot("launchIfNot") { value = 2 }
         model.launchIfNot("launchIfNot") { value = 4 }
         advanceUntilIdle()
+        assert(0, model.registrations.size)
         assert(2, value)
     }
 
     @Test
     fun launchReplace() = runTest {
         val model = CSModel()
+        assert(0, model.registrations.size)
         var count = 0
         var value = 2
         model.launch("replace") {
@@ -76,6 +78,7 @@ class CSHasRegistrationsCoroutinesTest {
             value = 4
         }
         advanceUntilIdle()
+        assert(0, model.registrations.size)
         assert(1, count)
         assert(4, value)
     }
@@ -94,6 +97,7 @@ class CSHasRegistrationsCoroutinesTest {
             }
         }
         advanceUntilIdle()
+        assert(0, model.registrations.size)
         assert(2, count)
         assert(4, value)
     }
@@ -117,13 +121,16 @@ class CSHasRegistrationsCoroutinesTest {
             }
         }
         advanceTimeBy(30)
+        assert(1, model.registrations.size)
         assert(1, count)
         wait1.setFalse()
         advanceUntilIdle()
+        assert(1, model.registrations.size)
         assert(2, count)
         model.destruct()
         wait2.setFalse()
         advanceUntilIdle()
+        assert(0, model.registrations.size)
         assert(2, count)
     }
 
@@ -165,7 +172,7 @@ class CSHasRegistrationsCoroutinesTest {
         assert(1, parent.registrations.size)
         parent.launch("test key") { delay(5.milliseconds) }
         assert(1, parent.registrations.size)
-        delay(10.milliseconds)
+        advanceUntilIdle()
         assert(0, parent.registrations.size)
     }
 

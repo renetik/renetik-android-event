@@ -48,7 +48,10 @@ fun CSHasRegistrations.launch(
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
     val newRegistration = CompletableDeferred<JobRegistrationImpl2>()
+    val previous = registrations.map[key] as? JobRegistration
+    registrations.cancel(key)
     val jobRegistration = dispatcher.launch { registration ->
+        previous?.waitToFinish()
         newRegistration.await().also {
             it.job = registration.job!!
             if (!it.isCanceled) {
