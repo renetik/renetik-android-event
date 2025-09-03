@@ -1,12 +1,15 @@
 package renetik.android.event.registration
 
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import renetik.android.core.lang.variable.increment
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.invoke
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.testing.CSAssert.assert
 
+@RunWith(RobolectricTestRunner::class)
 class ListCSHasChangeTest {
 
     @Test

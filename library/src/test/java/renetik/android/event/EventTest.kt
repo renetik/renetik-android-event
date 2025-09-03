@@ -4,6 +4,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
@@ -13,6 +15,7 @@ import renetik.android.event.registration.plus
 /**
  * Simple event use cases
  */
+@RunWith(RobolectricTestRunner::class)
 class EventTest {
     @Test
     fun testListen() {

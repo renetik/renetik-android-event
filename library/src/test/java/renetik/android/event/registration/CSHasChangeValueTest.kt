@@ -1,6 +1,8 @@
 package renetik.android.event.registration
 
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.CSValue.Companion.value
 import renetik.android.core.lang.variable.assign
@@ -19,6 +21,7 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeVa
 import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
 import renetik.android.testing.CSAssert.assert
 
+@RunWith(RobolectricTestRunner::class)
 class CSHasChangeValueTest {
 
     @Test

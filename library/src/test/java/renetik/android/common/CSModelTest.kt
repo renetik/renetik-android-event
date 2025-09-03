@@ -2,10 +2,14 @@ package renetik.android.common
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.registration.invoke
 
+@RunWith(RobolectricTestRunner::class)
 class CSModelTest {
     @Test
     fun testChildDestruct() {

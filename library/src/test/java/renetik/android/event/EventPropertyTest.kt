@@ -2,6 +2,8 @@ package renetik.android.event
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.fire
@@ -12,6 +14,7 @@ import renetik.android.event.registration.paused
 /**
  * Simple event property use cases
  */
+@RunWith(RobolectricTestRunner::class)
 class EventPropertyTest {
 
     @Test
