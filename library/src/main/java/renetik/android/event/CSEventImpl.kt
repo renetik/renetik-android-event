@@ -1,6 +1,9 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event
 
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.CSEnvironment.isDebug
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.common.CSHasDestruct
@@ -31,15 +34,17 @@ class CSEventImpl<T> : CSEvent<T> {
         try {
             listeners.forEach { listener ->
                 if (listener.isActive)
-                    onMainParent?.onMain {
-                        runCatching { listener(argument) }.onFailure(::logError)
-                    } ?: run {
-                        runCatching { listener(argument) }.onFailure(::logError)
-                    }
+                    onMainParent?.onMain { listener.fire(argument) }
+                        ?: run { listener.fire(argument) }
             }
         } finally {
             firing.set(false)
         }
+    }
+
+    private inline fun CSEventListener<T>.fire(argument: T) {
+        if (isDebug) this(argument)
+        else runCatching { this(argument) }.onFailure(::logError)
     }
 
     override fun clear() = listeners.clear()
