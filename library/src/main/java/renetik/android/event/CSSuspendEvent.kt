@@ -14,6 +14,13 @@ class CSSuspendEvent<T> : CSHasChange<T> {
         @JvmName("eventWithArgument")
         fun <T> suspendEvent() = CSSuspendEvent<T>()
         fun suspendEvent() = CSSuspendEvent<Unit>()
+        suspend operator fun CSSuspendEvent<Unit>.invoke() = fire(Unit)
+//
+//        operator fun <T> CSSuspendEvent<T>.invoke(
+//            function: suspend (T) -> Unit) = listen(function)
+//
+//        operator fun CSSuspendEvent<Unit>.invoke(
+//            function: suspend () -> Unit) = listen { function() }
     }
 
     private val listeners = CopyOnWriteArrayList<CSSuspendEventListener<T>>()

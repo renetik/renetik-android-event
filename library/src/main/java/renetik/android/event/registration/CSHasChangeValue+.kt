@@ -98,6 +98,16 @@ inline fun <T> CSHasChangeValue<T>.actionLaunch(
     return registrations
 }
 
+inline fun <T> CSHasChangeValue<T>.actionLaunch(
+    key: String, dispatcher: CoroutineDispatcher = Main,
+    crossinline function: suspend (T) -> Unit): CSRegistration {
+    val registrations = CSRegistrationsMap(className)
+    registrations + action { param ->
+        registrations.launch(key, dispatcher) { function(param) }
+    }
+    return registrations
+}
+
 inline fun <T> CSHasChangeValue<T>.onChangeFrom(
     crossinline function: (from: T) -> Unit,
 ): CSRegistration {
