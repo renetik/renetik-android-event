@@ -10,6 +10,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
+import renetik.android.core.lang.variable.CSWeakVariable
+import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 
 interface JobRegistration : CSRegistration {
     val job: Job?
@@ -27,7 +29,7 @@ private class JobRegistrationImpl(
     isActive: Boolean = false,
     private val onCancel: (Job?) -> Unit,
 ) : CSRegistrationImpl(isActive), JobRegistration {
-    override var job: Job? = null
+    override var job: Job? by weak(null)
     override fun onCancel() {
         super.onCancel()
         onCancel.invoke(job)

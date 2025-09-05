@@ -5,11 +5,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 
-private class JobRegistrationImpl2(
+private class JobRegistrationWrapper(
     private val registration: CSRegistration
 ) : JobRegistration {
-    override var job: Job? = null
+    override var job: Job? by weak(null)
     override val isActive: Boolean get() = registration.isActive
     override val isCanceled: Boolean get() = registration.isCanceled
     override val eventCancel = registration.eventCancel
@@ -23,7 +24,7 @@ fun CSHasRegistrations.launch(
     dispatcher: CoroutineDispatcher = Main,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
-    val newRegistration = CompletableDeferred<JobRegistrationImpl2>()
+    val newRegistration = CompletableDeferred<JobRegistrationWrapper>()
     val jobRegistration = dispatcher.launch { registration ->
         newRegistration.await().also {
             it.job = registration.job!!
@@ -33,7 +34,7 @@ fun CSHasRegistrations.launch(
             }
         }
     }
-    newRegistration.complete(JobRegistrationImpl2(this + jobRegistration))
+    newRegistration.complete(JobRegistrationWrapper(this + jobRegistration))
     return newRegistration.getCompleted()
 }
 
@@ -47,7 +48,7 @@ fun CSHasRegistrations.launch(
     key: String, dispatcher: CoroutineDispatcher = Main,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
-    val newRegistration = CompletableDeferred<JobRegistrationImpl2>()
+    val newRegistration = CompletableDeferred<JobRegistrationWrapper>()
     val previous = registrations.map[key] as? JobRegistration
     registrations.cancel(key)
     val jobRegistration = dispatcher.launch { registration ->
@@ -60,7 +61,7 @@ fun CSHasRegistrations.launch(
             }
         }
     }
-    newRegistration.complete(JobRegistrationImpl2(this + (key to jobRegistration)))
+    newRegistration.complete(JobRegistrationWrapper(this + (key to jobRegistration)))
     return newRegistration.getCompleted()
 }
 
