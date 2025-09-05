@@ -14,3 +14,12 @@ abstract class CSPropertyWrapper<T>(
 
     override fun fireChange() = property.fireChange()
 }
+
+abstract class CSSuspendPropertyWrapper<T>(
+    parent: CSHasDestruct? = null) : CSModel(parent), CSSuspendProperty<T> {
+    protected abstract val property: CSSuspendProperty<T>
+    override suspend fun value(newValue: T, fire: Boolean) = property.value(newValue, fire)
+    override fun onChange(function: suspend (T) -> Unit) = property.onChange(function)
+    override val value: T get() = property.value
+    override suspend fun fireChange() = property.fireChange()
+}
