@@ -18,6 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import renetik.android.core.lang.result.invoke
 import renetik.android.core.lang.variable.setFalse
+import renetik.android.core.lang.variable.setTrue
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.property
@@ -168,12 +169,45 @@ class CSHasRegistrationsCoroutinesTest {
     fun testRegistrationKeyLaunchCancel() = runTest {
         val parent = CSModel()
         assert(0, parent.registrations.size)
-        parent.launch("test key") { delay(5.milliseconds) }
+        var count = 0
+
+        parent.launch("test key") { delay(5.milliseconds); count++ }
+        parent.launch("test key") { delay(5.milliseconds); count++ }
+        parent.launch("test key") { delay(5.milliseconds); count++ }
         assert(1, parent.registrations.size)
-        parent.launch("test key") { delay(5.milliseconds) }
-        assert(1, parent.registrations.size)
+
         advanceUntilIdle()
+        assert(1, count)
         assert(0, parent.registrations.size)
     }
 
+    @Test
+    fun testOnChangeLaunchCancelParentDestruct() = runTest {
+        val parent = CSModel()
+        val property = property(false)
+        assert(0, parent.registrations.size)
+        var count = 0
+
+        parent + property.onChangeLaunch { delay(5.milliseconds); count++ }
+        assert(1, parent.registrations.size)
+
+        property.setTrue(); property.setFalse()
+        property.setTrue(); property.setFalse()
+        parent.destruct()
+
+        advanceUntilIdle()
+        assert(0, count)
+        assert(0, parent.registrations.size)
+    }
+
+    @Test
+    fun testOnChangeKeyLaunchCancel() = runTest {
+        val property = property(false)
+        var count = 0
+        property.onChangeLaunch("key") { delay(5.milliseconds); count++ }
+        property.setTrue(); property.setFalse()
+        property.setTrue(); property.setFalse()
+        advanceUntilIdle()
+        assert(1, count)
+    }
 }
