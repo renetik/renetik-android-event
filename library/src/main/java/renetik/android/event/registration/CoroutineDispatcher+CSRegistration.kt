@@ -10,20 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
-import renetik.android.core.lang.variable.CSWeakVariable
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
-
-interface JobRegistration : CSRegistration {
-    val job: Job?
-    suspend fun cancelAndWait() {
-        cancel()
-        waitToFinish()
-    }
-
-    suspend fun waitToFinish() {
-        job?.join()
-    }
-}
 
 private class JobRegistrationImpl(
     isActive: Boolean = false,
