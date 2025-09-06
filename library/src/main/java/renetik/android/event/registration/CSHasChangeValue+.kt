@@ -259,16 +259,37 @@ fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
     }
 
 fun <V, Instance> CSHasRegistrations.lazyFactory(
-    property: () -> CSHasChangeValue<V>,
-    createInstance: (Instance?, V) -> Instance
+    property: () -> CSHasChangeValue<V>, create: (Instance?, V) -> Instance
 ): CSValue<Instance> where Instance : CSHasDestruct =
     object : CSValue<Instance> {
+        val self = this@lazyFactory
         var instance: Instance? = null
         override val value: Instance
             get() {
-                if (instance == null) this@lazyFactory + property().action {
-                    instance = createInstance(instance, it)
+                if (instance == null) self + property().action {
+                    instance = create(instance, it)
                 }
+                return instance!!
+            }
+    }
+
+fun <V, Instance> CSHasChangeValue<V>.lazyFactory(
+    parent: CSHasRegistrations, create: (Instance?, V) -> Instance
+): CSValue<Instance> where Instance : CSHasDestruct =
+    object : CSValue<Instance> {
+        val self = this@lazyFactory
+        var instance: Instance? = null
+
+        init {
+            parent + self.onChange {
+                instance = create(instance, it)
+            }
+        }
+
+        override val value: Instance
+            get() {
+                if (instance == null)
+                    instance = create(instance, self.value)
                 return instance!!
             }
     }
