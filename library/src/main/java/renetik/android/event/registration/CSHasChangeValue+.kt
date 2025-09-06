@@ -250,12 +250,19 @@ fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
     }
 
 fun <V, Instance> CSHasRegistrations.lazyDestructFactory(
-    property: () -> CSHasChangeValue<V>,
-    createInstance: (V) -> Instance
+    property: () -> CSHasChangeValue<V>, create: (V) -> Instance
 ): CSValue<Instance> where Instance : CSHasDestruct =
     lazyFactory(property) { previousInstance, param ->
         previousInstance?.onDestruct()
-        createInstance(param)
+        create(param)
+    }
+
+fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
+    parent: CSHasRegistrations, create: (V) -> Instance
+): CSValue<Instance> where Instance : CSHasDestruct =
+    lazyFactory(parent) { previousInstance, param ->
+        previousInstance?.onDestruct()
+        create(param)
     }
 
 fun <V, Instance> CSHasRegistrations.lazyFactory(
