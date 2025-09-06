@@ -18,10 +18,10 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 import kotlin.Result.Companion.success
 
 @JvmName("destructPreviousNullable")
-inline fun <T : CSHasDestruct, P : CSHasChangeValue<T?>> P.destructPrevious() =
+inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T?>> P.destructPrevious() =
     apply { onChangeFrom { it?.destruct() } }
 
-inline fun <T : CSHasDestruct, P : CSHasChangeValue<T>> P.destructPrevious() =
+inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T>> P.destructPrevious() =
     apply { onChangeFrom { it.destruct() } }
 
 inline val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>

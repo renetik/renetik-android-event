@@ -63,6 +63,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        fun <T, Return : CSHasDestruct> CSHasChangeValue<T>.delegateDestruct(
+            parent: CSHasRegistrations? = null, from: (T) -> Return,
+        ): CSHasChangeValue<Return> = delegate(parent, from).destructPrevious()
+
         inline fun <Return> CSHasChange<Unit>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: () -> Return,
