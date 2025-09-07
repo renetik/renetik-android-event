@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event.registration
 
 interface CSHasChange<Argument> {
@@ -8,6 +10,10 @@ interface CSHasChange<Argument> {
         inline fun CSHasChange<*>.action(crossinline function: () -> Unit): CSRegistration {
             function()
             return onChange(function)
+        }
+
+        inline fun <T> empty() = object : CSHasChange<T> {
+            override fun onChange(function: (T) -> Unit) = CSRegistration.Empty
         }
     }
 

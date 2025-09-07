@@ -126,7 +126,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        fun <T, V, K, Return> Triple<CSHasChangeValue<T>, CSHasChangeValue<V>, CSHasChangeValue<K>>.delegate(
+        fun <T, V, K, Return> Triple<CSHasChangeValue<T>, CSHasChangeValue<V>,
+                CSHasChangeValue<K>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (T, V, K) -> Return,
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
@@ -190,6 +191,55 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         parentRegistration.cancel()
                         childRegistration?.cancel()
                     }).also { registration = it }.registerTo(parent)
+                }
+            }
+        }
+
+        @JvmName("delegateChild")
+        fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
+            parent: CSHasRegistrations? = null,
+            child: (List<Argument>) -> CSHasChangeValue<Return>,
+        ): CSHasChangeValue<Return> = let { properties ->
+            object : CSHasChangeValue<Return> {
+                override val value: Return get() = child(properties.map { it.value }).value
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    val value = ValueFunction(value, function)
+                    var registration: CSRegistration? = null
+                    var childRegistration: CSRegistration? = null
+                    val parentRegistration = properties.action { parentValue ->
+                        childRegistration?.cancel()
+                        val childItem = child(parentValue)
+                        if (parent.isActive && registration.isActive)
+                            childItem.also { value(it.value) }
+                        childRegistration = childItem.onChange {
+                            if (parent.isActive && registration.isActive) value(it)
+                        }
+                    }
+                    return CSRegistration(isActive = true, onCancel = {
+                        parentRegistration.cancel()
+                        childRegistration?.cancel()
+                    }).also { registration = it }.registerTo(parent)
+                }
+            }
+        }
+
+        @JvmName("delegateChildren")
+        fun <Argument, Return> CSHasChangeValue<Argument>.delegate(
+            parent: CSHasRegistrations? = null,
+            children: (Argument) -> List<CSHasChange<Return>>,
+        ): CSHasChange<Return> = let { properties ->
+            object : CSHasChange<Return> {
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    var registrations: List<CSRegistration>? = null
+                    val parentRegistration = properties.action { parentValue ->
+                        registrations?.forEach(CSRegistration::cancel)
+                        val childList = children(parentValue)
+                        registrations = childList.map { it.onChange { function(it) } }
+                    }
+                    return CSRegistration(isActive = true, onCancel = {
+                        parentRegistration.cancel()
+                        registrations?.forEach(CSRegistration::cancel)
+                    }).registerTo(parent)
                 }
             }
         }
