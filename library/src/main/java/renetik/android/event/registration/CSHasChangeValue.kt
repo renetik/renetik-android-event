@@ -18,6 +18,7 @@ import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
+import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
@@ -66,21 +67,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         fun <T, Return : CSHasDestruct> CSHasChangeValue<T>.delegateDestruct(
             parent: CSHasRegistrations? = null, from: (T) -> Return,
         ): CSHasChangeValue<Return> = delegate(parent, from).destructPrevious()
-
-        inline fun <Return> CSHasChange<Unit>.delegate(
-            parent: CSHasRegistrations? = null,
-            crossinline from: () -> Return,
-        ): CSHasChangeValue<Return> = let { property ->
-            object : CSHasChangeValue<Return> {
-                override val value: Return get() = from()
-                override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = ValueFunction(value, function)
-                    return property.onChange {
-                        if (parent.isActive) value(from())
-                    }.registerTo(parent)
-                }
-            }
-        }
 
         fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
             parent: CSHasRegistrations? = null,
@@ -168,6 +154,49 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+        inline fun <Return> CSHasChange<out Any>.delegate(
+            parent: CSHasRegistrations? = null,
+            crossinline from: () -> Return,
+        ): CSHasChangeValue<Return> = let { property ->
+            object : CSHasChangeValue<Return> {
+                override val value: Return get() = from()
+                override fun onChange(function: (Return) -> Unit): CSRegistration {
+                    val value = ValueFunction(value, function)
+                    return property.onChange {
+                        if (parent.isActive) value(from())
+                    }.registerTo(parent)
+                }
+            }
+        }
+
+        @JvmName("delegateChild")
+        fun <ChildValue> CSHasChange<out Any>.delegate(
+            parent: CSHasRegistrations? = null,
+            child: () -> CSHasChangeValue<ChildValue>,
+        ): CSHasChangeValue<ChildValue> = let { property ->
+            object : CSHasChangeValue<ChildValue> {
+                override val value: ChildValue get() = child().value
+                override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
+                    val value = ValueFunction(value, function)
+                    var registration: CSRegistration? = null
+                    var childRegistration: CSRegistration? = null
+                    val parentRegistration = property.action {
+                        childRegistration?.cancel()
+                        val childItem = child()
+                        if (parent.isActive && registration.isActive) childItem.also { value(it.value) }
+                        childRegistration = childItem.onChange {
+                            if (parent.isActive && registration.isActive) value(it)
+                        }
+                    }
+                    return CSRegistration(isActive = true, onCancel = {
+                        parentRegistration.cancel()
+                        childRegistration?.cancel()
+                    }).also { registration = it }.registerTo(parent)
+                }
+            }
+        }
+
+
         @JvmName("delegateChild")
         fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegate(
             parent: CSHasRegistrations? = null,
@@ -226,7 +255,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         @JvmName("delegateChildren")
         fun <Argument, Return> CSHasChangeValue<Argument>.delegate(
             parent: CSHasRegistrations? = null,
-            children: (Argument) -> List<CSHasChange<Return>>,
+            children: (Argument) -> List<CSHasChange<out Return>>,
         ): CSHasChange<Return> = let { properties ->
             object : CSHasChange<Return> {
                 override fun onChange(function: (Return) -> Unit): CSRegistration {

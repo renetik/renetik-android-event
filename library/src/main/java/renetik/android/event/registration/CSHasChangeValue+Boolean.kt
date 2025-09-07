@@ -55,14 +55,14 @@ fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
 
 fun CSHasChangeValue<Boolean>.isTrue(parent: CSHasRegistrations? = null) =
-    delegate(parent, from = { it })
+    delegate(parent, from = { it -> it })
 
 @JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue")
 fun CSHasChangeValue<Boolean?>.isTrue(parent: CSHasRegistrations? = null) =
     delegate(parent, from = { it == true })
 
 fun CSHasChangeValue<Boolean>.isFalse(parent: CSHasRegistrations? = null) =
-    delegate(parent, from = { !it })
+    delegate(parent, from = { it -> !it })
 
 val CSHasChangeValue<Boolean>.eventIsTrue: CSHasChange<Unit>
     get() = object : CSHasChange<Unit> {
@@ -97,7 +97,7 @@ fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     it + actionFalse { it.launch(dispatcher) { function() } }
 }
 
-operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { !it })
+operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { it -> !it })
 
 fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     registration: () -> CSRegistration?
