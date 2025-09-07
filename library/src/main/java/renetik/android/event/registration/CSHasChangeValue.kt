@@ -64,10 +64,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        fun <T, Return : CSHasDestruct> CSHasChangeValue<T>.delegateDestruct(
-            parent: CSHasRegistrations? = null, from: (T) -> Return,
-        ): CSHasChangeValue<Return> = delegate(parent, from).destructPrevious()
-
         fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (List<Argument>) -> Return,
@@ -154,7 +150,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Return> CSHasChange<out Any>.delegate(
+        inline fun <Return> CSHasChange<out Any>.delegate2(
             parent: CSHasRegistrations? = null,
             crossinline from: () -> Return,
         ): CSHasChangeValue<Return> = let { property ->
@@ -170,7 +166,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         @JvmName("delegateChild")
-        fun <ChildValue> CSHasChange<out Any>.delegate(
+        fun <ChildValue> CSHasChange<out Any>.delegate2(
             parent: CSHasRegistrations? = null,
             child: () -> CSHasChangeValue<ChildValue>,
         ): CSHasChangeValue<ChildValue> = let { property ->
