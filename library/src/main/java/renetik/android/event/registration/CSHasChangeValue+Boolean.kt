@@ -10,7 +10,7 @@ import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
@@ -55,14 +55,14 @@ fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
     onChange { if (it.isTrue) function() }
 
 fun CSHasChangeValue<Boolean>.isTrue(parent: CSHasRegistrations? = null) =
-    delegate(parent, from = { it -> it })
+    delegateValue(parent, from = { it -> it })
 
 @JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue")
 fun CSHasChangeValue<Boolean?>.isTrue(parent: CSHasRegistrations? = null) =
-    delegate(parent, from = { it == true })
+    delegateValue(parent, from = { it == true })
 
 fun CSHasChangeValue<Boolean>.isFalse(parent: CSHasRegistrations? = null) =
-    delegate(parent, from = { it -> !it })
+    delegateValue(parent, from = { it -> !it })
 
 val CSHasChangeValue<Boolean>.eventIsTrue: CSHasChange<Unit>
     get() = object : CSHasChange<Unit> {
@@ -97,7 +97,7 @@ fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     it + actionFalse { it.launch(dispatcher) { function() } }
 }
 
-operator fun CSHasChangeValue<Boolean>.not() = delegate(from = { it -> !it })
+operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { it -> !it })
 
 fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     registration: () -> CSRegistration?

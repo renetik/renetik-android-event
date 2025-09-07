@@ -47,9 +47,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
-        ): CSHasChangeValue<T> = delegate(parent, from = { it })
+        ): CSHasChangeValue<T> = delegateValue(parent, from = { it })
 
-        fun <T, Return> CSHasChangeValue<T>.delegate(
+        fun <T, Return> CSHasChangeValue<T>.delegateValue(
             parent: CSHasRegistrations? = null,
             from: (T) -> Return,
         ): CSHasChangeValue<Return> = let { property ->
@@ -150,7 +150,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-        inline fun <Return> CSHasChange<out Any>.delegate2(
+        inline fun <Return> CSHasChange<out Any>.delegate(
             parent: CSHasRegistrations? = null,
             crossinline from: () -> Return,
         ): CSHasChangeValue<Return> = let { property ->
@@ -166,7 +166,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         @JvmName("delegateChild")
-        fun <ChildValue> CSHasChange<out Any>.delegate2(
+        fun <ChildValue> CSHasChange<out Any>.delegate(
             parent: CSHasRegistrations? = null,
             child: () -> CSHasChangeValue<ChildValue>,
         ): CSHasChangeValue<ChildValue> = let { property ->
@@ -194,7 +194,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
 
         @JvmName("delegateChild")
-        fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegate(
+        fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateValue(
             parent: CSHasRegistrations? = null,
             child: (ParentValue) -> CSHasChangeValue<ChildValue>,
         ): CSHasChangeValue<ChildValue> = let { property ->

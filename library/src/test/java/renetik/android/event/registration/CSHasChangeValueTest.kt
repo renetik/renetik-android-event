@@ -14,6 +14,7 @@ import renetik.android.event.fire
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateIsChange
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateNullable
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
@@ -42,7 +43,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegate() {
         val property = property(0)
-        val isRecorded = property.delegate(from = { it > 1 })
+        val isRecorded = property.delegateValue(from = { it > 1 })
         val isRecordedUser1 = isRecorded.hasChangeValue(from = { "$it" })
         val isRecordedUser2 = isRecorded.hasChangeValue(from = { "$it" })
         assert(expected = false, actual = isRecorded.value)
@@ -82,7 +83,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegateChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
-        val delegateChild = property.delegate(child = { it.value })
+        val delegateChild = property.delegateValue(child = { it.value })
         testDelegateChildProperty(property, delegateChild)
     }
 
