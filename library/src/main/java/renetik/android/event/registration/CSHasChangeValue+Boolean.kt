@@ -16,11 +16,11 @@ import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
-suspend fun CSHasChangeValue<Boolean>.suspendIfFalse() = waitIsTrue()
-suspend fun CSHasChangeValue<Boolean>.suspendIfTrue() = waitIsFalse()
+suspend fun CSHasChangeValue<Boolean>.suspendIfFalse() = waitForTrue()
+suspend fun CSHasChangeValue<Boolean>.suspendIfTrue() = waitForFalse()
 
 // isTrue|isFalse|onFalse can changed on other thread
-suspend fun CSHasChangeValue<Boolean>.waitIsTrue() {
+suspend fun CSHasChangeValue<Boolean>.waitForTrue() {
     if (isFalse) suspendCancellableCoroutine {
         val registration = AtomicReference<CSRegistration?>(null)
         fun resume() = registration.exchange(null)?.apply {
@@ -34,7 +34,7 @@ suspend fun CSHasChangeValue<Boolean>.waitIsTrue() {
 }
 
 // isTrue|isFalse|onFalse can changed on other thread
-suspend fun CSHasChangeValue<Boolean>.waitIsFalse() {
+suspend fun CSHasChangeValue<Boolean>.waitForFalse() {
     if (isTrue) suspendCancellableCoroutine {
         val registration = AtomicReference<CSRegistration?>(null)
         fun resume() = registration.exchange(null)?.apply {

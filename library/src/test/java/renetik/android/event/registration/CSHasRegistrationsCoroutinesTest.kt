@@ -112,10 +112,10 @@ class CSHasRegistrationsCoroutinesTest {
         var count = 0
         model.launch {
             count += 1
-            wait1.waitIsFalse()
+            wait1.waitForFalse()
             Main {
                 count += 1
-                wait2.waitIsFalse()
+                wait2.waitForFalse()
                 Main.launch {
                     count += 1
                 }
@@ -143,10 +143,10 @@ class CSHasRegistrationsCoroutinesTest {
         var count = 0
         val registration = parent.launch {
             count += 1
-            wait1.waitIsFalse()
+            wait1.waitForFalse()
             Main {
                 count += 1
-                wait2.waitIsFalse()
+                wait2.waitForFalse()
                 Main {
                     count += 1
                     assert(3, count)
