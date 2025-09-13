@@ -18,8 +18,8 @@ inline fun CSHasRegistrations.laterEach(
 
 @AnyThread
 inline fun CSHasRegistrations.launchLaterEach(
-    after: Int = 0, period: Int = after,
-    start: Boolean = true, dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineDispatcher = Main, after: Int = 0,
+    period: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration {
     val resumeChannel = Channel<Unit>(Channel.CONFLATED)
