@@ -2,6 +2,8 @@
 
 package renetik.android.event.registration
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFunc
@@ -810,7 +812,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.actionLaterOnce(
-            onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
+            dispatcher: CoroutineDispatcher = Main,
+            onChange: suspend (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
         ): CSRegistration {
             val registrations = CSRegistrationsMap(className)
             var value1: Argument1? = null
@@ -824,7 +827,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 value4 = null; value5 = null; value6 = null
             }
 
-            val laterOnceFunction = registrations.debouncer {
+            val laterOnceFunction = registrations.debouncer(dispatcher) {
                 if (registrations.isActive) {
                     onChange((value1 ?: first.value),
                         (value2 ?: second.value),
