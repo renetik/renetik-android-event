@@ -194,7 +194,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
-
         @JvmName("delegateChild")
         fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateValue(
             parent: CSHasRegistrations? = null,
@@ -805,13 +804,21 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.action(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+                CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
+                        >.action(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
         ): CSRegistration = list(first, second, third, fourth, fifth, sixth).action {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.actionLaterOnce(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+                CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
+                        >.actionLaterOnce(
             dispatcher: CoroutineDispatcher = Main,
             onChange: suspend (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
         ): CSRegistration {
