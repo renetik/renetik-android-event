@@ -18,24 +18,20 @@ class Throttler<T>(
     companion object {
         fun CSHasRegistrations.throttler(
             after: Duration, function: suspend () -> Unit
-        ) =
-            Throttler<Unit>(this, Main, { function() }, after)
+        ) = Throttler<Unit>(this, Main, { function() }, after)
 
         fun CSHasRegistrations.throttler(
             dispatcher: CoroutineDispatcher = Main,
             after: Duration, function: suspend () -> Unit
-        ) =
-            Throttler<Unit>(this, dispatcher, { function() }, after)
+        ) = Throttler<Unit>(this, dispatcher, { function() }, after)
 
         fun CSHasRegistrations.throttler(
             dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit
-        ) =
-            Throttler<Unit>(this, dispatcher, { function() })
+        ) = Throttler<Unit>(this, dispatcher, { function() })
 
         fun CSHasRegistrations.throttler(
             function: suspend () -> Unit
-        ) =
-            Throttler<Unit>(this, Main, { function() })
+        ) = Throttler<Unit>(this, Main, { function() })
 
         fun <T> CSHasRegistrations.throttler(
             after: Duration, function: suspend (T) -> Unit
@@ -75,3 +71,5 @@ class Throttler<T>(
         flow.tryEmit(param)
     }
 }
+
+operator fun Throttler<Unit>.invoke() = invoke(Unit)
