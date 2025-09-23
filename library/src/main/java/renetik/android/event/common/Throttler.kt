@@ -2,19 +2,23 @@ package renetik.android.event.common
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.withTimeoutOrNull
+import renetik.android.core.logging.CSLog.logError
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.launch
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.TimeSource
 
 class Throttler<T>(
     parent: CSHasRegistrations,
     dispatcher: CoroutineDispatcher = Main,
     private val action: suspend (T) -> Unit,
-    private val after: Duration = Duration.ZERO,
-) : (T) -> Unit {  // Now the class itself is a function that takes T
+    private val after: Duration = ZERO,
+) : (T) -> Unit {
     companion object {
         fun CSHasRegistrations.throttler(
             after: Duration, function: suspend () -> Unit
@@ -53,22 +57,37 @@ class Throttler<T>(
         operator fun Throttler<Unit>.invoke() = invoke(Unit)
     }
 
-    private val flow = MutableSharedFlow<T>(
-        replay = 0, extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val channel = Channel<T>(Channel.CONFLATED)
 
     init {
         parent.launch(dispatcher) {
-            flow.collect { param ->
-                action(param)
-                if (after > Duration.ZERO) delay(after)
+            val clock = TimeSource.Monotonic
+            while (it.isActive) {
+                var param = try {
+                    channel.receive()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: ClosedReceiveChannelException) {
+                    break
+                }
+                if (after == ZERO) {
+                    runCatching { action(param) }.onFailure(::logError)
+                    continue
+                }
+                val mark = clock.markNow()
+                while (it.isActive) {
+                    val remaining = after - mark.elapsedNow()
+                    if (remaining <= ZERO) break
+                    val timeoutMs = remaining.inWholeMilliseconds.coerceAtLeast(1L)
+                    param = withTimeoutOrNull(timeoutMs) { channel.receive() } ?: break
+                }
+                runCatching { action(param) }.onFailure(::logError)
             }
         }
     }
 
-    override operator fun invoke(param: T) {
-        flow.tryEmit(param)
+    override fun invoke(param: T) {
+        channel.trySend(param)
     }
 }
 
