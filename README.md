@@ -1,257 +1,187 @@
-<!---Header--->
-[![Android Build](https://github.com/renetik/renetik-android-event/workflows/Android%20Build/badge.svg)
-](https://github.com/renetik/renetik-android-event/actions/workflows/android.yml)
+<!---Header-->
+[![Android Build](https://github.com/renetik/renetik-android-event/workflows/Android%20Build/badge.svg)](https://github.com/renetik/renetik-android-event/actions/workflows/android.yml)
+[![Maven Packages](https://img.shields.io/badge/Maven-GitHub%20Packages-blue)](https://github.com/renetik/maven)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-purple)](https://kotlinlang.org)
 
-# Renetik Android - Event & Property
-#### [https://github.com/renetik/renetik-android-event](https://github.com/renetik/renetik-android-event/) ➜ [Documentation](https://renetik.github.io/renetik-android-event/)
+## Renetik Android — Event & Property
+### [Repository](https://github.com/renetik/renetik-android-event/) • [API Docs](https://renetik.github.io/renetik-android-event/)
 
-Framework to enjoy, improve and speed up your application development while writing readable code.
-Used as library in many projects and improving it while developing new projects.
-I am open for [Hire](https://renetik.github.io) or investment in my mobile app music production & perfromance project Renetik Instruments www.renetik.com.
+Lightweight event and reactive property primitives for Android/Kotlin.
 
-## Installation
+- **Events**: type-safe signals with `listen`, `listenOnce`, `pause`/`resume`, `cancel`, and optional main-thread delivery.
+- **Properties**: observable values with `onChange`, `computed`, two‑way `connect`, pausable updates, and Kotlin delegate helpers.
+- **Registrations**: disposable subscriptions with lifecycle helpers, `pause`/`resume`, and `eventCancel` for clean teardown.
+
+Used across Renetik projects to keep app logic clear and decoupled.
+
+### Installation
+Add the Renetik GitHub Maven repositories and the dependency:
+
 ```gradle
 allprojects {
     repositories {
-        // For master-SNAPSHOT
+        // SNAPSHOTs
         maven { url 'https://github.com/renetik/maven-snapshot/raw/master/repository' }
-        // For release builds
+        // Releases
         maven { url 'https://github.com/renetik/maven/raw/master/repository' }
+        // Or mavenLocal() if you publish locally
     }
 }
 ```
+
 ```gradle
 dependencies {
     implementation 'com.renetik.library:renetik-android-event:$renetik-android-version'
 }
 ```
-## Examples
+
+### Compatibility
+- **minSdk**: 26
+- **target/compileSdk**: 35
+- **Kotlin**: 2.2.10
+- **AGP**: 8.1.x
+
+### Quick start
+Events:
 ```kotlin
-/**
- * Simple event use cases
- */
-class EventTest {
-    @Test
-    fun testListen() {
-        val event = event()
-        var count = 0
-        event.listen { count += 1 }
-        event.fire()
-        event.fire()
-        assertEquals(count, 2)
-    }
+import renetik.android.event.CSEvent.Companion.event
 
-    @Test
-    fun testArgListen() {
-        val event = event<Int>()
-        var count = 0
-        event.listen { count += it }
-        event.fire(2)
-        event.fire(3)
-        assertEquals(count, 5)
-    }
-
-    @Test
-    fun testListenOnce() {
-        val event = event()
-        var count = 0
-        event.listenOnce { count += 1 }
-        event.fire()
-        event.fire()
-        assertEquals(count, 1)
-    }
-
-    @Test
-    fun testArgListenOnce() {
-        val event = event()
-        var count = 0
-        event.listenOnce { count += 1 }
-        event.fire()
-        event.fire()
-        assertEquals(count, 1)
-    }
-
-    @Test
-    fun testEventCancel() {
-        val event = event()
-        var count = 0
-        event.listen { registration, _ ->
-            count += 1
-            if (count == 2) registration.cancel()
-        }
-        event.fire()
-        event.fire()
-        event.fire()
-        assertEquals(count, 2)
-    }
-
-    @Test
-    fun testStringEventCancel() {
-        val event = event<String>()
-        var value: String? = null
-        event.listen { registration, newValue ->
-            if (newValue == "second") registration.cancel()
-            value = newValue
-        }
-        event.fire("first")
-        assertEquals("first", value)
-        event.fire("second")
-        assertEquals("second", value)
-        event.fire("third")
-        assertEquals("second", value)
-    }
-
-    @Test
-    fun testEventPause() {
-        val event = event()
-        var count = 0
-        val registration = event.listen { count += 1 }
-        registration.pause { event.fire() }
-        assertEquals(count, 0)
-        event.fire()
-        assertEquals(count, 1)
-    }
-}
-
+val onTick = event<Unit>()
+val reg = onTick.listen { println("tick") }
+onTick.fire()
+reg.cancel()
 ```
 
+Properties:
 ```kotlin
-/**
- * Simple event property use cases
- */
-class EventPropertyTest {
+import renetik.android.event.property.CSProperty.Companion.property
 
-    @Test
-    fun testOnChange() {
-        var count = 0
-        var value: String by property("initial") { count += 1 }
-        value = "second"
-        value = "third"
-        assertEquals(count, 2)
-        assertEquals("third", value)
-    }
+var name by property("Guest") { println("changed to $it") }
+name = "Alice"
+```
 
-    @Test
-    fun testOnApply() {
-        var count = 0
-        var value: String by property("initial") { count += 1 }.apply()
-        value = "second"
-        value = "third"
-        assertEquals(count, 3)
-        assertEquals("third", value)
-    }
+Listen once and pause/resume:
+```kotlin
+val clicks = event<Unit>()
+clicks.listenOnce { println("first and only") }
+val r = clicks.listen { println("every time") }
+r.pause(); clicks.fire(); r.resume(); clicks.fire()
+```
 
-    @Test
-    fun testArgListen() {
-        var count = 0
-        var value: Int by property(0) { count += 1 }
-        value += 2
-        value += 3
-        assertEquals(5, value)
-        assertEquals(2, count)
-    }
+Two‑way connect and computed properties:
+```kotlin
+val a = property(0)
+val b = property(0)
+a.connect(b) // keep in sync both ways
+val percent = a.computed(from = { it / 100f }, to = { (it * 100).toInt() })
+```
 
-    @Test
-    fun testEquals() {
-        var count = 0
-        var value: String by property("") { count += 1 }
-        value = "second"
-        value = "second"
-        assertEquals(count, 1)
-        assertEquals("second", value)
-    }
+### Core concepts
+- **`CSEvent<T>`**: `listen`, `listenOnce`, `fire(T)`, `pause()/resume()`, `isListened`, `clear()`; `onMain()` to deliver on main thread.
+- **`CSProperty<T>`**: `value`, `onChange`, `fireChange`, `pause()/resume(fire)`; helpers: `computed`, `connect`, `paused {}`, delegates.
+- **`CSRegistration`**: result of `listen`/`onChange`; supports `pause()/resume()/cancel()`, `isActive`, and `eventCancel`.
 
-    @Test
-    fun testNotFireAndOnChangeOnce() {
-        var count = 0
-        val property: CSEventProperty<String> = property("")
-        property.onChangeOnce { count += 1 }
-        property.value("one", fire = false)
-        property.value = "two"
-        property.value = "three"
-        assertEquals(count, 1)
-        assertEquals("three", property.value)
-    }
+### Delegates (derived values and projections)
+Delegates let you derive values and signals from existing events/properties with minimal boilerplate. They return lightweight `CSHasChangeValue<T>` or `CSProperty<T>` that stay in sync.
 
-    @Test
-    fun testEventCancel() {
-        var count = 0
-        val property: CSEventProperty<Int> = property(0)
-        property.onChange { registration, value ->
-            count += value
-            if (count > 2) registration.cancel()
-        }
-        property.value = 1
-        property.value = 2
-        property.value = 3
-        assertEquals(count, 3)
-    }
+- From `CSEvent<T>`:
+  - `delegate { from() }` • `delegateLate { from() }`
 
-    @Test
-    fun testEventPause() {
-        var count = 0
-        val property: CSEventProperty<Int> = property(0)
-        val registration = property.onChange { count += it }
-        registration.pause { property.value = 1 }
-        assertEquals(count, 0)
-        property.value = 2
-        assertEquals(count, 2)
-    }
+- From `CSProperty<T>` and `CSHasChangeValue<T>`:
+  - `computed(from, to)` and `computed { get, set }`
+  - `delegateValue { transform(it) }`, `delegate { combine(...) }`
+  - Convenience delegates: boolean logic (`and`, `or`, `not`), equality checks, null checks, type casts, list delegates, etc.
+
+Examples:
+```kotlin
+// Project an event into a property-like value that updates on each fire
+val meterEvent = event<Int>()
+val latest = meterEvent.delegate { it }
+println(latest.value)
+
+// Late (nullable) projection
+val maybeLatest = meterEvent.delegateLate { it }
+
+// Compute a percent view over an Int property with two-way mapping
+val volume = property(50)
+val volumePercent = volume.computed(from = { it / 100f }, to = { (it * 100).toInt() })
+
+// Boolean delegates
+val isMuted = property(false)
+val isAudible = !isMuted // via computed/not delegate
+
+// Combine multiple change sources
+val width = property(100)
+val height = property(50)
+val area = CSProperty.property(parent = null, item1 = width, item2 = height, item3 = isAudible) { w, h, audible ->
+    if (audible) w * h else 0
 }
-``` 
+```
+
+### Threading
+Deliver event callbacks on the main thread by chaining `onMain(owner)` on the created event:
 
 ```kotlin
-/**
- * Event unregister after owner nulled
- */
-class EventOwnerEventTest {
-    @Test
-    fun testUnregisteredAfterNilled() {
-        val owner = CSEventOwnerHasDestroyBase()
-        val event = event()
-        var count = 0
-        owner.register(event.listen { count += 1 })
-        event.fire()
-        event.fire()
-        assertEquals(count, 2)
-        owner.destroy()
-        event.fire()
-        assertEquals(count, 2)
-    }
-}
-``` 
+val owner = /* something implementing CSHasDestruct */
+val e = CSEvent.event<Unit>().onMain(owner)
+e.listen { /* runs on main */ }
+```
 
+### Coroutines
+Suspend-friendly primitives and helpers:
+
+- Await on values (for any `CSHasChangeValue<T>`):
+  - `waitFor { condition(it) }`
+  - For booleans: `waitForTrue()`, `waitForFalse()`, plus `suspendIfTrue()/suspendIfFalse()`
+- Await next change (for any `CSHasChange<T>`):
+  - `waitForChange()` returns the new value
+- Suspend types:
+  - `CSSuspendEvent<T>`: `listen { suspend }`, `fire(arg)` is `suspend`
+  - `CSSuspendProperty<T>`: `onChange { suspend }`
+- Launch helpers (default dispatcher = Main):
+  - `onChangeLaunch { suspend }`, `actionLaunch { suspend }`
+  - Boolean: `onTrueLaunch {}`, `onFalseLaunch {}`
+  - From `CSHasRegistrations`: `launch { job -> }`, `launchWhileActive {}`, `launch(key) {}`
+
+Examples:
 ```kotlin
-/**
- * Event property unregister after owner nulled
- */
-class EventOwnerPropertyTest {
-    class SomeClass(parent: SomeClass? = null) : CSEventOwnerHasDestroyBase(parent) {
-        val string = property("initial value")
+// Wait for a property to reach a state
+val isReady = property(false)
+scope.launch { isReady.waitForTrue() }
 
-        init {
-            register(parent?.string?.onChange { string.value = it })
-        }
-    }
-
-    @Test
-    fun testUnregisteredAfterNilled() {
-        val instance1 = SomeClass()
-        val instance2 = SomeClass(instance1)
-        val instance3 = SomeClass(instance2)
-        assertEquals(instance3.string.value, "initial value")
-        instance1.string.value = "first value"
-        assertEquals(instance3.string.value, "first value")
-        instance2.destroy()
-        instance1.string.value = "second value"
-        assertEquals(instance3.string.value, "first value")
-    }
+// Await the next value change
+val value = property(0)
+scope.launch {
+    val next = value.waitForChange()
 }
-``` 
-## Renetik Android - Libraries
-#### [https://github.com/renetik/renetik-android-core](https://github.com/renetik/renetik-android-core/) ➜ [Documentation](https://renetik.github.io/renetik-android-core/)
-#### [https://github.com/renetik/renetik-android-json](https://github.com/renetik/renetik-android-json/) ➜ [Documentation](https://renetik.github.io/renetik-android-json/)
-#### [https://github.com/renetik/renetik-android-event](https://github.com/renetik/renetik-android-event/) ➜ [Documentation](https://renetik.github.io/renetik-android-event/)
-#### [https://github.com/renetik/renetik-android-store](https://github.com/renetik/renetik-android-store/) ➜ [Documentation](https://renetik.github.io/renetik-android-store/)
-#### [https://github.com/renetik/renetik-android-preset](https://github.com/renetik/renetik-android-preset/) ➜ [Documentation](https://renetik.github.io/renetik-android-preset/)
-#### [https://github.com/renetik/renetik-android-framework](https://github.com/renetik/renetik-android-framework/) ➜ [Documentation](https://renetik.github.io/renetik-android-framework/)
+
+// Suspend event
+val onLoaded = CSSuspendEvent.suspendEvent<Unit>()
+scope.launch { onLoaded.listen { /* suspending work */ } }
+scope.launch { onLoaded() } // fire Unit
+
+// Launch on change
+value.onChangeLaunch { newValue ->
+    // suspending work using newValue
+}
+```
+
+### API Reference
+Browse the generated docs: [API Docs](https://renetik.github.io/renetik-android-event/)
+
+### Related Renetik libraries
+- [renetik-android-core](https://github.com/renetik/renetik-android-core/) • [Docs](https://renetik.github.io/renetik-android-core/)
+- [renetik-android-json](https://github.com/renetik/renetik-android-json/) • [Docs](https://renetik.github.io/renetik-android-json/)
+- [renetik-android-event](https://github.com/renetik/renetik-android-event/) • [Docs](https://renetik.github.io/renetik-android-event/)
+- [renetik-android-store](https://github.com/renetik/renetik-android-store/) • [Docs](https://renetik.github.io/renetik-android-store/)
+- [renetik-android-preset](https://github.com/renetik/renetik-android-preset/) • [Docs](https://renetik.github.io/renetik-android-preset/)
+- [renetik-android-framework](https://github.com/renetik/renetik-android-framework/) • [Docs](https://renetik.github.io/renetik-android-framework/)
+
+### Contributing
+Issues and PRs are welcome. Please include a clear description and small, focused changes.
+
+### License
+This library is released under the terms of the license in `LICENSE.txt`.
+
+—
+If you find this useful, consider supporting the broader Renetik Instruments effort at `https://www.renetik.com` or get in touch for [Hire](https://renetik.github.io).
