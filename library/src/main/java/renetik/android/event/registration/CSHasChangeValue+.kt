@@ -1,4 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE")
+@file:OptIn(ExperimentalAtomicApi::class)
 
 package renetik.android.event.registration
 
@@ -17,6 +18,8 @@ import renetik.android.event.registration.CSHasChangeValue.Companion.emptyNullab
 import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 @JvmName("destructPreviousNullable")
 inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T?>> P.destructPrevious() =
@@ -28,17 +31,16 @@ inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T>> P.destructPrevious()
 inline val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
     get() = this?.delegateValue(from = { it }) ?: emptyNullable()
 
-suspend inline fun <T> CSHasChangeValue<T>.waitFor(crossinline condition: (T) -> Boolean) {
+suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     if (!condition(value)) suspendCancellableCoroutine { coroutine ->
-        var registration: CSRegistration? = null
-        registration = onChange {
-            if (condition(value)) {
-                registration?.cancel()
-                registration = null
-                coroutine.resumeWith(success(Unit))
-            }
+        val registration = AtomicReference<CSRegistration?>(null)
+        fun resume() = registration.exchange(null)?.apply {
+            cancel()
+            coroutine.resumeWith(success(Unit))
         }
-        coroutine.invokeOnCancellation { registration?.cancel() }
+        registration.store(onChange { if (condition(value)) resume() })
+        if (condition(value)) resume()
+        coroutine.invokeOnCancellation { registration.exchange(null)?.cancel() }
     }
 }
 

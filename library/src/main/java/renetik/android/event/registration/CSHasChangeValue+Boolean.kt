@@ -4,7 +4,6 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
@@ -13,40 +12,12 @@ import renetik.android.core.lang.value.isTrue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.Result.Companion.success
-import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
-suspend fun CSHasChangeValue<Boolean>.suspendIfFalse() = waitForTrue()
 suspend fun CSHasChangeValue<Boolean>.suspendIfTrue() = waitForFalse()
-
-// isTrue|isFalse|onFalse can changed on other thread
-suspend fun CSHasChangeValue<Boolean>.waitForTrue() {
-    if (isFalse) suspendCancellableCoroutine {
-        val registration = AtomicReference<CSRegistration?>(null)
-        fun resume() = registration.exchange(null)?.apply {
-            cancel()
-            it.resumeWith(success(Unit))
-        }
-        registration.store(onTrue { resume() })
-        if (isTrue) resume()
-        it.invokeOnCancellation { registration.exchange(null)?.cancel() }
-    }
-}
-
-// isTrue|isFalse|onFalse can changed on other thread
-suspend fun CSHasChangeValue<Boolean>.waitForFalse() {
-    if (isTrue) suspendCancellableCoroutine {
-        val registration = AtomicReference<CSRegistration?>(null)
-        fun resume() = registration.exchange(null)?.apply {
-            cancel()
-            it.resumeWith(success(Unit))
-        }
-        registration.store(onFalse { resume() })
-        if (isFalse) resume()
-        it.invokeOnCancellation { registration.exchange(null)?.cancel() }
-    }
-}
+suspend fun CSHasChangeValue<Boolean>.suspendIfFalse() = waitForTrue()
+suspend fun CSHasChangeValue<Boolean>.waitForTrue() = waitFor(Boolean::isTrue)
+suspend fun CSHasChangeValue<Boolean>.waitForFalse() = waitFor(Boolean::isFalse)
 
 fun CSHasChangeValue<Boolean>.onFalse(function: () -> Unit): CSRegistration =
     onChange { if (it.isFalse) function() }
@@ -83,10 +54,12 @@ fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
     return registration
 }
 
-fun CSHasChangeValue<Boolean>.actionTrueLaunch(dispatcher: CoroutineDispatcher = Main,
-    function: suspend () -> Unit): CSRegistration = CSRegistrationsMap(className).also {
-    it + actionTrue { it.launch(dispatcher) { function() } }
-}
+fun CSHasChangeValue<Boolean>.actionTrueLaunch(
+    dispatcher: CoroutineDispatcher = Main,
+    function: suspend () -> Unit): CSRegistration =
+    CSRegistrationsMap(className).also {
+        it + actionTrue { it.launch(dispatcher) { function() } }
+    }
 
 fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
     val invoked = AtomicBoolean(false)
@@ -99,10 +72,12 @@ fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration 
     return registration
 }
 
-fun CSHasChangeValue<Boolean>.actionFalseLaunch(dispatcher: CoroutineDispatcher = Main,
-    function: suspend () -> Unit): CSRegistration = CSRegistrationsMap(className).also {
-    it + actionFalse { it.launch(dispatcher) { function() } }
-}
+fun CSHasChangeValue<Boolean>.actionFalseLaunch(
+    dispatcher: CoroutineDispatcher = Main,
+    function: suspend () -> Unit): CSRegistration =
+    CSRegistrationsMap(className).also {
+        it + actionFalse { it.launch(dispatcher) { function() } }
+    }
 
 operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { it -> !it })
 
