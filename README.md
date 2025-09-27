@@ -1,7 +1,7 @@
 <!---Header-->
 [![Android Build](https://github.com/renetik/renetik-android-event/workflows/Android%20Build/badge.svg)](https://github.com/renetik/renetik-android-event/actions/workflows/android.yml)
 [![Maven Packages](https://img.shields.io/badge/Maven-GitHub%20Packages-blue)](https://github.com/renetik/maven)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-purple)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.2.20-purple)](https://kotlinlang.org)
 
 ## Renetik Android — Event & Property
 ### [Repository](https://github.com/renetik/renetik-android-event/) • [API Docs](https://renetik.github.io/renetik-android-event/)
@@ -38,7 +38,7 @@ dependencies {
 ### Compatibility
 - **minSdk**: 26
 - **target/compileSdk**: 35
-- **Kotlin**: 2.2.10
+- **Kotlin**: 2.2.20
 - **AGP**: 8.1.x
 
 ### Quick start
