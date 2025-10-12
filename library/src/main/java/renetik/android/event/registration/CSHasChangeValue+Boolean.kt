@@ -43,22 +43,24 @@ val CSHasChangeValue<Boolean>.eventIsTrue: CSHasChange<Unit>
 val CSHasChangeValue<Boolean>.eventIsFalse: CSHasChange<Unit>
     get() = (!this).eventIsTrue
 
-fun CSHasChangeValue<Boolean>.actionTrue(function: () -> Unit): CSRegistration {
+fun CSHasChangeValue<Boolean>.actionTrue(function: (CSRegistration) -> Unit): CSRegistration {
     val invoked = AtomicBoolean(false)
-    val registration = onChange {
-        if (it.isTrue) {
-            if (invoked.compareAndSet(false, true)) function()
+    val registration = onChange { registration, value ->
+        if (value) {
+            if (invoked.compareAndSet(false, true)) function(registration)
         } else invoked.set(false)
     }
-    if (isTrue) if (invoked.compareAndSet(false, true)) function()
+    if (isTrue) if (invoked.compareAndSet(false, true)) function(registration)
     return registration
 }
 
 fun CSHasChangeValue<Boolean>.actionTrueLaunch(
     dispatcher: CoroutineDispatcher = Main,
-    function: suspend () -> Unit): CSRegistration =
-    CSRegistrationsMap(className).also {
-        it + actionTrue { it.launch(dispatcher) { function() } }
+    function: suspend (CSRegistration) -> Unit): CSRegistration =
+    CSRegistrationsMap(className).also { registration ->
+        registration + actionTrue {
+            registration.launch(dispatcher) { function(registration) }
+        }
     }
 
 fun CSHasChangeValue<Boolean>.actionFalse(function: () -> Unit): CSRegistration {
