@@ -1,13 +1,13 @@
 package renetik.android.event.registration
 
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.Fun
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.io.Closeable
 
 val CSRegistration?.isActive get() = this?.isActive != false
 
-inline fun CSRegistration.onCancel(crossinline func: Func) = eventCancel.listen { func() }
+inline fun CSRegistration.onCancel(crossinline func: Fun) = eventCancel.listen { func() }
 
 val CSRegistrationEmpty = object : CSRegistration {
     override val isActive: Boolean = false
@@ -35,13 +35,13 @@ fun CSRegistration(
     onCancel = { registrations.forEach { it()?.cancel() } }
 )
 
-inline fun List<CSRegistration>.paused(function: Func) {
+inline fun List<CSRegistration>.paused(function: Fun) {
     onEach { it.pause() }
     function()
     onEach { it.resume() }
 }
 
-inline fun CSRegistration.paused(function: Func) {
+inline fun CSRegistration.paused(function: Fun) {
     pause()
     function()
     if (!isCanceled) resume()

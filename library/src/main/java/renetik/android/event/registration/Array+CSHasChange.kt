@@ -1,11 +1,11 @@
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.className
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.Fun
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
 
 inline fun <T : CSHasChange<*>> Array<T>.onChangeLater(
-    crossinline function: Func
+    crossinline function: Fun
 ): CSRegistration {
     val registrations = CSRegistrationsMap(className)
     val laterOnceFunction = registrations.debouncer { function() }
@@ -14,7 +14,7 @@ inline fun <T : CSHasChange<*>> Array<T>.onChangeLater(
 }
 
 inline fun <T : CSHasChange<*>> Array<T>.onChange(
-    crossinline function: Func
+    crossinline function: Fun
 ): CSRegistration {
     val registrations = CSRegistrationsMap(className)
     forEach { registrations.register(it.onChange(function)) }
@@ -22,7 +22,7 @@ inline fun <T : CSHasChange<*>> Array<T>.onChange(
 }
 
 inline fun <T : CSHasChange<*>> Array<T>.actionOnChangeLater(
-    crossinline function: Func
+    crossinline function: Fun
 ): CSRegistration {
     function()
     return onChangeLater(function)

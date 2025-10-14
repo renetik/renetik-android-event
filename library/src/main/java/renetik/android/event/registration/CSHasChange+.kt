@@ -4,8 +4,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.className
-import renetik.android.core.lang.ArgFunc
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.ArgFun
+import renetik.android.core.lang.Fun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
@@ -196,7 +196,7 @@ inline fun <Argument> CSHasChangeValue<out Argument?>.actionNotNullOnce(
 
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     after: Duration,
-    crossinline function: Func,
+    crossinline function: Fun,
 ): CSRegistration {
     val registrations = CSRegistrationsMap(className)
     val laterOnceFunction = registrations.debouncer(after) { function() }
@@ -206,7 +206,7 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
 
 inline fun <Argument> CSHasChangeValue<Argument>.onChangeLaterOnce(
     after: Duration = ZERO,
-    crossinline onChange: ArgFunc<Argument>,
+    crossinline onChange: ArgFun<Argument>,
 ): CSRegistration {
     val registrations = CSRegistrationsMap(className)
     var value1: Argument? = null
@@ -220,7 +220,7 @@ inline fun <Argument> CSHasChangeValue<Argument>.onChangeLaterOnce(
 
 inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
     after: Duration = ZERO,
-    crossinline onChange: ArgFunc<Argument>,
+    crossinline onChange: ArgFun<Argument>,
 ): CSRegistration {
     val registrations = CSRegistrationsMap(className)
     var value1: Argument? = null
@@ -234,7 +234,7 @@ inline fun <Argument> CSHasChangeValue<Argument>.actionLaterOnce(
 }
 
 inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
-    crossinline function: Func,
+    crossinline function: Fun,
 ) = onChangeLaterOnce(ZERO, function)
 
 fun Pair<CSHasChange<*>, CSHasChange<*>>.onChange(

@@ -2,7 +2,7 @@ package renetik.android.event.registration
 
 import android.os.Handler
 import android.os.SystemClock.uptimeMillis
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.Fun
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.time.Duration
 
@@ -12,11 +12,11 @@ import kotlin.time.Duration
  */
 inline fun Handler.laterEach(
     after: Int, period: Int = after,
-    start: Boolean = true, crossinline function: Func,
+    start: Boolean = true, crossinline function: Fun,
 ): CSRegistration {
     val token = object {}
     lateinit var registration: CSRegistration
-    lateinit var runnable: Func
+    lateinit var runnable: Fun
     runnable = {
         if (registration.isActive) {
             function()
@@ -32,10 +32,10 @@ inline fun Handler.laterEach(
 }
 
 inline fun Handler.laterEach(
-    after: Int, period: Int = after, crossinline function: Func,
+    after: Int, period: Int = after, crossinline function: Fun,
 ) = laterEach(after, period, start = true, function)
 
-inline fun Handler.later(after: Int, crossinline function: Func): CSRegistration {
+inline fun Handler.later(after: Int, crossinline function: Fun): CSRegistration {
     val token = object {}
     var isCanceled = false
     postAtTime({ if (!isCanceled) function() }, token, uptimeMillis() + after.toLong())
@@ -45,7 +45,7 @@ inline fun Handler.later(after: Int, crossinline function: Func): CSRegistration
     }
 }
 
-inline fun Handler.later(crossinline function: Func): CSRegistration {
+inline fun Handler.later(crossinline function: Fun): CSRegistration {
     val token = object {}
     var isCanceled = false
     postAtTime({ if (!isCanceled) function() }, token, uptimeMillis())
@@ -57,14 +57,14 @@ inline fun Handler.later(crossinline function: Func): CSRegistration {
 
 inline fun Handler.laterEach(
     after: Duration, period: Duration = after,
-    start: Boolean = true, crossinline function: Func,
+    start: Boolean = true, crossinline function: Fun,
 ) = laterEach(after.inWholeMilliseconds.toInt(),
     period.inWholeMilliseconds.toInt(), start, function)
 
 inline fun Handler.laterEach(
-    after: Duration, period: Duration = after, crossinline function: Func,
+    after: Duration, period: Duration = after, crossinline function: Fun,
 ) = laterEach(after.inWholeMilliseconds.toInt(),
     period.inWholeMilliseconds.toInt(), start = true, function)
 
-inline fun Handler.later(after: Duration, crossinline function: Func) =
+inline fun Handler.later(after: Duration, crossinline function: Fun) =
     later(after.inWholeMilliseconds.toInt(), function)

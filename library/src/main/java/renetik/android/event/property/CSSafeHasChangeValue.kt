@@ -1,6 +1,6 @@
 package renetik.android.event.property
 
-import renetik.android.core.lang.ArgFunc
+import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.value.CSSafeValue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSHasChangeValue
@@ -16,7 +16,7 @@ interface CSSafeHasChangeValue<T> : CSSafeValue<T>, CSHasChangeValue<T> {
 
         fun <T> CSHasChangeValue<T>.safe(
             parent: CSHasDestruct,
-            onChange: ArgFunc<T>? = null
+            onChange: ArgFun<T>? = null
         ): CSSafeHasChangeValue<T> = let { property ->
             object : CSPropertyBase<T>(parent, onChange), CSSafeHasChangeValue<T> {
                 @Volatile

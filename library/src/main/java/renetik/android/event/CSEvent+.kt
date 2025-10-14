@@ -1,7 +1,6 @@
 package renetik.android.event
 
-import renetik.android.core.lang.Func
-import renetik.android.event.property.CSProperty
+import renetik.android.core.lang.Fun
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
@@ -17,9 +16,9 @@ operator fun CSEvent<Unit>.invoke() {
 operator fun <T> CSEvent<T>.invoke(param: T) = apply { fire(param) }
 
 @JvmName("listenNoArg")
-fun CSEvent<*>.listen(function: Func): CSRegistration = listen { _, _ -> function() }
+fun CSEvent<*>.listen(function: Fun): CSRegistration = listen { _, _ -> function() }
 
-inline fun CSEvent<Unit>.listen(crossinline function: Func) = listen { _, _ -> function() }
+inline fun CSEvent<Unit>.listen(crossinline function: Fun) = listen { _, _ -> function() }
 
 inline fun CSEvent<*>.action(crossinline function: () -> Unit): CSRegistration {
     function()
@@ -48,7 +47,7 @@ inline fun <T> CSEvent<T>.listenOnce(
         listener(argument)
     }
 
-fun CSEvent<*>.paused(function: Func) {
+fun CSEvent<*>.paused(function: Fun) {
     pause()
     function()
     resume()

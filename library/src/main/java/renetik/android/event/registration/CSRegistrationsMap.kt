@@ -6,7 +6,7 @@ import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.CSLeakCanary.expectWeaklyReachable
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.Fun
 import renetik.android.core.lang.variable.CSVariable.Companion.variable
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
@@ -139,7 +139,7 @@ class CSRegistrationsMap(val id: String) : CSRegistrations, CSHasRegistrations {
     override fun toString(): String =
         "${super.toString()} id:$id size:$size isActive:$isActive isCanceled:$isCanceled"
 
-    fun onCancel(function: Func) = eventCancel.listen(function)
+    fun onCancel(function: Fun) = eventCancel.listen(function)
 
     @Synchronized
     @AnyThread

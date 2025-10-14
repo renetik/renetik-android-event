@@ -1,9 +1,9 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
-import renetik.android.core.lang.ArgFunc
+import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.CSHasCancel
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.Fun
 import renetik.android.event.CSEvent
 import renetik.android.event.common.CSHasDestruct
 import java.io.Closeable
@@ -35,13 +35,13 @@ interface CSRegistration : CSHasCancel, Closeable, CSHasDestruct {
             override fun cancel() = Unit
         }
 
-        fun paused(registration: CSRegistration?, function: Func) {
+        fun paused(registration: CSRegistration?, function: Fun) {
             registration?.pause()
             function()
             registration?.resume()
         }
 
-        fun paused(vararg registrations: CSRegistration, function: Func) {
+        fun paused(vararg registrations: CSRegistration, function: Fun) {
             registrations.onEach { it.pause() }
             function()
             registrations.onEach { it.resume() }
@@ -57,9 +57,9 @@ interface CSRegistration : CSHasCancel, Closeable, CSHasDestruct {
 
         fun CSRegistration(
             isActive: Boolean = false,
-            onResume: ArgFunc<CSRegistration>? = null,
-            onPause: ArgFunc<CSRegistration>? = null,
-            onCancel: ArgFunc<CSRegistration>? = null,
+            onResume: ArgFun<CSRegistration>? = null,
+            onPause: ArgFun<CSRegistration>? = null,
+            onCancel: ArgFun<CSRegistration>? = null,
         ) = object : CSRegistrationImpl(isActive) {
             override fun onResume() {
                 super.onResume()

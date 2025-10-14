@@ -1,6 +1,6 @@
 package renetik.android.event.common
 
-import renetik.android.core.lang.Func
+import renetik.android.core.lang.Fun
 import renetik.android.event.delegate
 import renetik.android.event.listen
 import renetik.android.event.registration.CSHasChangeValue
@@ -11,12 +11,12 @@ import renetik.android.event.registration.plus
 
 fun <T : CSHasDestruct> T.destruct() = onDestruct()
 
-inline fun CSHasDestruct.onDestructed(crossinline func: Func){
+inline fun CSHasDestruct.onDestructed(crossinline func: Fun){
     eventDestruct.listen(func)
 }
 
 inline fun CSHasDestruct.onDestructed(
-    parent: CSHasRegistrations, crossinline func: Func
+    parent: CSHasRegistrations, crossinline func: Fun
 ) {
     var registration: CSRegistration? = null
     registration = parent + eventDestruct.invoke {
