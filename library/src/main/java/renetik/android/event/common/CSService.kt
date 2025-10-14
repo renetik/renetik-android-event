@@ -37,6 +37,6 @@ abstract class CSService : Service(), CSHasRegistrationsHasDestruct {
 
     override fun onDestroy() {
         super.onDestroy()
-        destruct()
+        if (!isDestructed) destruct()
     }
 }
