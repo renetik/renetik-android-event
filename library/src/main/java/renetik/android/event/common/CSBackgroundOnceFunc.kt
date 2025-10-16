@@ -1,8 +1,8 @@
 package renetik.android.event.common
 
 import androidx.annotation.WorkerThread
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
+import renetik.android.core.base.CSApplication.Companion.app
 import renetik.android.core.lang.CSFunc
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.launch
@@ -22,7 +22,7 @@ class CSBackgroundOnceFunc(
     var registration: CSRegistration? = null
     override operator fun invoke() {
         registration?.cancel()
-        registration = launch(IO) { delay(after.toLong()); function() }
+        registration = launch(app.Default) { delay(after.toLong()); function() }
     }
 }
 
