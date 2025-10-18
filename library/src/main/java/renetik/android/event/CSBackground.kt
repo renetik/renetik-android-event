@@ -34,10 +34,12 @@ object CSBackground {
         defaultThreadFactory().newThread(it).apply { name = "CSBackground-$name" }
     }
 
+    @Deprecated(message = "use launch()")
     inline fun background(
         after: Duration, @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration = background(after.inWholeMilliseconds.toInt(), function)
 
+    @Deprecated(message = "use launch()")
     inline fun background(
         after: Int = 0, @WorkerThread crossinline function: (CSRegistration) -> Unit,
     ): CSRegistration {
@@ -49,6 +51,7 @@ object CSBackground {
         return registration
     }
 
+    @Deprecated(message = "use launchLaterEach()")
     inline fun backgroundEach(
         after: Int, period: Int = after, start: Boolean = true,
         @WorkerThread crossinline function: (CSRegistration) -> Unit,
