@@ -23,16 +23,16 @@ inline fun CSHasRegistrations.laterEach(
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
-    after: Int = 0, period: Int = after, start: Boolean = true,
+    after: Int = 0, delay: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration = launchRepeat(
-    dispatcher = Main, period = period, start = start, function = function
+    dispatcher = Main, delay = delay, start = start, function = function
 )
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
     dispatcher: CoroutineDispatcher = Main, after: Int = 0,
-    period: Int = after, start: Boolean = true,
+    delay: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration {
     val resumeChannel = Channel<Unit>(Channel.CONFLATED)
@@ -41,7 +41,7 @@ inline fun CSHasRegistrations.launchRepeat(
             delay(after.toLong())
             while (isActive) {
                 function()
-                delay(period.toLong())
+                delay(delay.toLong())
             }
         }
     }
