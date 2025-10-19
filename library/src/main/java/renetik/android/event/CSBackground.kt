@@ -19,7 +19,8 @@ import kotlin.time.Duration
 @Deprecated(message = "Not used")
 object CSBackground {
     // has to be public for inline functions
-    var executor: ScheduledExecutorService = createExecutor()
+    var executor: ScheduledExecutorService =
+        createExecutor()
         private set
 
     @Deprecated(message = "Not used")
