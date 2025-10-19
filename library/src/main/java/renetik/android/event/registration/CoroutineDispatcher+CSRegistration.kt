@@ -36,7 +36,7 @@ fun CoroutineDispatcher.launch(
     job.complete(mainScope.launch(context) {
         job.await()
         registration.job = job.getCompleted()
-        if (isActive && registration.isActive) func(registration)
+        if (isActive && !registration.isCanceled) func(registration)
     })
     return registration
 }

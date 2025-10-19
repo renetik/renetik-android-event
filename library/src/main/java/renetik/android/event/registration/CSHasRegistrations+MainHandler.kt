@@ -23,39 +23,41 @@ inline fun CSHasRegistrations.laterEach(
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
-    after: Int = 0, delay: Int = after, start: Boolean = true,
+    delay: Int, after: Int = delay, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration = launchRepeat(
-    dispatcher = Main, delay = delay, start = start, function = function
-)
+    dispatcher = Main, delay, after, start, function)
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
-    dispatcher: CoroutineDispatcher = Main, after: Int = 0,
-    delay: Int = after, start: Boolean = true,
+    dispatcher: CoroutineDispatcher = Main, delay: Int,
+    after: Int = delay, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration {
-    val resumeChannel = Channel<Unit>(Channel.CONFLATED)
+    val channel = Channel<Unit>(Channel.CONFLATED)
+    if (start) channel.trySend(Unit)
     val registration = launch(dispatcher) {
-        for (signal in resumeChannel) {
+        for (signal in channel) {
             delay(after.toLong())
-            while (isActive) {
+            while (it.isActive) {
                 function()
                 delay(delay.toLong())
             }
         }
     }
+    registration.setActive(start)
     return CSRegistration(
+        isActive = start,
         onResume = {
             registration.resume()
-            resumeChannel.trySend(Unit)
+            channel.trySend(Unit)
         },
-        onPause = { registration.pause() },
+        onPause = {
+            registration.pause()
+        },
         onCancel = {
             registration.cancel()
-            resumeChannel.close()
+            channel.close()
         }
-    ).also {
-        if (start) it.start()
-    }
+    )
 }
