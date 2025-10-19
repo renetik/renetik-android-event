@@ -15,9 +15,14 @@ inline fun CSHasRegistrations.laterEach(
     start: Boolean = true, crossinline function: () -> Unit,
 ): CSRegistration = this + mainHandler.laterEach(after, period, start, function)
 
+@AnyThread
+inline fun CSHasRegistrations.laterEach(
+    after: Duration, period: Duration = after,
+    start: Boolean = true, crossinline function: () -> Unit,
+): CSRegistration = this + mainHandler.laterEach(after, period, start, function)
 
 @AnyThread
-inline fun CSHasRegistrations.launchLaterEach(
+inline fun CSHasRegistrations.launchEach(
     dispatcher: CoroutineDispatcher = Main, after: Int = 0,
     period: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
@@ -46,9 +51,3 @@ inline fun CSHasRegistrations.launchLaterEach(
         if (start) it.start()
     }
 }
-
-@AnyThread
-inline fun CSHasRegistrations.laterEach(
-    after: Duration, period: Duration = after,
-    start: Boolean = true, crossinline function: () -> Unit,
-): CSRegistration = this + mainHandler.laterEach(after, period, start, function)
