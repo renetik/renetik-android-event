@@ -4,6 +4,7 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -26,12 +27,13 @@ private class JobRegistrationImpl(
 }
 
 fun CoroutineDispatcher.launch(
-    func: suspend (JobRegistration) -> Unit,
+    name: String? = null, func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
     val registration = JobRegistrationImpl(isActive = true,
         onCancel = { job -> job?.let { if (!it.isCompleted) it.cancel() } })
     val job = CompletableDeferred<Job>()
-    job.complete(mainScope.launch(context = this) {
+    val context = name?.let(::CoroutineName)?.let { this + it } ?: this
+    job.complete(mainScope.launch(context) {
         job.await()
         registration.job = job.getCompleted()
         if (isActive && registration.isActive) func(registration)
@@ -40,8 +42,9 @@ fun CoroutineDispatcher.launch(
 }
 
 fun CoroutineDispatcher.launch(
-    after: Duration, func: suspend (JobRegistration) -> Unit,
-): JobRegistration = launch { delay(after); func(it) }
+    name: String? = null, after: Duration,
+    func: suspend (JobRegistration) -> Unit,
+): JobRegistration = launch(name) { delay(after); func(it) }
 
 fun CoroutineScope.start(
     func: suspend (JobRegistration) -> Unit,
