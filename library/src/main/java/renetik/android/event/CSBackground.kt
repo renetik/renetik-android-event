@@ -16,15 +16,19 @@ import kotlin.math.max
 import kotlin.properties.Delegates.notNull
 import kotlin.time.Duration
 
+@Deprecated(message = "Not used")
 object CSBackground {
     // has to be public for inline functions
     var executor: ScheduledExecutorService = createExecutor()
         private set
 
+    @Deprecated(message = "Not used")
     fun shutdown() = executor.shutdownAndWait()
 
+    @Deprecated(message = "Not used")
     val isOff get() = executor.isShutdown
 
+    @Deprecated(message = "Not used")
     fun restart() {
         shutdown()
         executor = createExecutor()
@@ -51,7 +55,7 @@ object CSBackground {
         return registration
     }
 
-    @Deprecated(message = "use launchLaterEach()")
+    @Deprecated(message = "use launchEach()")
     inline fun backgroundEach(
         after: Int, period: Int = after, start: Boolean = true,
         @WorkerThread crossinline function: (CSRegistration) -> Unit,

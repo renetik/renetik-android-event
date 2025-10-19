@@ -7,10 +7,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
+import kotlin.time.Duration
 
 private class JobRegistrationImpl(
     isActive: Boolean = false,
@@ -36,6 +38,10 @@ fun CoroutineDispatcher.launch(
     })
     return registration
 }
+
+fun CoroutineDispatcher.launch(
+    after: Duration, func: suspend (JobRegistration) -> Unit,
+): JobRegistration = launch { delay(after); func(it) }
 
 fun CoroutineScope.start(
     func: suspend (JobRegistration) -> Unit,
