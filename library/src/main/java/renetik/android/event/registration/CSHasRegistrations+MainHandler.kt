@@ -23,6 +23,14 @@ inline fun CSHasRegistrations.laterEach(
 
 @AnyThread
 inline fun CSHasRegistrations.launchEach(
+    after: Int = 0, period: Int = after, start: Boolean = true,
+    crossinline function: suspend () -> Unit,
+): CSRegistration = launchEach(
+    dispatcher = Main, period = period, start = start, function = function
+)
+
+@AnyThread
+inline fun CSHasRegistrations.launchEach(
     dispatcher: CoroutineDispatcher = Main, after: Int = 0,
     period: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
