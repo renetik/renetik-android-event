@@ -22,15 +22,15 @@ inline fun CSHasRegistrations.laterEach(
 ): CSRegistration = this + mainHandler.laterEach(after, period, start, function)
 
 @AnyThread
-inline fun CSHasRegistrations.launchEach(
+inline fun CSHasRegistrations.launchRepeat(
     after: Int = 0, period: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
-): CSRegistration = launchEach(
+): CSRegistration = launchRepeat(
     dispatcher = Main, period = period, start = start, function = function
 )
 
 @AnyThread
-inline fun CSHasRegistrations.launchEach(
+inline fun CSHasRegistrations.launchRepeat(
     dispatcher: CoroutineDispatcher = Main, after: Int = 0,
     period: Int = after, start: Boolean = true,
     crossinline function: suspend () -> Unit,
