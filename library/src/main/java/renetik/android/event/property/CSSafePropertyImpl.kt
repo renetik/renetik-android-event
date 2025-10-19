@@ -1,17 +1,18 @@
 package renetik.android.event.property
 
 import renetik.android.core.lang.atomic.CSAtomic
+import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
 import renetik.android.event.common.CSHasDestruct
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KProperty
 
 class CSSafePropertyImpl<T>(
-    parent: CSHasDestruct,
+    parent: CSHasDestruct? = null,
     value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
 ) : CSPropertyBase<T>(parent, onChangeUnsafe), CSSafeProperty<T> {
 
     init {
-        eventChange.onMain(parent)
+        parent?.also(eventChange::onMain)
     }
 
     private val field = AtomicReference(value)
@@ -52,11 +53,25 @@ class CSSafePropertyImpl<T>(
             value: T, onChangeUnsafe: ((value: T) -> Unit)? = null
         ) = CSSafePropertyImpl(this, value, onChangeUnsafe)
 
+        fun <T> unsafeProperty(
+            value: T, onChange: ((value: T) -> Unit)? = null
+        ) = CSSafePropertyImpl(null, value, onChange)
+
         fun <T> CSHasDestruct.safeProperty(
             value: T, onChangeUnsafe: ((previous: T, current: T) -> Unit)
         ): CSSafePropertyImpl<T> {
-            var previous by CSAtomic(value)
+            var previous by atomic(value)
             return CSSafePropertyImpl(this, value) {
+                onChangeUnsafe(previous, it)
+                previous = it
+            }
+        }
+
+        fun <T> unsafeProperty(
+            value: T, onChangeUnsafe: ((previous: T, current: T) -> Unit)
+        ): CSSafePropertyImpl<T> {
+            var previous by atomic(value)
+            return CSSafePropertyImpl(null, value) {
                 onChangeUnsafe(previous, it)
                 previous = it
             }
