@@ -27,10 +27,17 @@ open class CSRegistrationImpl(
             logWarnTrace { "Already canceled:$this" }
             return
         }
-        if (!_isActive.exchange(true)) onResume()
+        val previouslyActive = _isActive.exchange(true)
+        if (!previouslyActive) {
+            if (isCanceled) {
+                _isActive.exchange(false)
+                return
+            }
+            onResume()
+        }
     }
 
-    open fun onResume() = Unit
+    protected open fun onResume() = Unit
 
     @AnyThread
     final override fun pause() {
@@ -41,7 +48,7 @@ open class CSRegistrationImpl(
         if (_isActive.exchange(false)) onPause()
     }
 
-    open fun onPause() = Unit
+    protected open fun onPause() = Unit
 
     @AnyThread
     final override fun cancel() {
@@ -51,5 +58,5 @@ open class CSRegistrationImpl(
         eventCancel.fire()
     }
 
-    open fun onCancel() = Unit
+    protected open fun onCancel() = Unit
 }
