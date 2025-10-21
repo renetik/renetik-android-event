@@ -2,6 +2,7 @@
 
 package renetik.android.event.registration
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
@@ -13,6 +14,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
+import renetik.android.core.logging.CSLog.logError
 import kotlin.time.Duration
 
 private class JobRegistrationImpl(
@@ -31,13 +33,20 @@ fun CoroutineDispatcher.launch(
 ): JobRegistration {
     val registration = JobRegistrationImpl(isActive = true,
         onCancel = { job -> job?.let { if (!it.isCompleted) it.cancel() } })
-    val job = CompletableDeferred<Job>()
     val context = name?.let(::CoroutineName)?.let { this + it } ?: this
-    job.complete(mainScope.launch(context) {
-        job.await()
-        registration.job = job.getCompleted()
-        if (isActive && !registration.isCanceled) func(registration)
-    })
+    mainScope.launch(context) {
+        try {
+            if (isActive && !registration.isCanceled) {
+                registration.job = coroutineContext[Job]!!
+                func(registration)
+            }
+        } catch (ex: CancellationException) {
+            registration.cancel()
+            throw ex
+        } catch (ex: Exception) {
+            logError(ex)
+        }
+    }
     return registration
 }
 
