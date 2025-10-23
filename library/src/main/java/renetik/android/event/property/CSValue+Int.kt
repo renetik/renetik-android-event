@@ -15,11 +15,3 @@ fun <Item : CSHasDestruct> CSValue<Int>.update(
 ): Unit = list.size.update(value,
     onAdd = { index -> list.add(function(index)) },
     onRemove = { index -> list.removeAt(index).destruct() })
-
-operator fun CSValue<Int>.times(value: Int): Int = this.value * value
-operator fun CSValue<Int>.div(value: Int): Int = this.value / value
-operator fun CSValue<Int>.div(value: Float): Float = this.value / value
-operator fun CSValue<Int>.plus(value: Int): Int = this.value + value
-operator fun CSValue<Int>.minus(value: Int): Int = this.value - value
-operator fun CSValue<Int>.minus(value: CSValue<Int>): Int = this.value - value.value
-operator fun Int.minus(value: CSValue<Int>): Int = this - value.value
