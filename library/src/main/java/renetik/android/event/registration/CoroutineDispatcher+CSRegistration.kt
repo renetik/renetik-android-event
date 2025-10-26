@@ -29,12 +29,13 @@ private class JobRegistrationImpl(
 }
 
 fun CoroutineDispatcher.launch(
-    name: String? = null, func: suspend (JobRegistration) -> Unit,
+    scope: CoroutineScope, name: String? = null,
+    func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
     val registration = JobRegistrationImpl(isActive = true,
         onCancel = { job -> job?.let { if (!it.isCompleted) it.cancel() } })
     val context = name?.let(::CoroutineName)?.let { this + it } ?: this
-    mainScope.launch(context) {
+    scope.launch(context) {
         try {
             if (isActive && !registration.isCanceled) {
                 registration.job = coroutineContext[Job]!!
@@ -49,6 +50,10 @@ fun CoroutineDispatcher.launch(
     }
     return registration
 }
+
+fun CoroutineDispatcher.launch(
+    name: String? = null, func: suspend (JobRegistration) -> Unit,
+): JobRegistration = launch(mainScope, name, func)
 
 fun CoroutineDispatcher.launch(
     name: String? = null, after: Duration,

@@ -2,10 +2,12 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import renetik.android.core.kotlin.className
+import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 
 private class JobRegistrationWrapper(
@@ -22,11 +24,12 @@ private class JobRegistrationWrapper(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun CSHasRegistrations.launch(
+    scope: CoroutineScope,
     dispatcher: CoroutineDispatcher = Main,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
     val newRegistration = CompletableDeferred<JobRegistrationWrapper>()
-    val jobRegistration = dispatcher.launch(className) { registration ->
+    val jobRegistration = dispatcher.launch(scope, className) { registration ->
         newRegistration.await().also {
             it.job = registration.job!!
             if (!it.isCanceled) {
@@ -38,6 +41,11 @@ fun CSHasRegistrations.launch(
     newRegistration.complete(JobRegistrationWrapper(this + jobRegistration))
     return newRegistration.getCompleted()
 }
+
+fun CSHasRegistrations.launch(
+    dispatcher: CoroutineDispatcher = Main,
+    func: suspend (JobRegistration) -> Unit,
+): JobRegistration = launch(mainScope, dispatcher, func)
 
 fun CSHasRegistrations.launchWhileActive(
     dispatcher: CoroutineDispatcher = Main,
