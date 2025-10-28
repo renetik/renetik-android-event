@@ -11,15 +11,29 @@ import kotlin.time.Duration
 
 @AnyThread
 inline fun CSHasRegistrations.laterEach(
-    after: Int, period: Int = after,
+    delay: Int , after: Int = delay,
     start: Boolean = true, crossinline function: () -> Unit,
-): CSRegistration = this + mainHandler.laterEach(after, period, start, function)
+): CSRegistration = this + mainHandler.laterEach(after, delay, start, function)
 
 @AnyThread
 inline fun CSHasRegistrations.laterEach(
-    after: Duration, period: Duration = after,
+    delay: Duration, after: Duration = delay,
     start: Boolean = true, crossinline function: () -> Unit,
-): CSRegistration = this + mainHandler.laterEach(after, period, start, function)
+): CSRegistration = this + mainHandler.laterEach(after, delay, start, function)
+
+fun CSHasRegistrations.launchWhileActive(
+    dispatcher: CoroutineDispatcher = Main,
+    func: suspend () -> Unit,
+) = launchRepeat(dispatcher, 0, function = func)
+
+@AnyThread
+inline fun CSHasRegistrations.launchRepeat(
+    delay: Duration, after: Duration = delay, start: Boolean = true,
+    crossinline function: suspend () -> Unit,
+): CSRegistration = launchRepeat(
+    dispatcher = Main, delay.inWholeMilliseconds.toInt(),
+    after.inWholeMilliseconds.toInt(), start, function
+)
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(

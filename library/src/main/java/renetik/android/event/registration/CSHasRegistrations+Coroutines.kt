@@ -47,11 +47,6 @@ fun CSHasRegistrations.launch(
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration = launch(mainScope, dispatcher, func)
 
-fun CSHasRegistrations.launchWhileActive(
-    dispatcher: CoroutineDispatcher = Main,
-    func: suspend (JobRegistration) -> Unit,
-) = launch(dispatcher) { while (it.isActive) func(it) }
-
 @OptIn(ExperimentalCoroutinesApi::class)
 fun CSHasRegistrations.launch(
     key: String, dispatcher: CoroutineDispatcher = Main,
