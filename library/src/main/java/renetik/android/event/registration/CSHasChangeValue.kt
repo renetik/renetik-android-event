@@ -5,7 +5,6 @@ package renetik.android.event.registration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
-import renetik.android.core.kotlin.collections.list
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.notNull
 import renetik.android.core.lang.tuples.CSQuadruple
@@ -501,7 +500,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             onChange: (Argument1, Argument2) -> Unit,
-        ): CSRegistration = list(item1, item2).onChange {
+        ): CSRegistration = listOf(item1, item2).onChange {
             onChange(item1.value, item2.value)
         }
 
@@ -511,7 +510,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
             onChange: (Argument1, Argument2) -> Unit,
-        ): CSRegistration = list(first, second, third).onChange {
+        ): CSRegistration = listOf(first, second, third).onChange {
             onChange(first.value, second.value)
         }
 
@@ -523,7 +522,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             onAction: (Argument1, Argument2) -> Unit,
-        ): CSRegistration = list(item1, item2).action {
+        ): CSRegistration = listOf(item1, item2).action {
             onAction(item1.value, item2.value)
         }
 
@@ -539,12 +538,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChangeLaterOnce(
             onChange: () -> Unit,
-        ): CSRegistration = list(first, second).onChangeLaterOnce { onChange() }
+        ): CSRegistration = listOf(first, second).onChangeLaterOnce { onChange() }
 
         fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChangeLaterOnce(
             onChange: (Argument1, Argument2) -> Unit,
         ): CSRegistration =
-            list(first, second).onChangeLaterOnce { onChange(first.value, second.value) }
+            listOf(first, second).onChangeLaterOnce { onChange(first.value, second.value) }
 
         fun <Argument1, Argument2, Argument3, Return>
                 Triple<CSHasChangeValue<Argument1>,
@@ -649,7 +648,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
             onChange: (Argument1, Argument2, Argument3) -> Unit,
-        ): CSRegistration = list(item1, item2, item3).onChange {
+        ): CSRegistration = listOf(item1, item2, item3).onChange {
             onChange(item1.value, item2.value, item3.value)
         }
 
@@ -672,7 +671,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChangeLaterOnce(
             onChange: (Argument1, Argument2, Argument3) -> Unit,
-        ): CSRegistration = list(first, second, third).onChangeLaterOnce {
+        ): CSRegistration = listOf(first, second, third).onChangeLaterOnce {
             onChange(first.value, second.value, third.value)
         }
 
@@ -681,14 +680,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChangeLaterOnce(
             onChange: () -> Unit,
-        ): CSRegistration = list(first, second, third).onChangeLaterOnce { onChange() }
+        ): CSRegistration = listOf(first, second, third).onChangeLaterOnce { onChange() }
 
         fun <Argument1, Argument2, Argument3> action(
             item1: CSHasChangeValue<Argument1>,
             item2: CSHasChangeValue<Argument2>,
             item3: CSHasChangeValue<Argument3>,
             onAction: (Argument1, Argument2, Argument3) -> Unit,
-        ): CSRegistration = list(item1, item2, item3).action {
+        ): CSRegistration = listOf(item1, item2, item3).action {
             onAction(item1.value, item2.value, item3.value)
         }
 
@@ -698,7 +697,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <Argument1, Argument2, Argument3> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>>.actionLaterOnce(
             onAction: (Argument1, Argument2, Argument3) -> Unit,
-        ): CSRegistration = list(first, second, third).actionLaterOnce {
+        ): CSRegistration = listOf(first, second, third).actionLaterOnce {
             onAction(first.value,
                 second.value,
                 third.value)
@@ -714,7 +713,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item3: CSHasChangeValue<Argument3>,
             item4: CSHasChangeValue<Argument4>,
             onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
-        ): CSRegistration = list(item1, item2, item3, item4).onChange {
+        ): CSRegistration = listOf(item1, item2, item3, item4).onChange {
             onAction(item1.value, item2.value, item3.value, item4.value)
         }
 
@@ -728,7 +727,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item3: CSHasChangeValue<Argument3>,
             item4: CSHasChangeValue<Argument4>,
             onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
-        ): CSRegistration = list(item1, item2, item3, item4).action {
+        ): CSRegistration = listOf(item1, item2, item3, item4).action {
             onAction(item1.value, item2.value, item3.value, item4.value)
         }
 
@@ -741,7 +740,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 CSHasChangeValue<Argument4>>.actionLaterOnce(
             isActionNow: Boolean = false,
             onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth).actionLaterOnce(isActionNow) {
+        ): CSRegistration = listOf(first, second, third, fourth).actionLaterOnce(isActionNow) {
             onChange(first.value, second.value, third.value, fourth.value)
         }
 
@@ -750,7 +749,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
                 CSHasChangeValue<Argument4>>.onChangeLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth).onChangeLaterOnce {
+        ): CSRegistration = listOf(first, second, third, fourth).onChangeLaterOnce {
             onChange(first.value, second.value, third.value, fourth.value)
         }
 
@@ -761,7 +760,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item4: CSHasChangeValue<Argument4>,
             item5: CSHasChangeValue<Argument5>,
             onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-        ): CSRegistration = list(item1, item2, item3, item4, item5).onChange {
+        ): CSRegistration = listOf(item1, item2, item3, item4, item5).onChange {
             onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
         }
 
@@ -776,7 +775,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item4: CSHasChangeValue<Argument4>,
             item5: CSHasChangeValue<Argument5>,
             onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-        ): CSRegistration = list(item1, item2, item3, item4, item5).action {
+        ): CSRegistration = listOf(item1, item2, item3, item4, item5).action {
             onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
         }
 
@@ -786,13 +785,13 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChangeLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth, fifth).onChangeLaterOnce {
+        ): CSRegistration = listOf(first, second, third, fourth, fifth).onChangeLaterOnce {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value)
         }
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.actionLaterOnce(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth, fifth).actionLaterOnce {
+        ): CSRegistration = listOf(first, second, third, fourth, fifth).actionLaterOnce {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value)
         }
 
@@ -823,7 +822,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth, fifth, sixth).onChange {
+        ): CSRegistration = listOf(first, second, third, fourth, fifth, sixth).onChange {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
         }
 
@@ -833,7 +832,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
                         >.action(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth, fifth, sixth).action {
+        ): CSRegistration = listOf(first, second, third, fourth, fifth, sixth).action {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
         }
 
@@ -888,7 +887,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 Argument1, Argument2, Argument3, Argument4,
                 Argument5, Argument6, Argument7
             ) -> Unit,
-        ): CSRegistration = list(first, second, third, fourth,
+        ): CSRegistration = listOf(first, second, third, fourth,
             fifth, sixth, seventh).action {
             onChange(first.value, second.value, third.value,
                 fourth.value, fifth.value, sixth.value, seventh.value)
