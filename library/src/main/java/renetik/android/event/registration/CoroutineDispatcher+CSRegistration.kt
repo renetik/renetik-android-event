@@ -38,7 +38,7 @@ fun CoroutineDispatcher.launch(
     scope.launch(context) {
         try {
             if (isActive && !registration.isCanceled) {
-                registration.job = coroutineContext[Job]!!
+                registration.job = coroutineContext[Job]
                 func(registration)
             }
         } catch (ex: CancellationException) {
