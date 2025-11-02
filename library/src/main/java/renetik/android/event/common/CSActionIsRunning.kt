@@ -1,6 +1,5 @@
 package renetik.android.event.common
 
-import renetik.android.core.kotlin.collections.list
 import renetik.android.event.property.CSActionInterface
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
@@ -15,7 +14,7 @@ class CSActionIsRunning(
     vararg actions: CSActionInterface
 ) : CSPropertyWrapper<Boolean>(parent) {
     override val property = property(false)
-    private val runningActions = list<CSProperty<Boolean>>()
+    private val runningActions = mutableListOf<CSProperty<Boolean>>()
 
     init {
         add(actions)
