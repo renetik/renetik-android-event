@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package renetik.android.event.registration
 
 import kotlinx.coroutines.CoroutineDispatcher
@@ -12,6 +14,10 @@ import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.fire
 import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.coroutines.resume
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
@@ -122,14 +128,21 @@ fun CSHasChange<Boolean>.onFalseLaunch(
 }
 
 suspend fun <T> CSHasChange<T>.waitForChange(): T =
-    suspendCancellableCoroutine { coroutine ->
-        var registration: CSRegistration? = null
-        registration = onChange {
-            registration?.cancel()
-            registration = null
-            coroutine.resumeWith(Result.success(it))
+    suspendCancellableCoroutine { continuation ->
+        val registration = AtomicReference<CSRegistration?>(null)
+        val isDone = AtomicBoolean(false)
+        val listener: (T) -> Unit = { value ->
+            if (isDone.compareAndSet(expectedValue = false, newValue = true)) {
+                continuation.resume(value)
+                registration.exchange(null)?.cancel()
+            }
         }
-        coroutine.invokeOnCancellation { registration?.cancel() }
+        registration.store(onChange(listener))
+        if (isDone.load()) registration.exchange(null)?.cancel()
+        continuation.invokeOnCancellation {
+            if (isDone.compareAndSet(expectedValue = false, newValue = true))
+                registration.exchange(null)?.cancel()
+        }
     }
 
 inline fun <Argument> CSHasChange<Argument>.onChange(
