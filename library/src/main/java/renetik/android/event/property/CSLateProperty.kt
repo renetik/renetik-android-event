@@ -6,6 +6,8 @@ class CSLateProperty<T>(
 
     var lateValue: T? = null
 
+    val isSet get() = lateValue != null
+
     override fun value(newValue: T, fire: Boolean) {
         if (lateValue == newValue) return
         lateValue = newValue
