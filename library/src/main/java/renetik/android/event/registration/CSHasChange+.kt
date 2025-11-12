@@ -127,7 +127,7 @@ fun CSHasChange<Boolean>.onFalseLaunch(
     it + onFalse { it.launch(key, dispatcher) { function() } }
 }
 
-suspend fun <T> CSHasChange<T>.waitForChange(): T =
+suspend fun <T> CSHasChange<T>.wait(): T =
     suspendCancellableCoroutine { continuation ->
         val registration = AtomicReference<CSRegistration?>(null)
         val isDone = AtomicBoolean(false)
