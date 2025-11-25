@@ -2,6 +2,8 @@
 
 package renetik.android.event
 
+import androidx.annotation.AnyThread
+import androidx.annotation.MainThread
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.CSEnvironment.isDebug
 import renetik.android.core.logging.CSLog.logError
@@ -11,35 +13,41 @@ import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
 import renetik.android.event.util.CSLater.onMain
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.atomic.AtomicBoolean
 
 class CSEventImpl<T> : CSEvent<T> {
     private var onMainParent: CSHasDestruct? = null
     fun onMain(parent: CSHasDestruct) = apply { onMainParent = parent }
+
     private val listeners = CopyOnWriteArrayList<CSEventListener<T>>()
 
-    @Volatile
-    private var paused = false
-    private val firing = AtomicBoolean(false)
-
+    @AnyThread
     override fun listen(function: (T) -> Unit): CSRegistration =
         EventListenerImpl(function).also(listeners::add)
 
+    @Volatile private var isPaused = false
+    private var isFiring = false
+
+    @AnyThread
     override fun fire(argument: T) {
-        if (paused) return
-        if (!firing.compareAndSet(false, true)) {
+        if (isPaused) return
+        onMainParent?.onMain { fireOnMain(argument) }
+            ?: run { fireListeners(argument) }
+    }
+
+    @AnyThread
+    fun fireListeners(argument: T) = listeners.forEach { listener ->
+        if (listener.isActive) listener.fire(argument)
+    }
+
+    @MainThread
+    fun fireOnMain(argument: T) {
+        if (isFiring) {
             logErrorTrace { "Event fired while firing" }
             return
         }
-        try {
-            listeners.forEach { listener ->
-                if (listener.isActive)
-                    onMainParent?.onMain { listener.fire(argument) }
-                        ?: run { listener.fire(argument) }
-            }
-        } finally {
-            firing.set(false)
-        }
+        isFiring = true
+        fireListeners(argument)
+        isFiring = false
     }
 
     private inline fun CSEventListener<T>.fire(argument: T) {
@@ -47,16 +55,20 @@ class CSEventImpl<T> : CSEvent<T> {
         else runCatching { this(argument) }.onFailure(::logError)
     }
 
+    @AnyThread
     override fun clear() = listeners.clear()
 
+    @get:AnyThread
     override val isListened get() = listeners.isNotEmpty()
 
+    @AnyThread
     override fun pause() {
-        paused = true
+        isPaused = true
     }
 
+    @AnyThread
     override fun resume() {
-        paused = false
+        isPaused = false
     }
 
     override fun onChange(function: (T) -> Unit): CSRegistration = listen(function)

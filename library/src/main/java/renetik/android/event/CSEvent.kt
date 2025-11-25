@@ -1,5 +1,6 @@
 package renetik.android.event
 
+import androidx.annotation.AnyThread
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSRegistration
 
@@ -23,15 +24,21 @@ interface CSEvent<T> : CSHasChange<T> {
         }
     }
 
+    @AnyThread
     fun pause()
 
+    @AnyThread
     fun resume()
 
+    @get:AnyThread
     val isListened: Boolean
 
+    @AnyThread
     fun listen(function: (argument: T) -> Unit): CSRegistration
 
+    @AnyThread
     fun fire(argument: T)
 
+    @AnyThread
     fun clear()
 }
