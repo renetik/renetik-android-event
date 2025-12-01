@@ -38,6 +38,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             private var value: Return,
             private val function: (Return) -> Unit,
         ) {
+            @Synchronized
             operator fun invoke(newValue: Return) {
                 if (value != newValue) {
                     value = newValue
