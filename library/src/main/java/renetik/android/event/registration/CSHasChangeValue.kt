@@ -351,6 +351,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             abstract override var value: Return
             val eventChange by lazy { event<Return>() }
             override fun onChange(function: (Return) -> Unit) = eventChange.listen(function)
+
+            @Synchronized
             open fun value(newValue: Return) {
                 if (value == newValue) return
                 value = newValue
@@ -444,6 +446,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         child = { child(it) }, action = { value(it) })
                 }
 
+                @Synchronized
                 override fun value(newValue: Return) {
                     if (isInitialized && value == newValue) return
                     value = newValue
