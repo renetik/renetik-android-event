@@ -1,6 +1,5 @@
 package renetik.android.event.common
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -8,6 +7,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.launch
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -15,7 +15,7 @@ import kotlin.time.TimeSource
 
 class Throttler<T>(
     parent: CSHasRegistrations,
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     private val action: suspend (T) -> Unit,
     private val after: Duration = ZERO,
 ) : (T) -> Unit {
@@ -25,12 +25,12 @@ class Throttler<T>(
         ) = Throttler<Unit>(this, Main, { function() }, after)
 
         fun CSHasRegistrations.throttler(
-            dispatcher: CoroutineDispatcher = Main,
+            dispatcher: CoroutineContext = Main,
             after: Duration, function: suspend () -> Unit
         ) = Throttler<Unit>(this, dispatcher, { function() }, after)
 
         fun CSHasRegistrations.throttler(
-            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit
+            dispatcher: CoroutineContext = Main, function: suspend () -> Unit
         ) = Throttler<Unit>(this, dispatcher, { function() })
 
         fun CSHasRegistrations.throttler(
@@ -42,12 +42,12 @@ class Throttler<T>(
         ) = Throttler(this, Main, function, after)
 
         fun <T> CSHasRegistrations.throttler(
-            dispatcher: CoroutineDispatcher = Main,
+            dispatcher: CoroutineContext = Main,
             after: Duration, function: suspend (T) -> Unit
         ) = Throttler(this, dispatcher, function, after)
 
         fun <T> CSHasRegistrations.throttler(
-            dispatcher: CoroutineDispatcher = Main, function: suspend (T) -> Unit
+            dispatcher: CoroutineContext = Main, function: suspend (T) -> Unit
         ) = Throttler(this, dispatcher, function)
 
         fun <T> CSHasRegistrations.throttler(

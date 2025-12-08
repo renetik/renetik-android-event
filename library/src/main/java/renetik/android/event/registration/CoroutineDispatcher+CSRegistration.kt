@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 import renetik.android.core.logging.CSLog.logError
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 private class JobRegistrationImpl(
@@ -28,7 +29,7 @@ private class JobRegistrationImpl(
     }
 }
 
-fun CoroutineDispatcher.launch(
+fun CoroutineContext.launch(
     scope: CoroutineScope, name: String? = null,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
@@ -51,11 +52,11 @@ fun CoroutineDispatcher.launch(
     return registration
 }
 
-fun CoroutineDispatcher.launch(
+fun CoroutineContext.launch(
     name: String? = null, func: suspend (JobRegistration) -> Unit,
 ): JobRegistration = launch(mainScope, name, func)
 
-fun CoroutineDispatcher.launch(
+fun CoroutineContext.launch(
     name: String? = null, after: Duration,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration = launch(name) { delay(after); func(it) }

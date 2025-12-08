@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 @AnyThread
@@ -34,7 +35,7 @@ inline fun CSHasRegistrations.launchRepeat(
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     delay: Duration, after: Duration = delay, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration = launchRepeat(
@@ -51,7 +52,7 @@ inline fun CSHasRegistrations.launchRepeat(
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
-    dispatcher: CoroutineDispatcher = Main, delay: Int,
+    dispatcher: CoroutineContext = Main, delay: Int,
     after: Int = delay, start: Boolean = true,
     crossinline function: suspend () -> Unit,
 ): CSRegistration {
