@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.result.mainScope
@@ -39,7 +40,7 @@ fun CoroutineContext.launch(
     scope.launch(context) {
         try {
             if (isActive && !registration.isCanceled) {
-                registration.job = coroutineContext[Job]
+                registration.job = coroutineContext.job
                 func(registration)
             }
         } catch (ex: CancellationException) {
