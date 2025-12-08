@@ -12,6 +12,7 @@ import renetik.android.core.lang.result.mainScope
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.launch
 import renetik.android.event.registration.onCancel
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -30,7 +31,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class CSDebouncer(
     parent: CSHasRegistrations,
     scope: CoroutineScope,
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     action: suspend () -> Unit,
     private val after: Duration = 1.milliseconds,
 ) : CSFunc {
@@ -41,12 +42,12 @@ class CSDebouncer(
         ) = CSDebouncer(this, mainScope, Main, function, after)
 
         fun CSHasRegistrations.debouncer(
-            dispatcher: CoroutineDispatcher = Main,
+            dispatcher: CoroutineContext = Main,
             after: Duration, function: suspend () -> Unit
         ) = CSDebouncer(this, mainScope, dispatcher, function, after)
 
         fun CSHasRegistrations.debouncer(
-            dispatcher: CoroutineDispatcher = Main, function: suspend () -> Unit
+            dispatcher: CoroutineContext = Main, function: suspend () -> Unit
         ) = CSDebouncer(this, mainScope, dispatcher, function)
 
         fun CSHasRegistrations.debouncer(
