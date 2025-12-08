@@ -4,7 +4,6 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import renetik.android.core.kotlin.className
 import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 import renetik.android.core.logging.CSLog.logError
@@ -20,12 +20,13 @@ import kotlin.time.Duration
 
 private class JobRegistrationImpl(
     isActive: Boolean = false,
-    private val onCancel: (Job?) -> Unit,
 ) : CSRegistrationImpl(isActive), JobRegistration {
     override var job: Job? by weak(null)
     override fun onCancel() {
         super.onCancel()
-        onCancel.invoke(job)
+        job?.takeIf { !it.isCompleted }?.cancel(
+            CancellationException("$className cancel")
+        )
     }
 }
 
@@ -33,8 +34,7 @@ fun CoroutineContext.launch(
     scope: CoroutineScope, name: String? = null,
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
-    val registration = JobRegistrationImpl(isActive = true,
-        onCancel = { job -> job?.let { if (!it.isCompleted) it.cancel() } })
+    val registration = JobRegistrationImpl(isActive = true)
     val context = name?.let(::CoroutineName)?.let { this + it } ?: this
     scope.launch(context) {
         try {
@@ -64,8 +64,7 @@ fun CoroutineContext.launch(
 fun CoroutineScope.start(
     func: suspend (JobRegistration) -> Unit,
 ): JobRegistration {
-    val registration = JobRegistrationImpl(isActive = true,
-        onCancel = { job -> job?.let { if (!it.isCompleted) it.cancel() } })
+    val registration = JobRegistrationImpl(isActive = true)
     val job = CompletableDeferred<Job>()
     job.complete(launch {
         job.await()
