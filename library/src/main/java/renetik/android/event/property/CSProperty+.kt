@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event.property
 
 import renetik.android.core.kotlin.primitives.percentOf
@@ -63,6 +65,9 @@ inline fun <T> CSProperty<T>.computedTo(
     noinline onChange: ArgFun<T>? = null,
 ): CSProperty<T> = computed(parent, from = { it }, to, onChange)
 
+inline fun <T> CSProperty<T>.computed(parent: CSHasRegistrations) =
+    computed(parent, from = { it }, to = { it })
+
 inline fun <T, V> CSProperty<T>.computed(
     parent: CSHasRegistrations? = null,
     crossinline get: (T) -> V, crossinline set: (CSProperty<T>, V) -> Unit,
@@ -116,5 +121,3 @@ fun CSProperty<Int>.computedAsPercentOf(
 )
 
 operator fun CSProperty<Boolean>.not() = computed(from = { !it }, to = { !it })
-fun CSProperty<Boolean>.computed(parent: CSHasRegistrations? = null) =
-    computed(parent, from = { it }, to = { it })
