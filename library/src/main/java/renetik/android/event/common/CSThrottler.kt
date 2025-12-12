@@ -103,5 +103,3 @@ class CSThrottler<T>(
         channel.trySend(param)
     }
 }
-
-operator fun CSThrottler<Unit>.invoke() = invoke(Unit)
