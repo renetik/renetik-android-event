@@ -13,6 +13,19 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.TimeSource
 
+/**
+ * A thread-safe, coroutine-based Throttler.
+ *
+ * It limits the execution frequency of the [action] to the duration specified in [after].
+ * If multiple events occur during the [after] window, only the *latest* one is processed
+ * (Conflation strategy).
+ *
+ * @param T The type of data passed to the action.
+ * @param parent A scope wrapper (CSHasRegistrations) that controls the lifecycle of this throttler.
+ * @param dispatcher The CoroutineContext where the action will run (default: Main).
+ * @param action The actual work to perform (suspend function).
+ * @param after The "cooldown" or "grouping" window duration.
+ */
 class Throttler<T>(
     parent: CSHasRegistrations,
     dispatcher: CoroutineContext = Main,
