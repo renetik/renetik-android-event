@@ -4,6 +4,15 @@ import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
+import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
+
+@JvmName("BooleanAndCSHasChangeValueBoolean")
+infix fun Boolean.and(other: CSHasChangeValue<Boolean>): CSHasChangeValue<Boolean> =
+    other.delegateValue(from = { it && this })
+
+@JvmName("CSHasChangeValueBooleanAndBoolean")
+infix fun CSHasChangeValue<Boolean>.and(other: Boolean): CSHasChangeValue<Boolean> =
+    this.delegateValue(from = { it && other })
 
 @JvmName("CSHasChangeValueBooleanAndCSHasChangeValueBoolean")
 infix fun CSHasChangeValue<Boolean>.and(other: CSHasChangeValue<Boolean>) =
