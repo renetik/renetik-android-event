@@ -26,7 +26,7 @@ import kotlin.time.TimeSource
  * @param action The actual work to perform (suspend function).
  * @param after The "cooldown" or "grouping" window duration.
  */
-class Throttler<T>(
+class CSThrottler<T>(
     parent: CSHasRegistrations,
     dispatcher: CoroutineContext = Main,
     private val action: suspend (T) -> Unit,
@@ -35,39 +35,39 @@ class Throttler<T>(
     companion object {
         fun CSHasRegistrations.throttler(
             after: Duration, function: suspend () -> Unit
-        ) = Throttler<Unit>(this, Main, { function() }, after)
+        ) = CSThrottler<Unit>(this, Main, { function() }, after)
 
         fun CSHasRegistrations.throttler(
             dispatcher: CoroutineContext = Main,
             after: Duration, function: suspend () -> Unit
-        ) = Throttler<Unit>(this, dispatcher, { function() }, after)
+        ) = CSThrottler<Unit>(this, dispatcher, { function() }, after)
 
         fun CSHasRegistrations.throttler(
             dispatcher: CoroutineContext = Main, function: suspend () -> Unit
-        ) = Throttler<Unit>(this, dispatcher, { function() })
+        ) = CSThrottler<Unit>(this, dispatcher, { function() })
 
         fun CSHasRegistrations.throttler(
             function: suspend () -> Unit
-        ) = Throttler<Unit>(this, Main, { function() })
+        ) = CSThrottler<Unit>(this, Main, { function() })
 
         fun <T> CSHasRegistrations.throttler(
             after: Duration, function: suspend (T) -> Unit
-        ) = Throttler(this, Main, function, after)
+        ) = CSThrottler(this, Main, function, after)
 
         fun <T> CSHasRegistrations.throttler(
             dispatcher: CoroutineContext = Main,
             after: Duration, function: suspend (T) -> Unit
-        ) = Throttler(this, dispatcher, function, after)
+        ) = CSThrottler(this, dispatcher, function, after)
 
         fun <T> CSHasRegistrations.throttler(
             dispatcher: CoroutineContext = Main, function: suspend (T) -> Unit
-        ) = Throttler(this, dispatcher, function)
+        ) = CSThrottler(this, dispatcher, function)
 
         fun <T> CSHasRegistrations.throttler(
             function: suspend (T) -> Unit
-        ) = Throttler(this, Main, function)
+        ) = CSThrottler(this, Main, function)
 
-        operator fun Throttler<Unit>.invoke() = invoke(Unit)
+        operator fun CSThrottler<Unit>.invoke() = invoke(Unit)
     }
 
     private val channel = Channel<T>(Channel.CONFLATED)
@@ -104,4 +104,4 @@ class Throttler<T>(
     }
 }
 
-operator fun Throttler<Unit>.invoke() = invoke(Unit)
+operator fun CSThrottler<Unit>.invoke() = invoke(Unit)
