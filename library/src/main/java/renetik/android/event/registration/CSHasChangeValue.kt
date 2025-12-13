@@ -802,7 +802,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         }
 
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.hasChangeValue(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return>
+                CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
             from: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
             onChange: ArgFun<Return>? = null
@@ -818,7 +821,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.hasChangeValue(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+                CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>>.hasChangeValue(
             parent: CSHasRegistrations? = null,
             onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
         ): CSHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>> =
@@ -826,7 +832,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 CSQuintuple(item1, item2, item3, item4, item5)
             }, onChange)
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6> CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+                CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
         ): CSRegistration = listOf(first, second, third, fourth, fifth, sixth).onChange {
             onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
@@ -883,6 +892,37 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             registrations.onCancel(::clearValues)
             return registrations
         }
+
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return>
+                CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
+            onChange: ArgFun<Return>? = null
+        ): CSHasChangeValue<Return> =
+            object : CSHasChangeValueBase<Return>(parent, onChange) {
+                override var value: Return = from(first.value, second.value,
+                    third.value, fourth.value, fifth.value, sixth.value)
+
+                init {
+                    this + (first to second to third to fourth to fifth to sixth)
+                        .onChange { item1, item2, item3, item4, item5, item6 ->
+                            value(from(item1, item2, item3, item4, item5, item6))
+                        }
+                }
+            }
+
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+                CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null
+        ): CSHasChangeValue<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>> =
+            hasChangeValue(parent, from = { item1, item2, item3, item4, item5, item6 ->
+                CSSixtuple(item1, item2, item3, item4, item5, item6)
+            }, onChange)
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7>
                 CSSeventuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
