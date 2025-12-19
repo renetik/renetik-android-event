@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.ArgFun
+import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.notNull
 import renetik.android.core.lang.synchronized
 import renetik.android.core.lang.tuples.CSQuadruple
@@ -22,6 +23,7 @@ import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
 import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import kotlin.coroutines.CoroutineContext
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {
@@ -685,8 +687,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 Triple<CSHasChangeValue<Argument1>,
                         CSHasChangeValue<Argument2>,
                         CSHasChangeValue<Argument3>>.onChangeLaterOnce(
-            onChange: () -> Unit,
-        ): CSRegistration = listOf(first, second, third).onChangeLaterOnce { onChange() }
+            dispatcher: CoroutineContext = Main, onChange: SusFun,
+        ): CSRegistration = listOf(first, second, third)
+            .onChangeLaterOnce(dispatcher) { onChange() }
 
         fun <Argument1, Argument2, Argument3> action(
             item1: CSHasChangeValue<Argument1>,

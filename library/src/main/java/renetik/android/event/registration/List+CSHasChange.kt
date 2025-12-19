@@ -1,8 +1,11 @@
 package renetik.android.event.registration
 
+import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.Fun
+import renetik.android.core.lang.SusFun
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
+import kotlin.coroutines.CoroutineContext
 
 inline fun <T : CSHasChange<*>> List<T>.onChange(
     crossinline function: Fun
@@ -24,15 +27,19 @@ inline fun <T : CSHasChange<*>> List<T>.action(
 }
 
 inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
-    crossinline function: Fun
+    dispatcher: CoroutineContext = Main, crossinline function: SusFun
 ): CSRegistrations {
     val registrations = CSRegistrationsMap(className)
-    val laterOnceFunction = registrations.debouncer {
+    val laterOnceFunction = registrations.debouncer(dispatcher) {
         if (registrations.isActive) function()
     }
     forEach { registrations + it.onChange { laterOnceFunction() } }
     return registrations
 }
+
+inline fun <T : CSHasChange<*>> List<T>.onChangeLaterOnce(
+    crossinline function: SusFun
+) = onChangeLaterOnce(Main, function)
 
 inline fun <T : CSHasChange<*>> List<T>.actionLaterOnce(
     isActionNow: Boolean = false,
