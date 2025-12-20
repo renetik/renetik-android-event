@@ -25,18 +25,19 @@ import android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET
 import android.media.AudioManager.GET_DEVICES_OUTPUTS
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.S
+import renetik.android.core.base.CSApplication.Companion.app
 import renetik.android.core.extensions.content.audioManager
 import renetik.android.core.extensions.content.isPermissionsGranted
 import renetik.android.core.extensions.content.unregister
 import renetik.android.core.lang.CSHandler.threadHandler
 import renetik.android.core.lang.variable.assign
 import renetik.android.core.logging.CSLog.logDebug
-import renetik.android.event.common.CSContext
+import renetik.android.event.common.CSModel
 import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.or
 
-class CSHeadsetDetector(parent: CSContext) : CSContext(parent),
+class CSHeadsetDetector(parent: CSModel) : CSModel(parent),
     CSHasChangeValue<Boolean> {
     private val isDeviceHeadset = safeProperty(false)
     private val isBtHeadset = safeProperty(false)
@@ -75,10 +76,10 @@ class CSHeadsetDetector(parent: CSContext) : CSContext(parent),
     }
 
     init {
-        if ((SDK_INT < S || isPermissionsGranted(BLUETOOTH_CONNECT, BLUETOOTH_ADVERTISE))
+        if ((SDK_INT < S || app.isPermissionsGranted(BLUETOOTH_CONNECT, BLUETOOTH_ADVERTISE))
             && btAdapter != null) {
-            btAdapter.getProfileProxy(context, btProfileProxyListener, A2DP)
-            context.registerReceiver(btwBroadcastReceiver,
+            btAdapter.getProfileProxy(app, btProfileProxyListener, A2DP)
+            app.registerReceiver(btwBroadcastReceiver,
                 IntentFilter(ACTION_CONNECTION_STATE_CHANGED))
         }
     }
@@ -98,16 +99,16 @@ class CSHeadsetDetector(parent: CSContext) : CSContext(parent),
     }
 
     init {
-        audioManager.getDevices(GET_DEVICES_OUTPUTS)
+        app.audioManager.getDevices(GET_DEVICES_OUTPUTS)
             .filter { it.isSink && it.type in deviceTypes }
             .let { isDeviceHeadset assign it.isNotEmpty() }
-        audioManager.registerAudioDeviceCallback(deviceCallback, threadHandler)
+        app.audioManager.registerAudioDeviceCallback(deviceCallback, threadHandler)
     }
 
     // Cleanup
     override fun onDestruct() {
-        context.unregister(btwBroadcastReceiver)
-        audioManager.unregisterAudioDeviceCallback(deviceCallback)
+        app.unregister(btwBroadcastReceiver)
+        app.audioManager.unregisterAudioDeviceCallback(deviceCallback)
         super.onDestruct()
     }
 

@@ -2,18 +2,20 @@ package renetik.android.event.common
 
 import android.content.BroadcastReceiver
 import android.content.Intent.ACTION_HEADSET_PLUG
+import renetik.android.core.base.CSApplication.Companion.app
 import renetik.android.core.extensions.content.register
 import renetik.android.core.extensions.content.unregister
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.core.logging.CSLog.logWarn
 
 class CSHeadsetAudioPlugDetector(
-    parent: CSContext,
-    val onHeadsetPlugChanged: (isPlugged: Boolean) -> Unit) : CSContext(parent) {
+    parent: CSModel,
+    val onHeadsetPlugChanged: (isPlugged: Boolean) -> Unit
+) : CSModel(parent) {
 
     private var isPlugged: Boolean? = null
 
-    private val receiver = register(ACTION_HEADSET_PLUG) { intent, receiver ->
+    private val receiver = app.register(ACTION_HEADSET_PLUG) { intent, receiver ->
         if (intent.action == ACTION_HEADSET_PLUG)
             when (val state = intent.getIntExtra("state", -1)) {
                 0, 1 -> onStateReceived(state, receiver)
@@ -31,7 +33,7 @@ class CSHeadsetAudioPlugDetector(
     }
 
     override fun onDestruct() {
-        unregister(receiver)
+        app.unregister(receiver)
         super.onDestruct()
     }
 }
