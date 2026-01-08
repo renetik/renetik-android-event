@@ -1,18 +1,23 @@
 package renetik.android.event
 
 import androidx.annotation.AnyThread
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSRegistration
 
 interface CSEvent<T> : CSHasChange<T> {
 
     companion object {
-        @JvmName("eventWithArgument")
-        fun <T> event() = CSEventImpl<T>()
+        @JvmName("eventWithArgument") fun <T> event() = CSEventImpl<T>()
+
         fun event() = CSEventImpl<Unit>()
 
-        val Empty: CSEvent<Unit> = empty()
+        @JvmName("eventWithArgument")
+        fun <T> CSHasDestruct.safeEvent() = CSEventImpl<T>().onMain(this)
 
+        fun CSHasDestruct.safeEvent() = CSEventImpl<Unit>().onMain(this)
+
+        val Empty: CSEvent<Unit> = empty()
         fun <T> empty(): CSEvent<T> = object : CSEvent<T> {
             override fun pause() = Unit
             override fun resume() = Unit
