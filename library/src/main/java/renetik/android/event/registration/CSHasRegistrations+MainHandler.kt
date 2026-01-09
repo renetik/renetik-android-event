@@ -1,7 +1,6 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -25,7 +24,7 @@ inline fun CSHasRegistrations.laterEach(
 fun CSHasRegistrations.launchWhileActive(
     dispatcher: CoroutineContext = Main,
     func: suspend () -> Unit,
-) = launchRepeat(dispatcher, 0, function = func)
+) = launchRepeat(dispatcher, 0, action = func)
 
 @AnyThread
 inline fun CSHasRegistrations.launchRepeat(
@@ -54,7 +53,7 @@ inline fun CSHasRegistrations.launchRepeat(
 inline fun CSHasRegistrations.launchRepeat(
     dispatcher: CoroutineContext = Main, delay: Int,
     after: Int = delay, start: Boolean = true,
-    crossinline function: suspend () -> Unit,
+    crossinline action: suspend () -> Unit,
 ): CSRegistration {
     val channel = Channel<Unit>(Channel.CONFLATED)
     if (start) channel.trySend(Unit)
@@ -62,7 +61,7 @@ inline fun CSHasRegistrations.launchRepeat(
         for (signal in channel) {
             delay(after.toLong())
             while (it.isActive) {
-                function()
+                action()
                 delay(delay.toLong())
             }
         }
