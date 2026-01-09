@@ -2,7 +2,6 @@
 
 package renetik.android.event.registration
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.className
@@ -17,6 +16,7 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -32,21 +32,21 @@ fun CSHasChange<Boolean>.onFalse(function: () -> Unit): CSRegistration =
     onChange { param -> if (!param) function() }
 
 fun <T> CSHasChange<T>.onChangeLaunch(
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     function: suspend (T) -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + onChange { param -> it.launch(dispatcher) { function(param) } }
 }
 
 fun <T> CSHasChange<T>.onChangeLaunch(
-    key: String, dispatcher: CoroutineDispatcher = Main,
+    key: String, dispatcher: CoroutineContext = Main,
     function: suspend (T) -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + onChange { param -> it.launch(key, dispatcher) { function(param) } }
 }
 
 fun <T> CSHasChange<T>.actionLaunch(
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + action { it.launch(dispatcher) { function() } }
@@ -87,7 +87,7 @@ fun <T> CSHasChangeValue<T>.onChangeFromToLaunch(
 
 fun <T> CSHasChangeValue<T>.actionLaunch(
     parent: CSHasRegistrations,
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     function: suspend (T) -> Unit,
 ): CSRegistration {
     var previous: JobRegistration? = null
@@ -107,21 +107,21 @@ fun <T> CSHasChangeValue<T>.actionLaunch(
 }
 
 fun CSHasChange<Boolean>.onTrueLaunch(
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + onTrue { it.launch(dispatcher) { function() } }
 }
 
 fun CSHasChange<Boolean>.onFalseLaunch(
-    dispatcher: CoroutineDispatcher = Main,
+    dispatcher: CoroutineContext = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + onFalse { it.launch(dispatcher) { function() } }
 }
 
 fun CSHasChange<Boolean>.onFalseLaunch(
-    key: String, dispatcher: CoroutineDispatcher = Main,
+    key: String, dispatcher: CoroutineContext = Main,
     function: suspend () -> Unit
 ): CSRegistration = CSRegistrationsMap(className).also {
     it + onFalse { it.launch(key, dispatcher) { function() } }
