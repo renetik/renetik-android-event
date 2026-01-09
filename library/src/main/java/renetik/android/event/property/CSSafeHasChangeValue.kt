@@ -16,7 +16,7 @@ interface CSSafeHasChangeValue<T> : CSSafeValue<T>, CSHasChangeValue<T> {
                 : CSSafeHasChangeValue<T> = property.safe(this)
 
         fun <T> CSHasChangeValue<T>.safe(
-            parent: CSHasDestruct,
+            parent: CSHasDestruct? = null,
             onChange: ArgFun<T>? = null
         ): CSSafeHasChangeValue<T> = let { property ->
             object : CSPropertyBase<T>(parent, onChange), CSSafeHasChangeValue<T> {
