@@ -21,7 +21,7 @@ inline fun CSHasRegistrations.laterEach(
     start: Boolean = true, crossinline function: () -> Unit,
 ): CSRegistration = this + mainHandler.laterEach(after, delay, start, function)
 
-fun CSHasRegistrations.launchWhileActive(
+fun CSHasRegistrations.launchRepeat(
     dispatcher: CoroutineContext = Main,
     func: suspend () -> Unit,
 ) = launchRepeat(dispatcher, 0, action = func)
