@@ -172,17 +172,30 @@ inline fun <Argument> CSHasChange<Argument>.onChange(
     return registration
 }
 
+/**
+ * Registers a one-time change listener.
+ *
+ * @return [CSRegistration] of this listener. The registration is self-cancelled
+ * on first change and must NOT be added to [CSHasRegistrations].
+ */
 inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
     parent: CSHasRegistrations? = null,
     crossinline function: () -> Unit,
-) {
-    var registration: CSRegistration? = null
+): CSRegistration {
+    lateinit var registration: CSRegistration
     registration = onChange {
-        registration?.cancel()
+        registration.cancel()
         function()
     }.registerTo(parent)
+    return registration
 }
 
+/**
+ * Registers a one-time change listener.
+ *
+ * @return [CSRegistration] of this listener. The registration is self-cancelled
+ * on first change and must NOT be added to [CSHasRegistrations].
+ */
 inline fun <Argument> CSHasChange<Argument>.onChangeOnce(
     parent: CSHasRegistrations? = null,
     crossinline function: (Argument) -> Unit,
