@@ -29,7 +29,8 @@ fun CSHasChangeValue<Boolean>.onTrue(function: () -> Unit): CSRegistration =
 fun CSHasChangeValue<Boolean>.isTrue(parent: CSHasRegistrations? = null) =
     delegateValue(parent, from = { it -> it })
 
-@JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue") fun CSHasChangeValue<Boolean?>.isTrue(
+@JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue")
+fun CSHasChangeValue<Boolean?>.isTrue(
     parent: CSHasRegistrations? = null) = delegateValue(parent, from = { it == true })
 
 fun CSHasChangeValue<Boolean>.isFalse(parent: CSHasRegistrations? = null) =
@@ -51,6 +52,36 @@ fun CSHasChangeValue<Boolean>.actionTrue(function: (CSRegistration) -> Unit): CS
         } else invoked.set(false)
     }
     if (isTrue) if (invoked.compareAndSet(false, true)) function(registration)
+    return registration
+}
+
+/**
+ * Register edge handlers for a boolean observable and invoke once for the current state.
+ *
+ * Calls `onTrue` when value becomes `true` and `onFalse` when it becomes `false`.
+ * Invocation for the current state happens immediately; thread-safe. Returns a
+ * `CSRegistration` to cancel the registration.
+ *
+ * @param onTrue  called when value becomes true
+ * @param onFalse called when value becomes false
+ * @return CSRegistration for this registration
+ */
+fun CSHasChangeValue<Boolean>.action(
+    onTrue: (CSRegistration) -> Unit,
+    onFalse: (CSRegistration) -> Unit
+): CSRegistration {
+    val last = java.util.concurrent.atomic.AtomicInteger(0)
+    val registration = onChange { reg, value ->
+        val newState = if (value) 1 else 2
+        val prev = last.getAndSet(newState)
+        if (prev != newState) {
+            if (value) onTrue(reg) else onFalse(reg)
+        }
+    }
+    val initial = if (isTrue) 1 else 2
+    if (last.compareAndSet(0, initial)) {
+        if (initial == 1) onTrue(registration) else onFalse(registration)
+    }
     return registration
 }
 
@@ -83,7 +114,8 @@ fun CSHasChangeValue<Boolean>.actionFalseLaunch(
 
 operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { it -> !it })
 
-fun CSHasChangeValue<Boolean>.onTrueUntilFalse(registration: () -> CSRegistration?): CSRegistration {
+fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
+    registration: () -> CSRegistration?): CSRegistration {
     var untilFalseRegistration: CSRegistration? = null
     val actionTrueRegistration = actionTrue {
         untilFalseRegistration?.cancel()

@@ -5,6 +5,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
+import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.notNull
@@ -69,6 +70,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             }
         }
 
+
         fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
             parent: CSHasRegistrations? = null,
             from: (List<Argument>) -> Return,
@@ -83,6 +85,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
         }
+
 
         fun <T> CSHasChangeValue<T>.delegateIsChange(
             parent: CSHasRegistrations? = null,
@@ -184,7 +187,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = property.action {
                         childRegistration?.cancel()
                         val childItem = child()
-                        if (parent.isActive && registration.isActive) childItem.also { value(it.value) }
+                        if (parent.isActive && registration.isActive) childItem.also {
+                            value(it.value)
+                        }
                         childRegistration = childItem.onChange {
                             if (parent.isActive && registration.isActive) value(it)
                         }
@@ -211,7 +216,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (parent.isActive && registration.isActive) childItem.also { value(it.value) }
+                        if (parent.isActive && registration.isActive) childItem.also {
+                            value(it.value)
+                        }
                         childRegistration = childItem.onChange {
                             if (parent.isActive && registration.isActive) value(it)
                         }
@@ -334,7 +341,9 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (parent.isActive && registration.isActive) childItem.also { value(it?.value) }
+                        if (parent.isActive && registration.isActive) childItem.also {
+                            value(it?.value)
+                        }
                         childRegistration = childItem?.onChange {
                             if (parent.isActive && registration.isActive) value.invoke(it)
                         }

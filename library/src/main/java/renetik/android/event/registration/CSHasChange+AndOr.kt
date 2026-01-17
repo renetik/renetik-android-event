@@ -1,8 +1,10 @@
 package renetik.android.event.registration
 
+import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue
+import renetik.android.event.registration.CSHasChangeValue.Companion.ValueFunction
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 
@@ -41,6 +43,43 @@ infix fun <T> CSHasChangeValue<T>.and(other: CSHasChangeValue<Boolean>): CSHasCh
             first.onChange { other.ifTrue { function(it) } },
             other.onTrue { function(value) },
         )
+    }
+}
+
+@JvmName("CSHasChangeValueIfTrueCSHasChangeValueBoolean")
+infix fun <T> CSHasChangeValue<T>.ifTrue(
+    other: CSHasChangeValue<Boolean>
+): CSHasChangeValue<T?> {
+    val first = this
+    return object : CSHasChangeValue<T?> {
+        fun from(first: T, other: Boolean) =  if (other) first else null
+        override val value: T? get() = from(first.value, other.value)
+        override fun onChange(function: (T?) -> Unit): CSRegistrationImpl {
+            val value = ValueFunction(this, value, function)
+            return CSRegistration(
+                first.onChange { value(from(it, other.value)) },
+                other.onChange { value(from(first.value, it)) },
+            )
+        }
+    }
+}
+
+
+@JvmName("CSHasChangeValueIfFalseCSHasChangeValueBoolean")
+infix fun <T> CSHasChangeValue<T>.ifFalse(
+    other: CSHasChangeValue<Boolean>
+): CSHasChangeValue<T?> {
+    val first = this
+    return object : CSHasChangeValue<T?> {
+        fun from(first: T, other: Boolean) =  if (!other) first else null
+        override val value: T? get() = from(first.value, other.value)
+        override fun onChange(function: (T?) -> Unit): CSRegistrationImpl {
+            val value = ValueFunction(this, value, function)
+            return CSRegistration(
+                first.onChange { value(from(it, other.value)) },
+                other.onChange { value(from(first.value, it)) },
+            )
+        }
     }
 }
 
