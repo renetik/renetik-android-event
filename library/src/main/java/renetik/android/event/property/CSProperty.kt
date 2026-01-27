@@ -6,6 +6,7 @@ import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
 import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.plus
 import renetik.android.event.registration.register
 
@@ -16,6 +17,18 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
     fun resume(fireChange: Boolean = true): Unit = notImplemented()
 
     companion object {
+        fun <T> empty(value: T): CSProperty<T> = object : CSProperty<T> {
+            override fun value(newValue: T, fire: Boolean) = Unit
+            override fun fireChange() = Unit
+            override var value: T = value
+            override fun onChange(function: (T) -> Unit) = CSRegistration.Empty
+        }
+
+        val emptyBoolean: CSProperty<Boolean> = empty(false)
+        val emptyString: CSProperty<String> = empty("")
+        val emptyInt: CSProperty<Int> = empty(0)
+
+
         fun <T> property(
             value: T, onChange: ((value: T) -> Unit)? = null,
         ): CSProperty<T> =
@@ -49,8 +62,8 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
         ): CSProperty<Argument3> {
             val property = property(from(first.value, second.value))
             onChange(first, second) { value1, value2 ->
-                        property.value = from(value1, value2)
-                    }.also { parent?.register(it) }
+                property.value = from(value1, value2)
+            }.also { parent?.register(it) }
             return property
         }
 
