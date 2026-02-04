@@ -1,7 +1,6 @@
 package renetik.android.event.registration
 
 import androidx.annotation.AnyThread
-import renetik.android.core.java.lang.nanoTime
 import renetik.android.core.kotlin.className
 import renetik.android.core.kotlin.collections.removeValue
 import renetik.android.core.kotlin.primitives.isTrue
@@ -12,6 +11,7 @@ import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
 import renetik.android.event.listen
+import java.lang.System.nanoTime
 import java.util.concurrent.atomic.AtomicInteger
 
 class CSRegistrationsMap(val id: String) : CSRegistrations, CSHasRegistrations {
@@ -31,7 +31,7 @@ class CSRegistrationsMap(val id: String) : CSRegistrations, CSHasRegistrations {
 
     val map: MutableMap<String, CSRegistration> = mutableMapOf()
     private val counter = AtomicInteger(0)
-    private fun createUniqueId() = "${counter.incrementAndGet()}-$id-$nanoTime"
+    private fun createUniqueId() = "${counter.incrementAndGet()}-$id-${nanoTime()}"
 
     private fun onActiveChange(isActive: Boolean) {
         if (isCanceled) {
