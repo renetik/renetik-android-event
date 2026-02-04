@@ -1,6 +1,5 @@
 package renetik.android.event.property
 
-import renetik.android.core.lang.atomic.CSAtomic
 import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
 import renetik.android.event.common.CSHasDestruct
 import java.util.concurrent.atomic.AtomicReference
@@ -36,8 +35,7 @@ class CSSafePropertyImpl<T>(
             onValueChanged(newValue, fire)
     }
 
-    @Volatile
-    override var isChanged = false
+    @Volatile override var isChanged = false
 
     override fun fireChange() = value.let {
         onChange?.invoke(it)

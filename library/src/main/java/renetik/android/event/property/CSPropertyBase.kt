@@ -12,13 +12,14 @@ abstract class CSPropertyBase<T>(
     constructor(onChange: ((value: T) -> Unit)? = null)
             : this(parent = null, onChange = onChange)
 
-    val eventChange by lazy { event<T>() }
+    val eventChange = event<T>()
 
     override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
 
-    override fun fireChange() = value.let {
-        onChange?.invoke(it)
-        eventChange.fire(it)
+    override fun fireChange() {
+        val actualValue = value
+        onChange?.invoke(actualValue)
+        eventChange.fire(actualValue)
     }
 
     override fun value(newValue: T, fire: Boolean) {
