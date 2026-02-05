@@ -1,7 +1,7 @@
 package renetik.android.event.property
 
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.util.CSLater.onMain
+import renetik.android.event.common.onMain
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KProperty

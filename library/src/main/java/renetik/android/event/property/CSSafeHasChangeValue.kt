@@ -10,7 +10,7 @@ import renetik.android.event.common.CSModel
 import renetik.android.event.registration.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.plus
-import renetik.android.event.util.CSLater.onMain
+import renetik.android.event.common.onMain
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.reflect.KProperty

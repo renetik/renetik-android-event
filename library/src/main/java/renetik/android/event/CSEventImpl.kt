@@ -11,7 +11,7 @@ import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
-import renetik.android.event.util.CSLater.onMain
+import renetik.android.event.common.onMain
 import java.util.concurrent.CopyOnWriteArrayList
 
 class CSEventImpl<T> : CSEvent<T> {

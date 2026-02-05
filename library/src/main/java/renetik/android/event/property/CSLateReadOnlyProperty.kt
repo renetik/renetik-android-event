@@ -2,7 +2,7 @@ package renetik.android.event.property
 
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.util.CSLater.later
+import renetik.android.event.common.later
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
