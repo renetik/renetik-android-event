@@ -152,25 +152,17 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (Return) -> Unit): CSRegistration {
                 val value = ValueFunction(this, value, function)
                 return CSRegistration(first.onChange {
-                    if (parent?.registrations.isActive) value(from(it,
-                        second.value,
-                        third.value,
-                        fourth.value))
+                    if (parent?.registrations.isActive)
+                        value(from(it, second.value, third.value, fourth.value))
                 }, second.onChange {
-                    if (parent?.registrations.isActive) value(from(first.value,
-                        it,
-                        third.value,
-                        fourth.value))
+                    if (parent?.registrations.isActive)
+                        value(from(first.value, it, third.value, fourth.value))
                 }, third.onChange {
-                    if (parent?.registrations.isActive) value(from(first.value,
-                        second.value,
-                        it,
-                        fourth.value))
+                    if (parent?.registrations.isActive)
+                        value(from(first.value, second.value, it, fourth.value))
                 }, fourth.onChange {
-                    if (parent?.registrations.isActive) value(from(first.value,
-                        second.value,
-                        third.value,
-                        it))
+                    if (parent?.registrations.isActive)
+                        value(from(first.value, second.value, third.value, it))
                 }).registerTo(parent)
             }
         }
