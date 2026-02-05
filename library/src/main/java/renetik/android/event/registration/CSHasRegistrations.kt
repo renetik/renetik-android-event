@@ -5,6 +5,3 @@ interface CSHasRegistrations {
 
     val registrations: CSRegistrationsMap
 }
-
-//TODO: Not ok named in many classes now is meaningless isActive
-val CSHasRegistrations?.isActive: Boolean get() = this?.registrations?.isActive != false

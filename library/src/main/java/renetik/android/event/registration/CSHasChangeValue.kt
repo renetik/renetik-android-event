@@ -5,7 +5,6 @@ package renetik.android.event.registration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
-import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.notNull
@@ -64,7 +63,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
                     val value = ValueFunction(this, value, function)
                     return property.onChange {
-                        if (parent.isActive) value(from(it))
+                        if (parent?.registrations.isActive) value(from(it))
                     }.registerTo(parent)
                 }
             }
@@ -80,7 +79,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
                     val value = ValueFunction(this, value, function)
                     return properties.onChange {
-                        if (parent.isActive) value(from(it))
+                        if (parent?.registrations.isActive) value(from(it))
                     }.registerTo(parent)
                 }
             }
@@ -95,7 +94,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (Boolean) -> Unit): CSRegistration {
                     return property.onChange {
                         value = true
-                        if (parent.isActive) function(true)
+                        if (parent?.registrations.isActive) function(true)
                         value = false
                     }.registerTo(parent)
                 }
@@ -110,8 +109,14 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (Return) -> Unit): CSRegistration {
                 val value = ValueFunction(this, value, function)
                 return CSRegistration(
-                    first.onChange { if (parent.isActive) value(from(it, second.value)) },
-                    second.onChange { if (parent.isActive) value(from(first.value, it)) },
+                    first.onChange {
+                        if (parent?.registrations.isActive) value(from(it,
+                            second.value))
+                    },
+                    second.onChange {
+                        if (parent?.registrations.isActive) value(from(first.value,
+                            it))
+                    },
                 ).registerTo(parent)
             }
         }
@@ -127,11 +132,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (Return) -> Unit): CSRegistration {
                 val value = ValueFunction(this, value, function)
                 return CSRegistration(first.onChange {
-                    if (parent.isActive) value(from(it, second.value, third.value))
+                    if (parent?.registrations.isActive) value(from(it, second.value, third.value))
                 }, second.onChange {
-                    if (parent.isActive) value(from(first.value, it, third.value))
+                    if (parent?.registrations.isActive) value(from(first.value, it, third.value))
                 }, third.onChange {
-                    if (parent.isActive) value(from(first.value, second.value, it))
+                    if (parent?.registrations.isActive) value(from(first.value, second.value, it))
                 }).registerTo(parent)
             }
         }
@@ -147,13 +152,25 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (Return) -> Unit): CSRegistration {
                 val value = ValueFunction(this, value, function)
                 return CSRegistration(first.onChange {
-                    if (parent.isActive) value(from(it, second.value, third.value, fourth.value))
+                    if (parent?.registrations.isActive) value(from(it,
+                        second.value,
+                        third.value,
+                        fourth.value))
                 }, second.onChange {
-                    if (parent.isActive) value(from(first.value, it, third.value, fourth.value))
+                    if (parent?.registrations.isActive) value(from(first.value,
+                        it,
+                        third.value,
+                        fourth.value))
                 }, third.onChange {
-                    if (parent.isActive) value(from(first.value, second.value, it, fourth.value))
+                    if (parent?.registrations.isActive) value(from(first.value,
+                        second.value,
+                        it,
+                        fourth.value))
                 }, fourth.onChange {
-                    if (parent.isActive) value(from(first.value, second.value, third.value, it))
+                    if (parent?.registrations.isActive) value(from(first.value,
+                        second.value,
+                        third.value,
+                        it))
                 }).registerTo(parent)
             }
         }
@@ -167,7 +184,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
                     val value = ValueFunction(this, value, function)
                     return property.onChange {
-                        if (parent.isActive) value(from())
+                        if (parent?.registrations.isActive) value(from())
                     }.registerTo(parent)
                 }
             }
@@ -187,11 +204,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = property.action {
                         childRegistration?.cancel()
                         val childItem = child()
-                        if (parent.isActive && registration.isActive) childItem.also {
+                        if (parent?.registrations.isActive && registration.isActive) childItem.also {
                             value(it.value)
                         }
                         childRegistration = childItem.onChange {
-                            if (parent.isActive && registration.isActive) value(it)
+                            if (parent?.registrations.isActive && registration.isActive) value(it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -216,11 +233,11 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (parent.isActive && registration.isActive) childItem.also {
+                        if (parent?.registrations.isActive && registration.isActive) childItem.also {
                             value(it.value)
                         }
                         childRegistration = childItem.onChange {
-                            if (parent.isActive && registration.isActive) value(it)
+                            if (parent?.registrations.isActive && registration.isActive) value(it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -245,10 +262,10 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = properties.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (parent.isActive && registration.isActive)
+                        if (parent?.registrations.isActive && registration.isActive)
                             childItem.also { value(it.value) }
                         childRegistration = childItem.onChange {
-                            if (parent.isActive && registration.isActive) value(it)
+                            if (parent?.registrations.isActive && registration.isActive) value(it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -293,7 +310,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
                         childRegistration = childItem.onChange {
-                            if (parent.isActive && registration.isActive) function(it)
+                            if (parent?.registrations.isActive && registration.isActive) function(it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -316,7 +333,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
                         childRegistration = childItem?.onChange {
-                            if (parent.isActive && registration.isActive) function(it)
+                            if (parent?.registrations.isActive && registration.isActive) function(it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -341,11 +358,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     val parentRegistration = property.action { parentValue ->
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
-                        if (parent.isActive && registration.isActive) childItem.also {
+                        if (parent?.registrations.isActive && registration.isActive) childItem.also {
                             value(it?.value)
                         }
                         childRegistration = childItem?.onChange {
-                            if (parent.isActive && registration.isActive) value.invoke(it)
+                            if (parent?.registrations.isActive && registration.isActive) value.invoke(
+                                it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
