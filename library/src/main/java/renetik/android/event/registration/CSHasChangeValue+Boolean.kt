@@ -57,6 +57,14 @@ inline fun CSHasChangeValue<Boolean>.actionTrue(
     return registration
 }
 
+inline fun CSHasChangeValue<Boolean>.onTrueOnce(
+    crossinline function: () -> Unit
+) = eventIsTrue.onChangeOnce { -> function() }
+
+inline fun CSHasChangeValue<Boolean>.onFalseOnce(
+    crossinline function: () -> Unit
+) = eventIsFalse.onChangeOnce { -> function() }
+
 /**
  * Register edge handlers for a boolean observable and invoke once for the current state.
  *
