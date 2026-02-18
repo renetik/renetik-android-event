@@ -30,7 +30,7 @@ abstract class CSContext : ContextWrapper, CSHasContext {
     final override val context: Context get() = baseContext
     final override val registrations = CSRegistrationsMap(className)
     final override val eventDestruct = event<Unit>()
-    final override var isDestructed = false
+    @Volatile final override var isDestructed = false
         private set
 
     override fun onDestruct() {
