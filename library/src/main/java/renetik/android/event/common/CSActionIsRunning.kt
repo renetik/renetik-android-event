@@ -1,6 +1,5 @@
 package renetik.android.event.common
 
-import renetik.android.event.property.CSActionInterface
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSPropertyWrapper
@@ -11,7 +10,7 @@ import renetik.android.event.registration.plus
 
 class CSActionIsRunning(
     parent: CSHasDestruct,
-    vararg actions: CSActionInterface
+    vararg actions: CSProperty<Boolean>
 ) : CSPropertyWrapper<Boolean>(parent) {
     override val property = property(false)
     private val runningActions = mutableListOf<CSProperty<Boolean>>()
@@ -20,9 +19,9 @@ class CSActionIsRunning(
         add(actions)
     }
 
-    private fun add(actions: Array<out CSActionInterface>) = actions.forEach { add(it) }
+    private fun add(actions: Array<out CSProperty<Boolean>>) = actions.forEach { add(it) }
 
-    fun add(action: CSActionInterface): CSRegistration {
+    fun add(action: CSProperty<Boolean>): CSRegistration {
         fun updateIsRunning(isRunning: Boolean) {
             if (isRunning) runningActions.add(action) else runningActions.remove(action)
             property.value(runningActions.size > 0)
