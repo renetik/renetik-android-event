@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event
 
 import androidx.annotation.AnyThread
@@ -8,17 +10,17 @@ import renetik.android.event.registration.CSRegistration
 interface CSEvent<T> : CSHasChange<T> {
 
     companion object {
-        @JvmName("eventWithArgument") fun <T> event() = CSEventImpl<T>()
+        @JvmName("eventWithArgument") inline fun <T> event() = CSEventImpl<T>()
 
-        fun event() = CSEventImpl<Unit>()
+        inline fun event() = CSEventImpl<Unit>()
 
         @JvmName("eventWithArgument")
-        fun <T> CSHasDestruct.safeEvent() = CSEventImpl<T>().onMain(this)
+        inline fun <T> CSHasDestruct.safeEvent() = CSEventImpl<T>().onMain(this)
 
-        fun CSHasDestruct.safeEvent() = CSEventImpl<Unit>().onMain(this)
+        inline fun CSHasDestruct.safeEvent() = CSEventImpl<Unit>().onMain(this)
 
         val Empty: CSEvent<Unit> = empty()
-        fun <T> empty(): CSEvent<T> = object : CSEvent<T> {
+        inline fun <T> empty(): CSEvent<T> = object : CSEvent<T> {
             override fun pause() = Unit
             override fun resume() = Unit
             override val isListened: Boolean = false
