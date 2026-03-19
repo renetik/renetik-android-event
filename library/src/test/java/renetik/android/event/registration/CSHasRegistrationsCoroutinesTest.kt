@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import renetik.android.core.base.TestCSApplication
 import renetik.android.core.lang.result.invoke
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
@@ -24,12 +25,11 @@ import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
 import renetik.android.testing.CSAssert.assert
-import renetik.android.testing.TestApplication
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-@Config(application = TestApplication::class)
+@Config(application = TestCSApplication::class)
 class CSHasRegistrationsCoroutinesTest {
 
     @Before

@@ -17,7 +17,7 @@ import renetik.android.testing.CSAssert.assert
 class EventOwnerEventTest {
 
     @Before
-    fun before() = init(logger = CSDummyLogger())
+    fun before() = init(logger = CSDummyLogger(), isTraceLineEnabled = false)
 
     @Test
     fun testUnregisteredAfterNilled() {
