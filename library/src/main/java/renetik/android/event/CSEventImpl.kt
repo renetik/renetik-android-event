@@ -2,6 +2,7 @@
 
 package renetik.android.event
 
+import android.annotation.SuppressLint
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import renetik.android.core.kotlin.primitives.isTrue
@@ -9,9 +10,9 @@ import renetik.android.core.lang.CSEnvironment.isDebug
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
 import renetik.android.event.common.CSHasDestruct
+import renetik.android.event.common.onMain
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
-import renetik.android.event.common.onMain
 import java.util.concurrent.CopyOnWriteArrayList
 
 class CSEventImpl<T> : CSEvent<T> {
@@ -30,6 +31,7 @@ class CSEventImpl<T> : CSEvent<T> {
     @AnyThread
     override fun fire(argument: T) {
         if (isPaused) return
+        @SuppressLint("ThreadConstraint")
         onMainParent?.onMain { fireOnMain(argument) }
             ?: run { fireListeners(argument) }
     }
