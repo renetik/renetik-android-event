@@ -2,6 +2,5 @@ rootProject.ext.namespace = 'renetik.android.event'
 if (rootProject.ext.is_renetik_library_module) apply from: '../library.gradle'
 else apply from: '../../library.gradle'
 dependencies {
-    if (rootProject.ext.is_renetik_library_release) implementation "$renetik_android_core"
-    else implementation project(':renetik-android-core')
+    implementation project(':renetik-android-core')
 }
