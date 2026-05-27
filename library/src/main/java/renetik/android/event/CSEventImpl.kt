@@ -31,6 +31,7 @@ class CSEventImpl<T> : CSEvent<T> {
     @AnyThread
     override fun fire(argument: T) {
         if (isPaused) return
+        if (!isListened) return
         @SuppressLint("ThreadConstraint")
         onMainParent?.onMain { fireOnMain(argument) }
             ?: run { fireListeners(argument) }
