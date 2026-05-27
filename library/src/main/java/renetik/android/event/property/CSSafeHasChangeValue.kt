@@ -81,7 +81,10 @@ fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasUnsafeChangeValue(
     from: (Argument) -> Return
 ): CSSafeHasChangeValue<Return> = let { source ->
     object : CSSafeHasChangeValue<Return> {
-        @Volatile override var value: Return = from(source.value)
+        private val _value = AtomicReference(from(source.value))
+        override var value: Return
+            get() = _value.load()
+            set(value) = _value.store(value)
 
         val eventUnsafeChange = event<Return>()
         override fun onUnsafeChange(function: (Return) -> Unit) =
@@ -94,8 +97,7 @@ fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasUnsafeChangeValue(
         init {
             parent + source.onUnsafeChange {
                 val newValue = from(it)
-                if (newValue != value) {
-                    value = newValue
+                if (newValue != _value.exchange(newValue)) {
                     eventUnsafeChange.fire(newValue)
                     parent.onMain { eventChange.fire(newValue) }
                 }
