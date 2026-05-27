@@ -1,7 +1,9 @@
 package renetik.android.event.property
 
+import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.onMain
+import renetik.android.event.registration.CSRegistration
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KProperty
@@ -11,6 +13,10 @@ class CSSafeWeakProperty<T>(
     value: T? = null,
     onChangeUnsafe: ((value: T?) -> Unit)? = null
 ) : CSPropertyBase<T?>(parent, onChangeUnsafe), CSSafeProperty<T?> {
+
+    private val eventUnsafeChange = event<T?>()
+    override fun onUnsafeChange(function: (T?) -> Unit): CSRegistration =
+        eventUnsafeChange.listen(function)
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T? = value
 
@@ -76,7 +82,18 @@ class CSSafeWeakProperty<T>(
 
     override fun fireChange() = value.let {
         onChange?.invoke(it)
+        eventUnsafeChange.fire(it)
         onMain { eventChange.fire(it) }
+    }
+
+    override fun pause() {
+        eventUnsafeChange.pause()
+        super<CSPropertyBase>.pause()
+    }
+
+    override fun resume(fireChange: Boolean) {
+        eventUnsafeChange.resume()
+        super<CSPropertyBase>.resume(fireChange)
     }
 
     override var value: T?
