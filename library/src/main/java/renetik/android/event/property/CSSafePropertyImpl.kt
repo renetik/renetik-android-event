@@ -49,6 +49,16 @@ class CSSafePropertyImpl<T>(
         eventChange.fire(actualValue)
     }
 
+    override fun pause() {
+        eventUnsafeChange.pause()
+        super<CSPropertyBase>.pause()
+    }
+
+    override fun resume(fireChange: Boolean) {
+        eventUnsafeChange.resume()
+        super<CSPropertyBase>.resume(fireChange)
+    }
+
     override var value: T
         get() = this.field.get()
         set(value) = value(value)
@@ -83,4 +93,3 @@ class CSSafePropertyImpl<T>(
         }
     }
 }
-
