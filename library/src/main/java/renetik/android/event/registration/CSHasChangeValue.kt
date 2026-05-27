@@ -398,12 +398,12 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             parent: CSHasRegistrations? = null,
             from: (Argument) -> Return,
             onChange: ArgFun<Return>? = null
-        ): CSHasChangeValue<Return> = let { property ->
+        ): CSHasChangeValue<Return> = let { source ->
             object : CSHasChangeValueBase<Return>(parent, onChange) {
-                override var value: Return = from(property.value)
+                override var value: Return = from(source.value)
 
                 init {
-                    this + property.onChange { value(from(it)) }
+                    this + source.onChange { value(from(it)) }
                 }
             }
         }
