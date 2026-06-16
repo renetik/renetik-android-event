@@ -21,9 +21,9 @@ import renetik.android.event.registration.delegate
 import renetik.android.event.registration.delegateValue
 import renetik.android.event.registration.delegateIsChange
 import renetik.android.event.registration.delegateNullable
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValueNullable
-import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
+import renetik.android.event.registration.hasChangeValue
+import renetik.android.event.registration.hasChangeValueNullable
+import renetik.android.event.registration.onChange
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)

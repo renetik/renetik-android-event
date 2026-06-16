@@ -4,7 +4,7 @@ import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSHasChangeValue
-import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
+import renetik.android.event.registration.onChange
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.plus

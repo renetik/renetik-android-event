@@ -2,8 +2,6 @@ package renetik.android.event.registration
 
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.registration.CSHasChange.Companion.action
-import renetik.android.event.registration.CSHasChangeValue.Companion.action
-import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun <T> CSHasChangeValue<T>.delegate(
@@ -34,8 +32,8 @@ fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
         override val value: Return get() = from(properties.map { it.value })
         override fun onChange(function: (Return) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
-            return properties.onChange {
-                if (parent?.registrations.isActive) value(from(it))
+            return properties.onChange { list ->
+                if (parent?.registrations.isActive) value(from(list))
             }.registerTo(parent)
         }
     }
