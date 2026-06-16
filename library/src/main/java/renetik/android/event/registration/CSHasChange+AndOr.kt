@@ -4,11 +4,6 @@ import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue
-import renetik.android.event.property.CSSafeHasChangeValue
-import renetik.android.event.property.CSSafeHasChangeValueBase
-import renetik.android.event.registration.CSHasChangeValue.Companion.ValueFunction
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 
 @JvmName("BooleanAndCSHasChangeValueBoolean")
 infix fun Boolean.and(other: CSHasChangeValue<Boolean>): CSHasChangeValue<Boolean> =
@@ -48,76 +43,6 @@ infix fun <T> CSHasChangeValue<T>.and(other: CSHasChangeValue<Boolean>): CSHasCh
     }
 }
 
-@JvmName("CSHasChangeValueAndCSSafeHasChangeValueBoolean")
-infix fun <T> CSHasChangeValue<T>.and(
-    other: CSSafeHasChangeValue<Boolean>
-): CSSafeHasChangeValue<T> {
-    val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            @Suppress("UNCHECKED_CAST")
-            this + (
-                if (first is CSSafeHasChangeValue<*>)
-                    (first as CSSafeHasChangeValue<T>).onUnsafeChange {
-                        if (other.value) value(it)
-                        else setValueSilently(it)
-                    }
-                else first.onChange {
-                    if (other.value) value(it)
-                    else setValueSilently(it)
-                })
-            this + other.onUnsafeChange {
-                if (it) {
-                    val currentValue = value
-                    value(currentValue, force = true)
-                }
-            }
-        }
-    }
-}
-
-@JvmName("CSSafeHasChangeValueAndCSSafeHasChangeValueBoolean")
-infix fun <T> CSSafeHasChangeValue<T>.and(
-    other: CSSafeHasChangeValue<Boolean>
-): CSSafeHasChangeValue<T> {
-    val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onUnsafeChange {
-                if (it) {
-                    val currentValue = value
-                    value(currentValue, force = true)
-                }
-            }
-        }
-    }
-}
-
-@JvmName("CSSafeHasChangeValueAndCSHasChangeValueBoolean")
-infix fun <T> CSSafeHasChangeValue<T>.and(
-    other: CSHasChangeValue<Boolean>
-): CSSafeHasChangeValue<T> {
-    val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onChange {
-                if (it) {
-                    val currentValue = value
-                    value(currentValue, force = true)
-                }
-            }
-        }
-    }
-}
-
 @JvmName("CSHasChangeValueIfTrueCSHasChangeValueBoolean")
 infix fun <T> CSHasChangeValue<T>.ifTrue(
     other: CSHasChangeValue<Boolean>
@@ -127,7 +52,7 @@ infix fun <T> CSHasChangeValue<T>.ifTrue(
         fun from(first: T, other: Boolean) =  if (other) first else null
         override val value: T? get() = from(first.value, other.value)
         override fun onChange(function: (T?) -> Unit): CSRegistrationImpl {
-            val value = ValueFunction(this, value, function)
+            val value = CSValueFunction(this, value, function)
             return CSRegistration(
                 first.onChange { value(from(it, other.value)) },
                 other.onChange { value(from(first.value, it)) },
@@ -146,7 +71,7 @@ infix fun <T> CSHasChangeValue<T>.ifFalse(
         fun from(first: T, other: Boolean) =  if (!other) first else null
         override val value: T? get() = from(first.value, other.value)
         override fun onChange(function: (T?) -> Unit): CSRegistrationImpl {
-            val value = ValueFunction(this, value, function)
+            val value = CSValueFunction(this, value, function)
             return CSRegistration(
                 first.onChange { value(from(it, other.value)) },
                 other.onChange { value(from(first.value, it)) },

@@ -10,9 +10,6 @@ import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
-import renetik.android.event.property.CSSafeHasChangeValue
-import renetik.android.event.property.CSSafeHasChangeValueBase
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -126,16 +123,6 @@ inline fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     }
 
 inline operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { it -> !it })
-
-@JvmName("CSSafeHasChangeValueBooleanNot")
-operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> {
-    val source = this
-    return object : CSSafeHasChangeValueBase<Boolean>(initialValue = !source.value) {
-        init {
-            this + source.onUnsafeChange { value(!it) }
-        }
-    }
-}
 
 inline fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     crossinline registration: () -> CSRegistration?): CSRegistration {

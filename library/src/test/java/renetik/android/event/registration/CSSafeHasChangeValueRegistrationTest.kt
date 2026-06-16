@@ -9,8 +9,8 @@ import renetik.android.core.lang.variable.assign
 import renetik.android.event.common.CSModel
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafeProperty.Companion.safe
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
-import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
+import renetik.android.event.registration.hasChangeValue
+import renetik.android.event.registration.onChange
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)

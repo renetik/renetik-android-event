@@ -17,13 +17,13 @@ import renetik.android.event.fire
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafeProperty.Companion.safe
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateIsChange
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateNullable
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValueNullable
-import renetik.android.event.registration.CSHasChangeValue.Companion.onChange
+import renetik.android.event.registration.delegate
+import renetik.android.event.registration.delegateValue
+import renetik.android.event.registration.delegateIsChange
+import renetik.android.event.registration.delegateNullable
+import renetik.android.event.registration.hasChangeValue
+import renetik.android.event.registration.hasChangeValueNullable
+import renetik.android.event.registration.onChange
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)

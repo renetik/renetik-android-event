@@ -12,10 +12,7 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.common.update
 import renetik.android.event.property.CSLateProperty
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.emptyNullable
-import renetik.android.event.registration.CSHasChangeValue.Companion.hasChangeValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
