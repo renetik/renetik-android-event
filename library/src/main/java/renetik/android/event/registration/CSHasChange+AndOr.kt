@@ -4,7 +4,6 @@ import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue
-import renetik.android.event.registration.CSHasChangeValue.Companion.ValueFunction
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 
@@ -55,7 +54,7 @@ infix fun <T> CSHasChangeValue<T>.ifTrue(
         fun from(first: T, other: Boolean) =  if (other) first else null
         override val value: T? get() = from(first.value, other.value)
         override fun onChange(function: (T?) -> Unit): CSRegistrationImpl {
-            val value = ValueFunction(this, value, function)
+            val value = CSValueFunction(this, value, function)
             return CSRegistration(
                 first.onChange { value(from(it, other.value)) },
                 other.onChange { value(from(first.value, it)) },
@@ -74,7 +73,7 @@ infix fun <T> CSHasChangeValue<T>.ifFalse(
         fun from(first: T, other: Boolean) =  if (!other) first else null
         override val value: T? get() = from(first.value, other.value)
         override fun onChange(function: (T?) -> Unit): CSRegistrationImpl {
-            val value = ValueFunction(this, value, function)
+            val value = CSValueFunction(this, value, function)
             return CSRegistration(
                 first.onChange { value(from(it, other.value)) },
                 other.onChange { value(from(first.value, it)) },

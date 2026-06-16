@@ -16,7 +16,6 @@ import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.variable.assign
-import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
@@ -39,19 +38,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             override fun onChange(function: (T) -> Unit) = CSRegistration.Empty
         }
 
-        class ValueFunction<Return>(
-            val parent: Any,
-            private var value: Return,
-            private val function: (Return) -> Unit,
-        ) {
-            operator fun invoke(newValue: Return) = synchronized(parent) {
-                if (value != newValue) {
-                    value = newValue
-                    function(newValue)
-                }
-            }
-        }
-
         fun <T> CSHasChangeValue<T>.delegate(
             parent: CSHasRegistrations? = null,
         ): CSHasChangeValue<T> = delegateValue(parent, from = { it })
@@ -63,7 +49,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(property.value)
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     return property.onChange {
                         if (parent?.registrations.isActive) value(from(it))
                     }.registerTo(parent)
@@ -79,7 +65,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from(properties.map { it.value })
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     return properties.onChange {
                         if (parent?.registrations.isActive) value(from(it))
                     }.registerTo(parent)
@@ -109,7 +95,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
         ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
             override val value: Return get() = from(first.value, second.value)
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = ValueFunction(this, value, function)
+                val value = CSValueFunction(this, value, function)
                 return CSRegistration(
                     first.onChange {
                         if (parent?.registrations.isActive) value(from(it,
@@ -132,7 +118,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 get() = from(first.value, second.value, third.value)
 
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = ValueFunction(this, value, function)
+                val value = CSValueFunction(this, value, function)
                 return CSRegistration(first.onChange {
                     if (parent?.registrations.isActive) value(from(it, second.value, third.value))
                 }, second.onChange {
@@ -152,7 +138,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 get() = from(first.value, second.value, third.value, fourth.value)
 
             override fun onChange(function: (Return) -> Unit): CSRegistration {
-                val value = ValueFunction(this, value, function)
+                val value = CSValueFunction(this, value, function)
                 return CSRegistration(first.onChange {
                     if (parent?.registrations.isActive)
                         value(from(it, second.value, third.value, fourth.value))
@@ -176,7 +162,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = from()
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     return property.onChange {
                         if (parent?.registrations.isActive) value(from())
                     }.registerTo(parent)
@@ -192,7 +178,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<ChildValue> {
                 override val value: ChildValue get() = child().value
                 override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     var registration: CSRegistration? = null
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action {
@@ -221,7 +207,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<ChildValue> {
                 override val value: ChildValue get() = child(property.value).value
                 override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     var registration: CSRegistration? = null
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
@@ -250,7 +236,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<Return> {
                 override val value: Return get() = child(properties.map { it.value }).value
                 override fun onChange(function: (Return) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     var registration: CSRegistration? = null
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = properties.action { parentValue ->
@@ -348,7 +334,7 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             object : CSHasChangeValue<ChildValue?> {
                 override val value: ChildValue? get() = child(property.value)?.value
                 override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
-                    val value = ValueFunction(this, value, function)
+                    val value = CSValueFunction(this, value, function)
                     var registration: CSRegistration? = null
                     var childRegistration: CSRegistration? = null
                     val parentRegistration = property.action { parentValue ->
@@ -368,30 +354,6 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                     }).also { registration = it }.registerTo(parent)
                 }
             }
-        }
-
-        private abstract class CSHasChangeValueBase<Return>(
-            val parent: CSHasRegistrations?,
-            val onChange: ArgFun<Return>? = null
-        ) : CSHasChangeValue<Return> {
-            abstract override var value: Return
-            val eventChange by lazy { event<Return>() }
-            override fun onChange(function: (Return) -> Unit) = eventChange.listen(function)
-
-            @Synchronized
-            open fun value(newValue: Return) {
-                if (value == newValue) return
-                value = newValue
-                onValueChanged(newValue)
-            }
-
-            fun onValueChanged(newValue: Return) {
-                onChange?.invoke(newValue)
-                eventChange.fire(newValue)
-            }
-
-            operator fun plus(registration: CSRegistration): CSRegistration? =
-                parent?.register(registration)
         }
 
         fun <T> CSHasChangeValue<T>.hasChangeValue(
