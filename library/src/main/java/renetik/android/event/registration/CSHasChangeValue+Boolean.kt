@@ -10,7 +10,6 @@ import renetik.android.core.kotlin.primitives.isFalse
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
-import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
