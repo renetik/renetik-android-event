@@ -4,8 +4,6 @@ import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue
-import renetik.android.event.property.CSSafeHasChangeValue
-import renetik.android.event.property.CSSafeHasChangeValueBase
 import renetik.android.event.registration.CSHasChangeValue.Companion.ValueFunction
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
@@ -45,76 +43,6 @@ infix fun <T> CSHasChangeValue<T>.and(other: CSHasChangeValue<Boolean>): CSHasCh
             first.onChange { other.ifTrue { function(it) } },
             other.onTrue { function(value) },
         )
-    }
-}
-
-@JvmName("CSHasChangeValueAndCSSafeHasChangeValueBoolean")
-infix fun <T> CSHasChangeValue<T>.and(
-    other: CSSafeHasChangeValue<Boolean>
-): CSSafeHasChangeValue<T> {
-    val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            @Suppress("UNCHECKED_CAST")
-            this + (
-                if (first is CSSafeHasChangeValue<*>)
-                    (first as CSSafeHasChangeValue<T>).onUnsafeChange {
-                        if (other.value) value(it)
-                        else setValueSilently(it)
-                    }
-                else first.onChange {
-                    if (other.value) value(it)
-                    else setValueSilently(it)
-                })
-            this + other.onUnsafeChange {
-                if (it) {
-                    val currentValue = value
-                    value(currentValue, force = true)
-                }
-            }
-        }
-    }
-}
-
-@JvmName("CSSafeHasChangeValueAndCSSafeHasChangeValueBoolean")
-infix fun <T> CSSafeHasChangeValue<T>.and(
-    other: CSSafeHasChangeValue<Boolean>
-): CSSafeHasChangeValue<T> {
-    val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onUnsafeChange {
-                if (it) {
-                    val currentValue = value
-                    value(currentValue, force = true)
-                }
-            }
-        }
-    }
-}
-
-@JvmName("CSSafeHasChangeValueAndCSHasChangeValueBoolean")
-infix fun <T> CSSafeHasChangeValue<T>.and(
-    other: CSHasChangeValue<Boolean>
-): CSSafeHasChangeValue<T> {
-    val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onChange {
-                if (it) {
-                    val currentValue = value
-                    value(currentValue, force = true)
-                }
-            }
-        }
     }
 }
 
