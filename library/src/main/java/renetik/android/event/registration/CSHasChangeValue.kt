@@ -21,6 +21,8 @@ import renetik.android.event.common.CSDebouncer.Companion.debouncer
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
+import renetik.android.event.property.CSSafeHasChangeValue
+import renetik.android.event.property.CSSafeHasChangeValueBase
 import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.coroutines.CoroutineContext
@@ -302,7 +304,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
                         childRegistration = childItem.onChange {
-                            if (parent?.registrations.isActive && registration.isActive) function(it)
+                            if (parent?.registrations.isActive && registration.isActive) function(
+                                it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -325,7 +328,8 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                         childRegistration?.cancel()
                         val childItem = child(parentValue)
                         childRegistration = childItem?.onChange {
-                            if (parent?.registrations.isActive && registration.isActive) function(it)
+                            if (parent?.registrations.isActive && registration.isActive) function(
+                                it)
                         }
                     }
                     return CSRegistration(isActive = true, onCancel = {
@@ -407,6 +411,24 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
                 }
             }
         }
+
+        @JvmName("safeHasChangeValue")
+        fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument) -> Return,
+            onChange: ArgFun<Return>? = null
+        ): CSSafeHasChangeValue<Return> = let { source ->
+            object : CSSafeHasChangeValueBase<Return>(parent, from(source.value), onChange) {
+                init {
+                    this + source.onUnsafeChange { value(from(it)) }
+                }
+            }
+        }
+
+        @JvmName("safeHasChangeValueIdentity")
+        fun <T> CSSafeHasChangeValue<T>.hasChangeValue(
+            parent: CSHasRegistrations? = null, onChange: ArgFun<T>? = null,
+        ): CSSafeHasChangeValue<T> = hasChangeValue(parent, from = { it }, onChange)
 
         fun <Argument, Return> CSHasChangeValue<Argument>.safeHasChangeValue(
             parent: CSHasRegistrations? = null,
@@ -788,13 +810,96 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             item4: CSHasChangeValue<Argument4>,
             item5: CSHasChangeValue<Argument5>,
             onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-        ): CSRegistration = listOf(item1, item2, item3, item4, item5).onChange {
-            onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
+        ): CSRegistration {
+            @Suppress("UNCHECKED_CAST")
+            if (item5 is CSSafeHasChangeValue<*>)
+                return onChange(item1, item2, item3, item4,
+                    item5 as CSSafeHasChangeValue<Argument5>, onAction)
+            return listOf(item1, item2, item3, item4, item5).onChange {
+                onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
+            }
         }
 
-        fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChange(
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
+            item1: CSHasChangeValue<Argument1>,
+            item2: CSHasChangeValue<Argument2>,
+            item3: CSHasChangeValue<Argument3>,
+            item4: CSHasChangeValue<Argument4>,
+            item5: CSSafeHasChangeValue<Argument5>,
+            onUnsafeChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+        ): CSRegistration {
+            val registrations = CSRegistrationsMap(className)
+            val lock = Any()
+            var value1 = item1.value
+            var value2 = item2.value
+            var value3 = item3.value
+            var value4 = item4.value
+            var value5 = item5.value
+
+            fun fireChange(
+                values: CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>
+            ) {
+                if (registrations.isActive) onUnsafeChange(
+                    values.first, values.second, values.third, values.fourth, values.fifth)
+            }
+
+            registrations.register(item1.onChange { newValue ->
+                val values = synchronized(lock) {
+                    value1 = newValue
+                    CSQuintuple(value1, value2, value3, value4, value5)
+                }
+                fireChange(values)
+            })
+            registrations.register(item2.onChange { newValue ->
+                val values = synchronized(lock) {
+                    value2 = newValue
+                    CSQuintuple(value1, value2, value3, value4, value5)
+                }
+                fireChange(values)
+            })
+            registrations.register(item3.onChange { newValue ->
+                val values = synchronized(lock) {
+                    value3 = newValue
+                    CSQuintuple(value1, value2, value3, value4, value5)
+                }
+                fireChange(values)
+            })
+            registrations.register(item4.onChange { newValue ->
+                val values = synchronized(lock) {
+                    value4 = newValue
+                    CSQuintuple(value1, value2, value3, value4, value5)
+                }
+                fireChange(values)
+            })
+            registrations.register(item5.onUnsafeChange { newValue ->
+                val values = synchronized(lock) {
+                    value5 = newValue
+                    CSQuintuple(value1, value2, value3, value4, value5)
+                }
+                fireChange(values)
+            })
+            return registrations
+        }
+
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+                CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                        CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                        CSHasChangeValue<Argument5>>.onChange(
             onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
         ): CSRegistration = onChange(first, second, third, fourth, fifth, onChange)
+
+        @JvmName("onChangeWithSafeFifth")
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5,
+                Item1, Item2, Item3, Item4, Item5>
+                CSQuintuple<Item1, Item2, Item3, Item4, Item5>.onChange(
+            onUnsafeChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+        ): CSRegistration
+                where Item1 : CSHasChangeValue<Argument1>,
+                      Item2 : CSHasChangeValue<Argument2>,
+                      Item3 : CSHasChangeValue<Argument3>,
+                      Item4 : CSHasChangeValue<Argument4>,
+                      Item5 : CSSafeHasChangeValue<Argument5> =
+            onChange(first, second, third, fourth, fifth, onUnsafeChange)
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5> action(
             item1: CSHasChangeValue<Argument1>,
@@ -853,6 +958,47 @@ interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
             hasChangeValue(parent, from = { item1, item2, item3, item4, item5 ->
                 CSQuintuple(item1, item2, item3, item4, item5)
             }, onChange)
+
+
+        @JvmName("hasChangeValueWithSafeFifth")
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5,
+                Item1, Item2, Item3, Item4, Item5>
+                CSQuintuple<Item1, Item2, Item3, Item4, Item5>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
+        ): CSSafeHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>
+                where Item1 : CSHasChangeValue<Argument1>,
+                      Item2 : CSHasChangeValue<Argument2>,
+                      Item3 : CSHasChangeValue<Argument3>,
+                      Item4 : CSHasChangeValue<Argument4>,
+                      Item5 : CSSafeHasChangeValue<Argument5> =
+            hasChangeValue(parent, from = { item1, item2, item3, item4, item5 ->
+                CSQuintuple(item1, item2, item3, item4, item5)
+            }, onChange)
+
+        @JvmName("hasChangeValueFromWithSafeFifth")
+        fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
+                Item1, Item2, Item3, Item4, Item5>
+                CSQuintuple<Item1, Item2, Item3, Item4, Item5>.hasChangeValue(
+            parent: CSHasRegistrations? = null,
+            from: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
+            onChange: ArgFun<Return>? = null
+        ): CSSafeHasChangeValue<Return>
+                where Item1 : CSHasChangeValue<Argument1>,
+                      Item2 : CSHasChangeValue<Argument2>,
+                      Item3 : CSHasChangeValue<Argument3>,
+                      Item4 : CSHasChangeValue<Argument4>,
+                      Item5 : CSSafeHasChangeValue<Argument5> =
+            object : CSSafeHasChangeValueBase<Return>(
+                parent, from(first.value, second.value, third.value, fourth.value, fifth.value),
+                onChange
+            ) {
+                init {
+                    this + onChange(first, second, third, fourth, fifth) { item1, item2, item3, item4, item5 ->
+                        value(from(item1, item2, item3, item4, item5))
+                    }
+                }
+            }
 
         fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,

@@ -3,6 +3,8 @@ package renetik.android.event.registration
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
+import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.CSValue.Companion.value
 import renetik.android.core.lang.variable.assign
@@ -10,9 +12,11 @@ import renetik.android.core.lang.variable.plusAssign
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.common.CSModel
 import renetik.android.event.fire
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.property.CSSafeProperty.Companion.safe
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegate
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateValue
 import renetik.android.event.registration.CSHasChangeValue.Companion.delegateIsChange
@@ -53,6 +57,76 @@ class CSHasChangeValueTest {
         assert(expected = true, actual = isRecorded.value)
         assert(expected = "true", actual = isRecordedUser1.value)
         assert(expected = "true", actual = isRecordedUser2.value)
+    }
+
+    @Test
+    fun safeHasChangeValueKeepsUnsafeAndSafePropagation() {
+        val parent = CSModel()
+        val item1 = property(1)
+        val item2 = property(2)
+        val item3 = property(3)
+        val item4 = property(4)
+        val durationSource = property(5)
+        val duration = durationSource.safe(parent)
+        val isRecord = property(false).safe(parent)
+        val tuple = (item1 to item2 to item3 to item4 to duration).hasChangeValue()
+        val gated = tuple and !isRecord
+        val end = gated.hasChangeValue(parent, from = {
+            it.first + it.second + it.third + it.fourth + it.fifth
+        })
+
+        var unsafeValue: Int? = null
+        var safeValue: Int? = null
+        end.onUnsafeChange { unsafeValue = it }
+        end.onChange { safeValue = it }
+
+        assert(expected = 15, actual = end.value)
+        Thread { duration assign 6 }.apply {
+            start()
+            join()
+        }
+        assert(expected = 6, actual = duration.value)
+        assert(expected = 6, actual = tuple.value.fifth)
+        assert(expected = 6, actual = gated.value.fifth)
+        assert(expected = 16, actual = end.value)
+        assert(expected = 16, actual = unsafeValue)
+        assert(expected = null, actual = safeValue)
+        runUiThreadTasksIncludingDelayedTasks()
+        assert(expected = 16, actual = safeValue)
+    }
+
+    @Test
+    fun safeValueAndNormalBooleanKeepsUnsafePropagation() {
+        val parent = CSModel()
+        val source = property(1).safe(parent)
+        val gate = property(false)
+        val gated = source and gate
+        var unsafeValue: Int? = null
+        var safeValue: Int? = null
+        gated.onUnsafeChange { unsafeValue = it }
+        gated.onChange { safeValue = it }
+
+        Thread { source assign 2 }.apply {
+            start()
+            join()
+        }
+        assert(expected = 2, actual = gated.value)
+        assert(expected = null, actual = unsafeValue)
+        assert(expected = null, actual = safeValue)
+
+        gate assign true
+        assert(expected = 2, actual = unsafeValue)
+        assert(expected = 2, actual = safeValue)
+
+        Thread { source assign 3 }.apply {
+            start()
+            join()
+        }
+        assert(expected = 3, actual = gated.value)
+        assert(expected = 3, actual = unsafeValue)
+        assert(expected = 2, actual = safeValue)
+        runUiThreadTasksIncludingDelayedTasks()
+        assert(expected = 3, actual = safeValue)
     }
 
 

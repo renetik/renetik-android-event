@@ -76,31 +76,60 @@ interface CSSafeHasChangeValue<T> : CSSafeValue<T>, CSHasChangeValue<T> {
     }
 }
 
+internal open class CSSafeHasChangeValueBase<T>(
+    parent: CSHasRegistrations? = null,
+    initialValue: T,
+    private val onSafeChange: ArgFun<T>? = null
+) : CSModel(parent?.registrations), CSSafeHasChangeValue<T> {
+    private val _value = AtomicReference(initialValue)
+    private val eventUnsafeChange = event<T>()
+    private val eventChange by lazy { event<T>() }
+
+    override var value: T
+        get() = _value.load()
+        set(value) = _value.store(value)
+
+    override fun onChange(function: (T) -> Unit) =
+        eventChange.listen(function)
+
+    override fun onUnsafeChange(function: (T) -> Unit) =
+        eventUnsafeChange.listen(function)
+
+    fun value(newValue: T, force: Boolean = false) {
+        if (setValue(newValue) || force) onValueChanged(newValue)
+    }
+
+    @Synchronized
+    protected fun setValueSilently(newValue: T) {
+        value = newValue
+    }
+
+    @Synchronized
+    private fun setValue(newValue: T): Boolean {
+        if (value == newValue) return false
+        value = newValue
+        return true
+    }
+
+    protected open fun onValueChanged(newValue: T) {
+        eventUnsafeChange.fire(newValue)
+        onMain {
+            if (registrations.isActive) {
+                onSafeChange?.invoke(newValue)
+                eventChange.fire(newValue)
+            }
+        }
+    }
+}
+
 fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasUnsafeChangeValue(
     parent: CSHasRegistrationsHasDestruct,
     from: (Argument) -> Return
 ): CSSafeHasChangeValue<Return> = let { source ->
-    object : CSSafeHasChangeValue<Return> {
-        private val _value = AtomicReference(from(source.value))
-        override var value: Return
-            get() = _value.load()
-            set(value) = _value.store(value)
-
-        val eventUnsafeChange = event<Return>()
-        override fun onUnsafeChange(function: (Return) -> Unit) =
-            eventUnsafeChange.listen(function)
-
-        val eventChange by lazy { event<Return>() }
-        override fun onChange(function: (Return) -> Unit) =
-            eventChange.listen(function)
-
+    object : CSSafeHasChangeValueBase<Return>(parent, from(source.value)) {
         init {
             parent + source.onUnsafeChange {
-                val newValue = from(it)
-                if (newValue != _value.exchange(newValue)) {
-                    eventUnsafeChange.fire(newValue)
-                    parent.onMain { eventChange.fire(newValue) }
-                }
+                value(from(it))
             }
         }
     }
