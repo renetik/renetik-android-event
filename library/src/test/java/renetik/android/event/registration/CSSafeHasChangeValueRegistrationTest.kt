@@ -113,6 +113,63 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
+    fun safeThirdAndFifthTupleHasChangeValueFromKeepsUnsafePropagation() {
+        val parent = CSModel()
+        val item1 = property(1)
+        val item2 = property(2)
+        val item3 = property(3).safe(parent)
+        val item4 = property(4)
+        val item5 = property(5).safe(parent)
+        val combined = (item1 to item2 to item3 to item4 to item5)
+            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth, fifth ->
+                first + second + third + fourth + fifth
+            })
+        var unsafeValue: Int? = null
+        var safeValue: Int? = null
+        combined.onUnsafeChange { unsafeValue = it }
+        combined.onChange { safeValue = it }
+
+        Thread { item3 assign 4; item5 assign 6 }.apply {
+            start()
+            join()
+        }
+        assert(expected = 17, actual = combined.value)
+        assert(expected = 17, actual = unsafeValue)
+        assert(expected = null, actual = safeValue)
+        runUiThreadTasksIncludingDelayedTasks()
+        assert(expected = 17, actual = safeValue)
+    }
+
+    @Test
+    fun safeFourthAndSixthTupleHasChangeValueFromKeepsUnsafePropagation() {
+        val parent = CSModel()
+        val item1 = property(1)
+        val item2 = property(2)
+        val item3 = property(3)
+        val item4 = property(4).safe(parent)
+        val item5 = property(5)
+        val item6 = property(6).safe(parent)
+        val combined = (item1 to item2 to item3 to item4 to item5 to item6)
+            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
+                first + second + third + fourth + fifth + sixth
+            })
+        var unsafeValue: Int? = null
+        var safeValue: Int? = null
+        combined.onUnsafeChange { unsafeValue = it }
+        combined.onChange { safeValue = it }
+
+        Thread { item4 assign 5; item6 assign 7 }.apply {
+            start()
+            join()
+        }
+        assert(expected = 23, actual = combined.value)
+        assert(expected = 23, actual = unsafeValue)
+        assert(expected = null, actual = safeValue)
+        runUiThreadTasksIncludingDelayedTasks()
+        assert(expected = 23, actual = safeValue)
+    }
+
+    @Test
     fun safeLastTupleHasChangeValueIdentityKeepsUnsafePropagation() {
         val parent = CSModel()
         val item1 = property(1)
@@ -143,6 +200,10 @@ class CSSafeHasChangeValueRegistrationTest {
         assert(expected = 4, actual = safeThirdUnsafe?.third)
         assert(expected = 5, actual = safeFourth.value.fourth)
         assert(expected = 5, actual = safeFourthUnsafe?.fourth)
+        assert(expected = 4, actual = safeSixth.value.third)
+        assert(expected = 4, actual = safeSixthUnsafe?.third)
+        assert(expected = 5, actual = safeSixth.value.fourth)
+        assert(expected = 5, actual = safeSixthUnsafe?.fourth)
         assert(expected = 7, actual = safeSixth.value.sixth)
         assert(expected = 7, actual = safeSixthUnsafe?.sixth)
         assert(expected = null, actual = safeSixthSafe)
@@ -192,11 +253,8 @@ class CSSafeHasChangeValueRegistrationTest {
         assert(expected = 7, actual = safeThirdUnsafe)
         assert(expected = 13, actual = safeFourth.value)
         assert(expected = 13, actual = safeFourthUnsafe)
-        // item6 is the safe last item, so it propagates synchronously. item3 and
-        // item4 are safe but not last, so they propagate on the main thread like
-        // any other onChange source: their new values are not applied yet here.
-        assert(expected = 22, actual = safeSixth.value)
-        assert(expected = 22, actual = safeSixthUnsafe)
+        assert(expected = 24, actual = safeSixth.value)
+        assert(expected = 24, actual = safeSixthUnsafe)
         runUiThreadTasksIncludingDelayedTasks()
         assert(expected = 24, actual = safeSixth.value)
         assert(expected = 24, actual = safeSixthUnsafe)
