@@ -79,7 +79,7 @@ interface CSSafeHasChangeValue<T> : CSSafeValue<T>, CSHasChangeValue<T> {
 internal open class CSSafeHasChangeValueBase<T>(
     parent: CSHasRegistrations? = null,
     initialValue: T,
-    private val onSafeChange: ArgFun<T>? = null
+    private val onChange: ArgFun<T>? = null
 ) : CSModel(parent?.registrations), CSSafeHasChangeValue<T> {
     private val _value = AtomicReference(initialValue)
     private val eventUnsafeChange = event<T>()
@@ -115,7 +115,7 @@ internal open class CSSafeHasChangeValueBase<T>(
         eventUnsafeChange.fire(newValue)
         onMain {
             if (registrations.isActive) {
-                onSafeChange?.invoke(newValue)
+                onChange?.invoke(newValue)
                 eventChange.fire(newValue)
             }
         }
