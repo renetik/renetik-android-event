@@ -5,8 +5,6 @@ import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.to
-import renetik.android.event.registration.CSHasChange.Companion.action
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.coroutines.CoroutineContext
 
 fun <Argument1, Argument2, Return> hasChangeValue(
@@ -284,4 +282,3 @@ fun <Argument1, Argument2, Argument3, Argument4> CSQuadruple<CSHasChangeValue<Ar
 ): CSRegistration = listOf(first, second, third, fourth).onChangeLaterOnce {
     onChange(first.value, second.value, third.value, fourth.value)
 }
-

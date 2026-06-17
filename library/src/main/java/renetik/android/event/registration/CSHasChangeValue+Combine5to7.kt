@@ -9,9 +9,6 @@ import renetik.android.core.lang.tuples.CSSeventuple
 import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.core.lang.tuples.to
 import renetik.android.event.common.CSDebouncer.Companion.debouncer
-import renetik.android.event.property.CSSafeHasChangeValue
-import renetik.android.event.registration.CSHasChange.Companion.action
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
     item1: CSHasChangeValue<Argument1>,
@@ -20,14 +17,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
     item4: CSHasChangeValue<Argument4>,
     item5: CSHasChangeValue<Argument5>,
     onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-): CSRegistration {
-    @Suppress("UNCHECKED_CAST")
-    if (item5 is CSSafeHasChangeValue<*>)
-        return onChange(item1, item2, item3, item4,
-            item5 as CSSafeHasChangeValue<Argument5>, onAction)
-    return listOf(item1, item2, item3, item4, item5).onChange {
-        onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
-    }
+): CSRegistration = listOf(item1, item2, item3, item4, item5).onChange {
+    onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
 }
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5>
@@ -202,4 +193,3 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Argument7
     onChange(first.value, second.value, third.value,
         fourth.value, fifth.value, sixth.value, seventh.value)
 }
-
