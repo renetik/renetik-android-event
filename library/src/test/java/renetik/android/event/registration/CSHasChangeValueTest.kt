@@ -71,7 +71,7 @@ class CSHasChangeValueTest {
         val isRecord = property(false).safe(parent)
         val tuple = (item1 to item2 to item3 to item4 to duration).hasChangeValue()
         val gated = tuple and !isRecord
-        val end = gated.hasChangeValue(parent, from = {
+        val end = gated.hasChangeValue(parent, unsafeFrom = {
             it.first + it.second + it.third + it.fourth + it.fifth
         })
 
