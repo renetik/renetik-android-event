@@ -1,6 +1,7 @@
 package renetik.android.event.property
 
 import renetik.android.core.kotlin.notImplemented
+import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.variable.CSVariable
 import renetik.android.event.registration.CSHasChange
 import renetik.android.event.registration.CSHasChangeValue
@@ -75,8 +76,8 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
             crossinline from: (Argument1, Argument2, Argument3) -> Argument4,
         ): CSProperty<Argument4> {
             val property = property(from(item1.value, item2.value, item3.value))
-            onChange(item1, item2, item3) { value1, value2, value3 ->
-                property.value = from(value1, value2, value3)
+            (item1 to item2 to item3).onChange { item1, item2, item3 ->
+                property.value = from(item1, item2, item3)
             }.also { parent?.register(it) }
             return property
         }

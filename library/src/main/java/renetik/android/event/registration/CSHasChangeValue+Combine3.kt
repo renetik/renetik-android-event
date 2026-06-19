@@ -31,28 +31,23 @@ fun <Argument1, Argument2, Argument3, Return>
         }
     }
 
-fun <Argument1, Argument2, Argument3> onChange(
-    item1: CSHasChangeValue<Argument1>,
-    item2: CSHasChangeValue<Argument2>,
-    item3: CSHasChangeValue<Argument3>,
+fun <Argument1, Argument2, Argument3>
+        Triple<CSHasChangeValue<Argument1>,
+                CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>>.onChange(
     onChange: (Argument1, Argument2, Argument3) -> Unit,
-): CSRegistration = listOf(item1, item2, item3).onChange {
-    onChange(item1.value, item2.value, item3.value)
+): CSRegistration = listOf(first, second, third).onChange {
+    onChange(first.value, second.value, third.value)
 }
 
 fun <Argument1, Argument2, Argument3>
         Triple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>>.onChange(
-    onChange: (Argument1, Argument2, Argument3) -> Unit,
-): CSRegistration = onChange(first, second, third, onChange)
-
-fun <Argument1, Argument2, Argument3>
-        Triple<CSHasChangeValue<Argument1>,
-                CSHasChangeValue<Argument2>,
-                CSHasChangeValue<Argument3>>.onChange(
     onChange: () -> Unit,
-): CSRegistration = onChange(first, second, third) { _, _, _ -> onChange() }
+): CSRegistration = listOf(first, second, third).onChange {
+    onChange()
+}
 
 fun <Argument1, Argument2, Argument3>
         Triple<CSHasChangeValue<Argument1>,
