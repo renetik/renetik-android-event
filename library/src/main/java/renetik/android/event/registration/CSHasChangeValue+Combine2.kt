@@ -3,23 +3,6 @@ package renetik.android.event.registration
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.tuples.to
 
-fun <Argument1, Argument2, Return> hasChangeValue(
-    parent: CSHasRegistrations? = null,
-    item1: CSHasChangeValue<Argument1>,
-    item2: CSHasChangeValue<Argument2>,
-    from: (Argument1, Argument2) -> Return,
-    onChange: ArgFun<Return>? = null
-): CSHasChangeValue<Return> =
-    object : CSHasChangeValueBase<Return>(parent, onChange) {
-        override var value: Return = from(item1.value, item2.value)
-
-        init {
-            this + (item1 to item2).onChange { item1, item2 ->
-                value(from(item1, item2))
-            }
-        }
-    }
-
 fun <Argument1, Argument2, Return>
         Pair<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>>.hasChangeValue(
@@ -27,7 +10,15 @@ fun <Argument1, Argument2, Return>
     from: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
-    hasChangeValue(parent, first, second, from, onChange)
+    object : CSHasChangeValueBase<Return>(parent, onChange) {
+        override var value: Return = from(first.value, second.value)
+
+        init {
+            this + (first to second).onChange { item1, item2 ->
+                value(from(item1, item2))
+            }
+        }
+    }
 
 fun <Argument1, Argument2> onChange(
     item1: CSHasChangeValue<Argument1>,
