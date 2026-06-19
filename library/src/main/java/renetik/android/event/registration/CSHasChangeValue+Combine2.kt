@@ -27,13 +27,6 @@ fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
     onChange(first.value, second.value)
 }
 
-fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>,
-        CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
-    onChange: (Argument1, Argument2) -> Unit,
-): CSRegistration = listOf(first, second, third).onChange {
-    onChange(first.value, second.value)
-}
-
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
         CSHasChangeValue<Argument2>>.onChange(
     onChange: () -> Unit,

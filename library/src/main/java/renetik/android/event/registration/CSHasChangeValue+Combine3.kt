@@ -6,6 +6,13 @@ import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.tuples.to
 import kotlin.coroutines.CoroutineContext
 
+fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
+    onChange: (Argument1, Argument2) -> Unit,
+): CSRegistration = listOf(first, second, third).onChange {
+    onChange(first.value, second.value)
+}
+
 fun <Argument1, Argument2, Argument3, Return>
         Triple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>,
