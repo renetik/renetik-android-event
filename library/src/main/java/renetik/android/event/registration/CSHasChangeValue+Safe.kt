@@ -7,8 +7,23 @@ import renetik.android.core.lang.synchronized
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSixtuple
+import renetik.android.core.lang.value.CSSafeValue
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
+import kotlin.reflect.KProperty
+
+fun <T> CSHasChangeValue<T>.safeValue(
+    parent: CSHasRegistrations): CSSafeValue<T> = let { property ->
+    object : CSSafeValue<T> {
+        @Volatile
+        override var value: T = property.value
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
+
+        init {
+            parent + property.onChange { value = it }
+        }
+    }
+}
 
 fun <Argument, Return> CSHasChangeValue<Argument>.safeHasChangeValue(
     parent: CSHasRegistrations? = null,

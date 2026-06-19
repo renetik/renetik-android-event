@@ -5,12 +5,50 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.ArgFun
+import renetik.android.event.CSEvent
+import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSHasRegistrationsHasDestruct
+import renetik.android.event.common.CSModel
+import renetik.android.event.common.onMain
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.reflect.KProperty
+
+fun <T> CSHasChangeValue<T>.safe(
+    parent: CSHasDestruct? = null,
+    onChange: ArgFun<T>? = null
+): CSSafeHasChangeValue<T> = let { property ->
+    object : CSModel(parent), CSSafeHasChangeValue<T> {
+        private val _value = AtomicReference(property.value)
+        val eventChange = event<T>()
+        val eventUnsafeChange = event<T>()
+
+        override var value: T
+            get() = _value.load()
+            set(value) = _value.store(value)
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
+        override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
+        override fun onUnsafeChange(function: (T) -> Unit) =
+            eventUnsafeChange.listen(function)
+
+        init {
+            this + property.onChange { newValue ->
+                if (newValue != _value.exchange(newValue)) {
+                    eventUnsafeChange.fire(newValue)
+                    onMain {
+                        onChange?.invoke(newValue)
+                        eventChange.fire(newValue)
+                    }
+                }
+            }
+        }
+    }
+}
 
 inline fun <T> CSSafeHasChangeValue<T?>.isNull(): CSSafeHasChangeValue<Boolean> = isSetTo(null)
 
@@ -55,7 +93,8 @@ fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasChangeValue(
     }
 }
 
-inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(noinline function: (T) -> Unit): CSRegistration {
+inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(
+    noinline function: (T) -> Unit): CSRegistration {
     onValue(function)
     return onUnsafeChange(function)
 }
