@@ -43,13 +43,12 @@ fun <T> CSHasChangeValue<T>.delegateIsChange(
 ): CSHasChangeValue<Boolean> = let { property ->
     object : CSHasChangeValue<Boolean> {
         override var value: Boolean = false
-        override fun onChange(function: (Boolean) -> Unit): CSRegistration {
-            return property.onChange {
+        override fun onChange(function: (Boolean) -> Unit): CSRegistration =
+            property.onChange {
                 value = true
                 if (parent?.registrations.isActive) function(true)
                 value = false
             }.registerTo(parent)
-        }
     }
 }
 

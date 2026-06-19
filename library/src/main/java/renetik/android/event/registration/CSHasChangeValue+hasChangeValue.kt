@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package renetik.android.event.registration
 
 import renetik.android.core.lang.ArgFun
@@ -10,6 +12,10 @@ import renetik.android.event.property.CSProperty.Companion.lateProperty
 fun <T> CSHasChangeValue<T>.hasChangeValue(
     parent: CSHasRegistrations? = null, onChange: ArgFun<T>? = null,
 ): CSHasChangeValue<T> = hasChangeValue(parent, from = { it }, onChange)
+
+inline fun <Value> CSHasChangeValue<Value>.hasChangeValue(
+    parent: CSHasRegistrations? = null, hasValue: Value,
+): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == hasValue })
 
 fun <Argument, Return> CSHasChangeValue<Argument>.hasChangeValue(
     parent: CSHasRegistrations? = null,

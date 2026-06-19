@@ -144,9 +144,6 @@ inline fun <Value> CSHasChangeValue<Value>.onChangeTo(
 ): CSRegistration =
     onChange { if (this.value == value) onChange() }
 
-inline fun <Value> CSHasChangeValue<Value>.hasValue(
-    parent: CSHasRegistrations? = null, value: Value,
-): CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
 @JvmName("onChangeChild")
 inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.onChange(
@@ -214,11 +211,6 @@ inline fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.action(
         childRegistration?.cancel()
     })
 }
-
-inline fun <Item : CSHasDestruct> CSHasChangeValue<Int>.updates(
-    list: MutableList<Item>,
-    noinline function: (index: Int) -> Item
-): CSRegistration = action { value -> list.update(value, function = function) }
 
 fun <V, Instance> CSHasChangeValue<V>.lazyDestructFactory(
     parent: CSHasRegistrations? = null,
