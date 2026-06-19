@@ -4,6 +4,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
+import java.util.concurrent.atomic.AtomicInteger
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSModel
@@ -132,6 +133,48 @@ class CSSafeHasChangeAndOrTest {
         assert(expected = null, actual = changeValue)
         runUiThreadTasksIncludingDelayedTasks()
         assert(expected = 5, actual = changeValue)
+    }
+
+    @Test
+    fun safePairDelegateConvergesUnderConcurrentWrites() {
+        val parent = CSModel()
+        val first = property(0).safe(parent)
+        val second = property(0).safe(parent)
+        val delegated = (first to second).delegate(from = Int::plus)
+        val lastUnsafe = AtomicInteger(delegated.value)
+        delegated.onUnsafeChange { lastUnsafe.set(it) }
+
+        val count = 2000
+        val writer1 = Thread { for (i in 1..count) first assign i }
+        val writer2 = Thread { for (i in 1..count) second assign i }
+        writer1.start(); writer2.start()
+        writer1.join(); writer2.join()
+
+        // The last unsafe notification must equal the live value (no stale pin).
+        assert(expected = count + count, actual = delegated.value)
+        assert(expected = delegated.value, actual = lastUnsafe.get())
+    }
+
+    @Test
+    fun safeGateStaysConsistentUnderConcurrentWrites() {
+        val parent = CSModel()
+        val source = property(0).safe(parent)
+        val gate = property(true).safe(parent)
+        val gated: CSSafeHasChangeValue<Int> = source and gate
+        val lastUnsafe = AtomicInteger(gated.value)
+        gated.onUnsafeChange { lastUnsafe.set(it) }
+
+        val count = 2000
+        val writer1 = Thread { for (i in 1..count) source assign i }
+        val writer2 = Thread { for (i in 1..count) gate assign (i % 2 == 0) }
+        writer1.start(); writer2.start()
+        writer1.join(); writer2.join()
+
+        // A quiescent final write with the gate open must be delivered exactly.
+        gate assign true
+        source assign count + 1
+        assert(expected = count + 1, actual = gated.value)
+        assert(expected = gated.value, actual = lastUnsafe.get())
     }
 
     private class TrackingSafeValue<T>(

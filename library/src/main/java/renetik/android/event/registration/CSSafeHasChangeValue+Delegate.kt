@@ -16,14 +16,14 @@ fun <T, Return> CSSafeHasChangeValue<T>.delegateValue(
         override fun onChange(function: (Return) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             return source.onChange {
-                if (parent?.registrations.isActive) value(from(it))
+                if (parent?.registrations.isActive) value.update { from(source.value) }
             }.registerTo(parent)
         }
 
         override fun onUnsafeChange(function: (Return) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             return source.onUnsafeChange {
-                if (parent?.registrations.isActive) value(from(it))
+                if (parent?.registrations.isActive) value.update { from(source.value) }
             }.registerTo(parent)
         }
     }
@@ -40,12 +40,14 @@ fun <T, V, Return> Pair<CSSafeHasChangeValue<T>, CSSafeHasChangeValue<V>>.delega
         val value = CSValueFunction(this, value, function)
         return CSRegistration(
             first.onChange {
-                if (parent?.registrations.isActive)
-                    value(from(it, second.value))
+                if (parent?.registrations.isActive) value.update {
+                    from(first.value, second.value)
+                }
             },
             second.onChange {
-                if (parent?.registrations.isActive)
-                    value(from(first.value, it))
+                if (parent?.registrations.isActive) value.update {
+                    from(first.value, second.value)
+                }
             },
         ).registerTo(parent)
     }
