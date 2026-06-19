@@ -1,6 +1,7 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.ArgFun
+import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.to
 
