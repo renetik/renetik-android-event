@@ -4,46 +4,37 @@ import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.to
 
-fun <Argument1, Argument2, Argument3, Argument4, Argument5> onChange(
-    item1: CSHasChangeValue<Argument1>,
-    item2: CSHasChangeValue<Argument2>,
-    item3: CSHasChangeValue<Argument3>,
-    item4: CSHasChangeValue<Argument4>,
-    item5: CSHasChangeValue<Argument5>,
-    onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-): CSRegistration = listOf(item1, item2, item3, item4, item5).onChange {
-    onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
-}
-
 fun <Argument1, Argument2, Argument3, Argument4, Argument5>
         CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                 CSHasChangeValue<Argument5>>.onChange(
     onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-): CSRegistration = onChange(first, second, third, fourth, fifth, onChange)
-
-fun <Argument1, Argument2, Argument3, Argument4, Argument5> action(
-    item1: CSHasChangeValue<Argument1>,
-    item2: CSHasChangeValue<Argument2>,
-    item3: CSHasChangeValue<Argument3>,
-    item4: CSHasChangeValue<Argument4>,
-    item5: CSHasChangeValue<Argument5>,
-    onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-): CSRegistration = listOf(item1, item2, item3, item4, item5).action {
-    onAction(item1.value, item2.value, item3.value, item4.value, item5.value)
+): CSRegistration = listOf(first, second, third, fourth, fifth).onChange {
+    onChange(first.value, second.value, third.value, fourth.value, fifth.value)
 }
 
-fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.action(
+fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                CSHasChangeValue<Argument5>>.action(
     onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-): CSRegistration = action(first, second, third, fourth, fifth, onChange)
+): CSRegistration = listOf(first, second, third, fourth, fifth).action {
+    onChange(first.value, second.value, third.value, fourth.value, fifth.value)
+}
 
-fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.onChangeLaterOnce(
+fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                CSHasChangeValue<Argument5>>.onChangeLaterOnce(
     onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
 ): CSRegistration = listOf(first, second, third, fourth, fifth).onChangeLaterOnce {
     onChange(first.value, second.value, third.value, fourth.value, fifth.value)
 }
 
-fun <Argument1, Argument2, Argument3, Argument4, Argument5> CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>, CSHasChangeValue<Argument5>>.actionLaterOnce(
+fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                CSHasChangeValue<Argument5>>.actionLaterOnce(
     onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
 ): CSRegistration = listOf(first, second, third, fourth, fifth).actionLaterOnce {
     onChange(first.value, second.value, third.value, fourth.value, fifth.value)
