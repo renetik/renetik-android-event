@@ -61,8 +61,8 @@ interface CSProperty<T> : CSVariable<T>, CSHasChange<T>, CSHasChangeValue<T> {
             crossinline from: (Argument1, Argument2) -> Argument3,
         ): CSProperty<Argument3> {
             val property = property(from(first.value, second.value))
-            onChange(first, second) { value1, value2 ->
-                property.value = from(value1, value2)
+            (first to second).onChange { first, second ->
+                property.value = from(first, second)
             }.also { parent?.register(it) }
             return property
         }
