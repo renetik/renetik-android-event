@@ -6,8 +6,10 @@ import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.tuples.to
 import kotlin.coroutines.CoroutineContext
 
-fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>,
-        CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
+fun <Argument1, Argument2>
+        Triple<CSHasChangeValue<Argument1>,
+                CSHasChangeValue<Argument2>,
+                CSHasChange<*>>.onChange(
     onChange: (Argument1, Argument2) -> Unit,
 ): CSRegistration = listOf(first, second, third).onChange {
     onChange(first.value, second.value)
@@ -66,20 +68,19 @@ fun <Argument1, Argument2, Argument3>
 ): CSRegistration = listOf(first, second, third)
     .onChangeLaterOnce(dispatcher) { onChange() }
 
-fun <Argument1, Argument2, Argument3> action(
-    item1: CSHasChangeValue<Argument1>,
-    item2: CSHasChangeValue<Argument2>,
-    item3: CSHasChangeValue<Argument3>,
+fun <Argument1, Argument2, Argument3>
+        Triple<CSHasChangeValue<Argument1>,
+                CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>>.action(
     onAction: (Argument1, Argument2, Argument3) -> Unit,
-): CSRegistration = listOf(item1, item2, item3).action {
-    onAction(item1.value, item2.value, item3.value)
+): CSRegistration = listOf(first, second, third).action {
+    onAction(first.value, second.value, third.value)
 }
 
-fun <Argument1, Argument2, Argument3> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>>.action(
-    onAction: (Argument1, Argument2, Argument3) -> Unit,
-): CSRegistration = action(first, second, third, onAction)
-
-fun <Argument1, Argument2, Argument3> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>>.actionLaterOnce(
+fun <Argument1, Argument2, Argument3>
+        Triple<CSHasChangeValue<Argument1>,
+                CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>>.actionLaterOnce(
     onAction: (Argument1, Argument2, Argument3) -> Unit,
 ): CSRegistration = listOf(first, second, third).actionLaterOnce {
     onAction(first.value,
@@ -87,6 +88,9 @@ fun <Argument1, Argument2, Argument3> Triple<CSHasChangeValue<Argument1>, CSHasC
         third.value)
 }
 
-fun <Argument1, Argument2, Argument3> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>>.actionLaterOnce(
+fun <Argument1, Argument2, Argument3>
+        Triple<CSHasChangeValue<Argument1>,
+                CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>>.actionLaterOnce(
     onAction: () -> Unit,
 ): CSRegistration = actionLaterOnce { _, _, _ -> onAction() }
