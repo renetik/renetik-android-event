@@ -41,7 +41,6 @@ fun <Argument1, Argument2> Pair<CSHasChangeValue<out Argument1>,
     onAction(first.value, second.value)
 }
 
-
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
         CSHasChangeValue<Argument2>>.action(
     onAction: () -> Unit,

@@ -28,19 +28,6 @@ inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T>> P.destructPrevious()
 inline val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
     get() = this?.delegateValue(from = { it }) ?: emptyNullable()
 
-suspend fun <T> CSHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
-    if (!condition(value)) suspendCancellableCoroutine { coroutine ->
-        val registration = AtomicReference<CSRegistration?>(null)
-        fun resume() = registration.exchange(null)?.apply {
-            cancel()
-            coroutine.resumeWith(success(Unit))
-        }
-        registration.store(onChange { if (condition(value)) resume() })
-        if (condition(value)) resume()
-        coroutine.invokeOnCancellation { registration.exchange(null)?.cancel() }
-    }
-}
-
 inline fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> = isSetTo(null)
 
 inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> = !isSetTo(null)

@@ -83,7 +83,6 @@ fun <Argument1, Argument2, Argument3, Argument4>
     onChange(first.value, second.value, third.value, fourth.value)
 }
 
-
 fun <Argument1, Argument2, Argument3, Argument4>
         CSQuadruple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
