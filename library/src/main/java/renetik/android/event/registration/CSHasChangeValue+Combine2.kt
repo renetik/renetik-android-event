@@ -20,50 +20,54 @@ fun <Argument1, Argument2, Return>
         }
     }
 
-fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
+fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>>.onChange(
     onChange: (Argument1, Argument2) -> Unit,
 ): CSRegistration = listOf(first, second).onChange {
     onChange(first.value, second.value)
 }
 
-fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
+fun <Argument1, Argument2> Triple<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>, CSHasChange<*>>.onChange(
     onChange: (Argument1, Argument2) -> Unit,
 ): CSRegistration = listOf(first, second, third).onChange {
     onChange(first.value, second.value)
 }
 
-fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChange(
+fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>>.onChange(
     onChange: () -> Unit,
 ): CSRegistration = listOf(first, second).onChange {
     onChange()
 }
 
-fun <Argument1, Argument2> action(
-    item1: CSHasChangeValue<Argument1>,
-    item2: CSHasChangeValue<Argument2>,
+fun <Argument1, Argument2> Pair<CSHasChangeValue<out Argument1>,
+        CSHasChangeValue<out Argument2>>.action(
     onAction: (Argument1, Argument2) -> Unit,
-): CSRegistration = listOf(item1, item2).action {
-    onAction(item1.value, item2.value)
+): CSRegistration = listOf(first, second).action {
+    onAction(first.value, second.value)
 }
 
-fun <Argument1, Argument2> Pair<CSHasChangeValue<out Argument1>, CSHasChangeValue<out Argument2>>.action(
-    onAction: (Argument1, Argument2) -> Unit,
-): CSRegistration = action(first, second) { first, second -> onAction(first, second) }
 
-
-fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.action(
+fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>>.action(
     onAction: () -> Unit,
-): CSRegistration = action(first, second) { _, _ -> onAction() }
+): CSRegistration = listOf(first, second).action {
+    onAction()
+}
 
 
-fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChangeLaterOnce(
+fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>>.onChangeLaterOnce(
     onChange: () -> Unit,
-): CSRegistration = listOf(first, second).onChangeLaterOnce { onChange() }
+): CSRegistration = listOf(first, second)
+    .onChangeLaterOnce { onChange() }
 
-fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>>.onChangeLaterOnce(
+fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
+        CSHasChangeValue<Argument2>>.onChangeLaterOnce(
     onChange: (Argument1, Argument2) -> Unit,
-): CSRegistration =
-    listOf(first, second).onChangeLaterOnce { onChange(first.value, second.value) }
+): CSRegistration = listOf(first, second)
+    .onChangeLaterOnce { onChange(first.value, second.value) }
 
 fun <Argument1, Argument2, Return>
         Triple<CSHasChangeValue<Argument1>,
