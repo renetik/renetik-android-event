@@ -64,12 +64,12 @@ fun <T, V, Return> Pair<CSHasChangeValue<T>, CSHasChangeValue<V>>.delegate(
         val value = CSValueFunction(this, value, function)
         return CSRegistration(
             first.onChange {
-                if (parent?.registrations.isActive) value(from(it,
-                    second.value))
+                if (parent?.registrations.isActive)
+                    value(from(it, second.value))
             },
             second.onChange {
-                if (parent?.registrations.isActive) value(from(first.value,
-                    it))
+                if (parent?.registrations.isActive)
+                    value(from(first.value, it))
             },
         ).registerTo(parent)
     }

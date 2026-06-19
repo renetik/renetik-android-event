@@ -1,21 +1,7 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.ArgFun
-import renetik.android.core.lang.synchronized
 import renetik.android.event.CSEvent.Companion.event
-
-class CSValueFunction<Return>(
-    val parent: Any,
-    private var value: Return,
-    private val function: (Return) -> Unit,
-) {
-    operator fun invoke(newValue: Return) = synchronized(parent) {
-        if (value != newValue) {
-            value = newValue
-            function(newValue)
-        }
-    }
-}
 
 internal abstract class CSHasChangeValueBase<Return>(
     val parent: CSHasRegistrations?,

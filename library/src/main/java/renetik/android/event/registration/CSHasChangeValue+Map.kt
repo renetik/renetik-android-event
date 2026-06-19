@@ -6,7 +6,6 @@ import renetik.android.core.lang.variable.assign
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 import renetik.android.event.property.CSProperty.Companion.lateProperty
-import renetik.android.event.registration.CSHasChange.Companion.action
 
 fun <T> CSHasChangeValue<T>.hasChangeValue(
     parent: CSHasRegistrations? = null, onChange: ArgFun<T>? = null,
