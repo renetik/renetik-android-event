@@ -4,7 +4,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
-import java.util.concurrent.atomic.AtomicInteger
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSModel
@@ -14,6 +13,7 @@ import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeProperty.Companion.safe
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.testing.CSAssert.assert
+import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(RobolectricTestRunner::class)
 class CSSafeHasChangeAndOrTest {

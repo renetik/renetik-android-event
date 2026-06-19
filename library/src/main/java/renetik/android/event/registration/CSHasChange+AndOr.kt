@@ -1,6 +1,5 @@
 package renetik.android.event.registration
 
-import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.core.lang.value.ifTrue

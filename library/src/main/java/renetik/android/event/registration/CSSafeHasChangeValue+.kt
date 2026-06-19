@@ -5,7 +5,6 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.lang.ArgFun
-import renetik.android.event.CSEvent
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSHasRegistrationsHasDestruct

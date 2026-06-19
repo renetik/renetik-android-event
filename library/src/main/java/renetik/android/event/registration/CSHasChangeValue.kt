@@ -3,7 +3,6 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.value.CSValue
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 interface CSHasChangeValue<T> : CSValue<T>, CSHasChange<T> {
     companion object {

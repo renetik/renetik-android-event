@@ -4,8 +4,6 @@ package renetik.android.event.registration
 
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.ArgFun
-import renetik.android.event.registration.CSHasChange.Companion.action
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 inline fun <T : CSHasChangeValue<Value>, Value> List<T>.onChange(
     crossinline function: ArgFun<List<Value>>
