@@ -40,7 +40,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegate() {
         val property = property(0)
-        val isRecorded = property.delegateValue(from = { it > 1 })
+        val isRecorded = property.delegateFrom(from = { it > 1 })
         val isRecordedUser1 = isRecorded.hasChangeValue(from = { "$it" })
         val isRecordedUser2 = isRecorded.hasChangeValue(from = { "$it" })
         assert(expected = false, actual = isRecorded.value)
@@ -364,7 +364,7 @@ class CSHasChangeValueTest {
         val propertyBool = property(false)
         val pair = propertyInt to propertyBool
         var invocationCount = 0
-        val pairDelegate = pair.delegate(from = { int, bool ->
+        val pairDelegate = pair.delegateFrom(from = { int, bool ->
             invocationCount += 1
             "$int-$bool"
         })

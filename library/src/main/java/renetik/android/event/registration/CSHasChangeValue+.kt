@@ -5,17 +5,13 @@ package renetik.android.event.registration
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
-import renetik.android.event.common.update
 import renetik.android.event.property.CSLateProperty
 import renetik.android.event.registration.CSHasChangeValue.Companion.emptyNullable
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import kotlin.Result.Companion.success
-import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 @JvmName("destructPreviousNullable")
@@ -26,37 +22,37 @@ inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T>> P.destructPrevious()
     apply { onChangeFrom { it.destruct() } }
 
 inline val <T> CSHasChangeValue<T>?.nullable: CSHasChangeValue<T?>
-    get() = this?.delegateValue(from = { it }) ?: emptyNullable()
+    get() = this?.delegateFrom(from = { it }) ?: emptyNullable()
 
 inline fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> = isSetTo(null)
 
 inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> = !isSetTo(null)
 
 inline infix fun <T> CSHasChangeValue<T>.isSetTo(value: T): CSHasChangeValue<Boolean> =
-    delegateValue(from = { it == value })
+    delegateFrom(from = { it == value })
 
 inline infix fun <T> CSHasChangeValue<T>.isEqualTo(other: CSHasChangeValue<T>): CSHasChangeValue<Boolean> =
-    (this to other).delegate(from = { first, second -> first == second })
+    (this to other).delegateFrom(from = { first, second -> first == second })
 
 inline infix fun <T> CSHasChangeValue<T>.isTrue(
     crossinline condition: (T) -> Boolean
-): CSHasChangeValue<Boolean> = delegateValue(from = { condition(it) })
+): CSHasChangeValue<Boolean> = delegateFrom(from = { condition(it) })
 
 inline infix fun <T> CSHasChangeValue<T>.isFalse(
     crossinline condition: (T) -> Boolean
-): CSHasChangeValue<Boolean> = delegateValue(from = { !condition(it) })
+): CSHasChangeValue<Boolean> = delegateFrom(from = { !condition(it) })
 
 inline fun <T> CSHasChangeValue<T>.isSetTo(parent: CSHasRegistrations, value: T)
         : CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
 
 inline infix fun <T> CSHasChangeValue<T>.isNotSetTo(value: T): CSHasChangeValue<Boolean> =
-    delegateValue(from = { it != value })
+    delegateFrom(from = { it != value })
 
 inline fun <reified T> CSHasChangeValue<*>.isOfType(): CSHasChangeValue<Boolean> =
-    delegateValue(from = { it is T })
+    delegateFrom(from = { it is T })
 
 inline fun <reified T> CSHasChangeValue<*>.asType(): CSHasChangeValue<T?> =
-    delegateValue(from = { it as? T })
+    delegateFrom(from = { it as? T })
 
 inline fun <reified T> CSHasChangeValue<*>.onType(
     crossinline function: (T) -> Unit
@@ -280,10 +276,10 @@ fun <V, Instance> CSHasChangeValue<V>.lazyFactory(
 }
 
 val CSHasChangeValue<out Any?>.eventIsNull: CSHasChange<Unit>
-    get() = delegateValue(from = { it == null }).eventIsTrue
+    get() = delegateFrom(from = { it == null }).eventIsTrue
 
 val CSHasChangeValue<out Any?>.eventIsNotNull: CSHasChange<Unit>
-    get() = delegateValue(from = { it != null }).eventIsTrue
+    get() = delegateFrom(from = { it != null }).eventIsTrue
 
 fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> {
     val self = this

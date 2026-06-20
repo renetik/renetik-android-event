@@ -2,9 +2,9 @@ package renetik.android.event.registration
 
 fun <T> CSHasChangeValue<T>.delegate(
     parent: CSHasRegistrations? = null,
-): CSHasChangeValue<T> = delegateValue(parent, from = { it })
+): CSHasChangeValue<T> = delegateFrom(parent, from = { it })
 
-fun <T, Return> CSHasChangeValue<T>.delegateValue(
+fun <T, Return> CSHasChangeValue<T>.delegateFrom(
     parent: CSHasRegistrations? = null,
     from: (T) -> Return,
 ): CSHasChangeValue<Return> = let { property ->
@@ -19,7 +19,7 @@ fun <T, Return> CSHasChangeValue<T>.delegateValue(
     }
 }
 
-fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
+fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegateFromList(
     parent: CSHasRegistrations? = null,
     from: (List<Argument>) -> Return,
 ): CSHasChangeValue<Return> = let { properties ->

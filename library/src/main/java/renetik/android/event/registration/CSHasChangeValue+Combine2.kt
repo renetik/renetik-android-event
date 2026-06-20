@@ -1,7 +1,6 @@
 package renetik.android.event.registration
 
 import renetik.android.core.lang.ArgFun
-import renetik.android.core.lang.tuples.to
 
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
         CSHasChangeValue<Argument2>>.onChange(
@@ -60,7 +59,7 @@ fun <Argument1, Argument2, Return>
         }
     }
 
-fun <T, V, Return> Pair<CSHasChangeValue<T>, CSHasChangeValue<V>>.delegate(
+fun <T, V, Return> Pair<CSHasChangeValue<T>, CSHasChangeValue<V>>.delegateFrom(
     parent: CSHasRegistrations? = null,
     from: (T, V) -> Return,
 ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {

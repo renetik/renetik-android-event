@@ -26,14 +26,14 @@ inline fun CSHasChangeValue<Boolean>.onTrue(crossinline function: () -> Unit): C
     onChange { if (it.isTrue) function() }
 
 inline fun CSHasChangeValue<Boolean>.isTrue(parent: CSHasRegistrations? = null) =
-    delegateValue(parent, from = { it })
+    delegateFrom(parent, from = { it })
 
 @JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue")
 inline fun CSHasChangeValue<Boolean?>.isTrue(
-    parent: CSHasRegistrations? = null) = delegateValue(parent, from = { it == true })
+    parent: CSHasRegistrations? = null) = delegateFrom(parent, from = { it == true })
 
 inline fun CSHasChangeValue<Boolean>.isFalse(parent: CSHasRegistrations? = null) =
-    delegateValue(parent, from = { !it })
+    delegateFrom(parent, from = { !it })
 
 inline val CSHasChangeValue<Boolean>.eventIsTrue: CSHasChange<Unit>
     get() = object : CSHasChange<Unit> {
@@ -122,7 +122,7 @@ inline fun CSHasChangeValue<Boolean>.actionFalseLaunch(
         it + actionFalse { it.launch(dispatcher) { function() } }
     }
 
-inline operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { !it })
+inline operator fun CSHasChangeValue<Boolean>.not() = delegateFrom(from = { !it })
 
 inline fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     crossinline registration: () -> CSRegistration?): CSRegistration {
