@@ -47,38 +47,3 @@ fun <T> CSHasChangeValue<T>.delegateIsChange(
             }.registerTo(parent)
     }
 }
-
-fun <T, V, Return> Pair<CSHasChangeValue<T>, CSHasChangeValue<V>>.delegate(
-    parent: CSHasRegistrations? = null,
-    from: (T, V) -> Return,
-): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
-    override val value: Return get() = from(first.value, second.value)
-    override fun onChange(function: (Return) -> Unit): CSRegistration {
-        val value = CSValueFunction(this, value, function)
-        return CSRegistration(
-            first.onChange {
-                if (parent?.registrations.isActive)
-                    value(from(it, second.value))
-            },
-            second.onChange {
-                if (parent?.registrations.isActive)
-                    value(from(first.value, it))
-            },
-        ).registerTo(parent)
-    }
-}
-
-inline fun <Return> CSHasChange<out Any>.delegate(
-    parent: CSHasRegistrations? = null,
-    crossinline from: () -> Return,
-): CSHasChangeValue<Return> = let { property ->
-    object : CSHasChangeValue<Return> {
-        override val value: Return get() = from()
-        override fun onChange(function: (Return) -> Unit): CSRegistration {
-            val value = CSValueFunction(this, value, function)
-            return property.onChange {
-                if (parent?.registrations.isActive) value(from())
-            }.registerTo(parent)
-        }
-    }
-}

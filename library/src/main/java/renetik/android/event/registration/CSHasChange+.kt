@@ -297,3 +297,18 @@ fun CSQuadruple<CSHasChange<*>, CSHasChange<*>, CSHasChange<*>, CSHasChange<*>>.
     third.onChange(onChange), fourth.onChange(onChange)
 )
 
+inline fun <Return> CSHasChange<out Any>.delegate(
+    parent: CSHasRegistrations? = null,
+    crossinline from: () -> Return,
+): CSHasChangeValue<Return> = let { property ->
+    object : CSHasChangeValue<Return> {
+        override val value: Return get() = from()
+        override fun onChange(function: (Return) -> Unit): CSRegistration {
+            val value = CSValueFunction(this, value, function)
+            return property.onChange {
+                if (parent?.registrations.isActive) value(from())
+            }.registerTo(parent)
+        }
+    }
+}
+
