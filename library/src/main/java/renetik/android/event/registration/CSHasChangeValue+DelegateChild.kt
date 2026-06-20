@@ -1,6 +1,5 @@
 package renetik.android.event.registration
 
-import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
