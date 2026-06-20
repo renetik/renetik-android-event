@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
     namespace rootProject.ext.namespace
@@ -6,13 +7,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
     }
-    kotlin { jvmToolchain(21) }
     compileSdk = project.properties.sdk_version
     defaultConfig {
-        minSdkVersion  project.properties.min_sdk_version
-        targetSdkVersion   project.properties.sdk_version
+        minSdkVersion project.properties.min_sdk_version
+        targetSdkVersion project.properties.sdk_version
     }
     testOptions {
+        unitTests {
+            includeAndroidResources = true // https://robolectric.org/getting-started/
+        }
         unitTests.all {
             testLogging {
                 outputs.upToDateWhen { false }
@@ -32,13 +35,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$ktx_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
 
-    testImplementation project(':renetik-android-testing')
-    tasks.register('sourceJar', Jar) {
-        classifier 'sources'
-        from android.sourceSets.main.java.srcDirs
-    }
-    dokkaHtml {
-        outputDirectory = file("${projectDir}/../docs")
-        dokkaSourceSets { configureEach { includes.from("../README.md") } }
-    }
+    if (rootProject.ext.is_renetik_development)
+        testImplementation project(':renetik-android-testing')
+    else testImplementation "com.github.renetik:renetik-android-testing:1.0.1"
 }
