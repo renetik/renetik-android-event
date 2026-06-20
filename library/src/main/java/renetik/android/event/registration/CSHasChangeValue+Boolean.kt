@@ -122,7 +122,7 @@ inline fun CSHasChangeValue<Boolean>.actionFalseLaunch(
         it + actionFalse { it.launch(dispatcher) { function() } }
     }
 
-inline operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { it -> !it })
+inline operator fun CSHasChangeValue<Boolean>.not() = delegateValue(from = { !it })
 
 inline fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     crossinline registration: () -> CSRegistration?): CSRegistration {
