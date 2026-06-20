@@ -17,6 +17,8 @@ fun <ChildValue> CSHasChange<out Any>.delegate(
             val parentRegistration = property.action {
                 childRegistration?.cancel()
                 val childItem = child()
+                // TODO: This works because "isActive = this?.isActive != false" but its super weird
+                //  this returns isActive if registration is null basically what is nonsense but fort his case it is what we want...
                 if (parent?.registrations.isActive && registration.isActive) childItem.also {
                     value(it.value)
                 }
