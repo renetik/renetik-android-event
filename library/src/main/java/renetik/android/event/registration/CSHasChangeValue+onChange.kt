@@ -2,6 +2,7 @@ package renetik.android.event.registration
 
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
+import renetik.android.core.lang.tuples.CSSixtuple
 
 
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
@@ -61,4 +62,13 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5>
     onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
 ): CSRegistration = listOf(first, second, third, fourth, fifth).onChange {
     onChange(first.value, second.value, third.value, fourth.value, fifth.value)
+}
+
+fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
+        CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.onChange(
+    onChange: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit,
+): CSRegistration = listOf(first, second, third, fourth, fifth, sixth).onChange {
+    onChange(first.value, second.value, third.value, fourth.value, fifth.value, sixth.value)
 }

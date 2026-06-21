@@ -3,6 +3,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.tuples.CSQuadruple
+import renetik.android.core.lang.tuples.CSQuintuple
 import kotlin.coroutines.CoroutineContext
 
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
@@ -41,4 +42,13 @@ fun <Argument1, Argument2, Argument3, Argument4>
     onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
 ): CSRegistration = listOf(first, second, third, fourth).onChangeLaterOnce {
     onChange(first.value, second.value, third.value, fourth.value)
+}
+
+fun <Argument1, Argument2, Argument3, Argument4, Argument5>
+        CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
+                CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
+                CSHasChangeValue<Argument5>>.onChangeLaterOnce(
+    onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+): CSRegistration = listOf(first, second, third, fourth, fifth).onChangeLaterOnce {
+    onChange(first.value, second.value, third.value, fourth.value, fifth.value)
 }
