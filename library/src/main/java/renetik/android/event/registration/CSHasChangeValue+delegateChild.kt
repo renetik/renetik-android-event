@@ -3,7 +3,7 @@ package renetik.android.event.registration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 @JvmName("delegateChild")
-fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateValue(
+fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegate(
     parent: CSHasRegistrations? = null,
     fromValueChild: (ParentValue) -> CSHasChangeValue<ChildValue>,
 ): CSHasChangeValue<ChildValue> = let { property ->

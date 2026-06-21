@@ -29,30 +29,30 @@ inline fun <T> CSHasChangeValue<T?>.isNull(): CSHasChangeValue<Boolean> = isSetT
 inline fun <T> CSHasChangeValue<T?>.isNotNull(): CSHasChangeValue<Boolean> = !isSetTo(null)
 
 inline infix fun <T> CSHasChangeValue<T>.isSetTo(value: T): CSHasChangeValue<Boolean> =
-    delegate(fromValue = { it == value })
+    this@isSetTo.delegate(fromValue = { it == value })
 
 inline infix fun <T> CSHasChangeValue<T>.isEqualTo(other: CSHasChangeValue<T>): CSHasChangeValue<Boolean> =
     (this to other).delegate(fromValues = { first, second -> first == second })
 
 inline infix fun <T> CSHasChangeValue<T>.isTrue(
     crossinline condition: (T) -> Boolean
-): CSHasChangeValue<Boolean> = delegate(fromValue = { condition(it) })
+): CSHasChangeValue<Boolean> = this@isTrue.delegate(fromValue = { condition(it) })
 
 inline infix fun <T> CSHasChangeValue<T>.isFalse(
     crossinline condition: (T) -> Boolean
-): CSHasChangeValue<Boolean> = delegate(fromValue = { !condition(it) })
+): CSHasChangeValue<Boolean> = this@isFalse.delegate(fromValue = { !condition(it) })
 
 inline fun <T> CSHasChangeValue<T>.isSetTo(parent: CSHasRegistrations, value: T)
         : CSHasChangeValue<Boolean> = stateDelegate(parent, fromValue = { it == value })
 
 inline infix fun <T> CSHasChangeValue<T>.isNotSetTo(value: T): CSHasChangeValue<Boolean> =
-    delegate(fromValue = { it != value })
+    this@isNotSetTo.delegate(fromValue = { it != value })
 
 inline fun <reified T> CSHasChangeValue<*>.isOfType(): CSHasChangeValue<Boolean> =
-    delegate(fromValue = { it is T })
+    this@isOfType.delegate(fromValue = { it is T })
 
 inline fun <reified T> CSHasChangeValue<*>.asType(): CSHasChangeValue<T?> =
-    delegate(fromValue = { it as? T })
+    this@asType.delegate(fromValue = { it as? T })
 
 inline fun <reified T> CSHasChangeValue<*>.onType(
     crossinline function: (T) -> Unit
@@ -276,10 +276,10 @@ fun <V, Instance> CSHasChangeValue<V>.lazyFactory(
 }
 
 val CSHasChangeValue<out Any?>.eventIsNull: CSHasChange<Unit>
-    get() = delegate(fromValue = { it == null }).eventIsTrue
+    get() = this@eventIsNull.delegate(fromValue = { it == null }).eventIsTrue
 
 val CSHasChangeValue<out Any?>.eventIsNotNull: CSHasChange<Unit>
-    get() = delegate(fromValue = { it != null }).eventIsTrue
+    get() = this@eventIsNotNull.delegate(fromValue = { it != null }).eventIsTrue
 
 fun <T> CSHasChangeValue<out T?>.eventIsNotNull(): CSHasChange<T> {
     val self = this

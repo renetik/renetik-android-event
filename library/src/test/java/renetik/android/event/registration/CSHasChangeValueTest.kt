@@ -150,7 +150,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegateChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
-        val delegateChild = property.delegateValue(fromValueChild = { it.value })
+        val delegateChild = property.delegate(fromValueChild = { it.value })
         testDelegateChildProperty(property, delegateChild)
     }
 

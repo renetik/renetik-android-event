@@ -2,7 +2,7 @@ package renetik.android.event.registration
 
 fun <T> CSHasChangeValue<T>.delegate(
     parent: CSHasRegistrations? = null,
-): CSHasChangeValue<T> = delegate(parent, fromValue = { it })
+): CSHasChangeValue<T> = this@delegate.delegate(parent, fromValue = { it })
 
 fun <T> CSHasChangeValue<T>.delegateIsChange(
     parent: CSHasRegistrations? = null,
