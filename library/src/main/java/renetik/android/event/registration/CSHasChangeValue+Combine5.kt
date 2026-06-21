@@ -5,14 +5,7 @@ import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.to
 
-fun <Argument1, Argument2, Argument3, Argument4, Argument5>
-        CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
-                CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
-                CSHasChangeValue<Argument5>>.onChange(
-    onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
-): CSRegistration = listOf(first, second, third, fourth, fifth).onChange {
-    onChange(first.value, second.value, third.value, fourth.value, fifth.value)
-}
+
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5>
         CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,

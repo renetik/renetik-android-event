@@ -1,0 +1,102 @@
+package renetik.android.event.registration
+
+import renetik.android.core.lang.tuples.CSQuadruple
+
+fun <T, Return> CSHasChangeValue<T>.delegateFrom(
+    parent: CSHasRegistrations? = null,
+    from: (T) -> Return,
+): CSHasChangeValue<Return> = let { property ->
+    object : CSHasChangeValue<Return> {
+        override val value: Return get() = from(property.value)
+        override fun onChange(function: (Return) -> Unit): CSRegistration {
+            val value = CSValueFunction(this, value, function)
+            return property.onChange {
+                if (parent?.registrations.isActive) value(from(it))
+            }.registerTo(parent)
+        }
+    }
+}
+
+fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegateFromList(
+    parent: CSHasRegistrations? = null,
+    from: (List<Argument>) -> Return,
+): CSHasChangeValue<Return> = let { properties ->
+    object : CSHasChangeValue<Return> {
+        override val value: Return get() = from(properties.map { it.value })
+        override fun onChange(function: (Return) -> Unit): CSRegistration {
+            val value = CSValueFunction(this, value, function)
+            return properties.onChange { list ->
+                if (parent?.registrations.isActive) value(from(list))
+            }.registerTo(parent)
+        }
+    }
+}
+
+fun <T, V, Return>
+        Pair<CSHasChangeValue<T>,
+                CSHasChangeValue<V>>.delegateFrom(
+    parent: CSHasRegistrations? = null,
+    from: (T, V) -> Return,
+): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+    override val value: Return get() = from(first.value, second.value)
+    override fun onChange(function: (Return) -> Unit): CSRegistration {
+        val value = CSValueFunction(this, value, function)
+        return CSRegistration(
+            first.onChange {
+                if (parent?.registrations.isActive)
+                    value(from(it, second.value))
+            },
+            second.onChange {
+                if (parent?.registrations.isActive)
+                    value(from(first.value, it))
+            },
+        ).registerTo(parent)
+    }
+}
+
+fun <T, V, K, Return>
+        Triple<CSHasChangeValue<T>, CSHasChangeValue<V>,
+                CSHasChangeValue<K>>.delegateFrom(
+    parent: CSHasRegistrations? = null,
+    from: (T, V, K) -> Return,
+): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+    override val value: Return
+        get() = from(first.value, second.value, third.value)
+
+    override fun onChange(function: (Return) -> Unit): CSRegistration {
+        val value = CSValueFunction(this, value, function)
+        return CSRegistration(first.onChange {
+            if (parent?.registrations.isActive) value(from(it, second.value, third.value))
+        }, second.onChange {
+            if (parent?.registrations.isActive) value(from(first.value, it, third.value))
+        }, third.onChange {
+            if (parent?.registrations.isActive) value(from(first.value, second.value, it))
+        }).registerTo(parent)
+    }
+}
+
+fun <T, V, K, L, Return> CSQuadruple<CSHasChangeValue<T>,
+        CSHasChangeValue<V>, CSHasChangeValue<K>, CSHasChangeValue<L>>.delegateFrom(
+    parent: CSHasRegistrations? = null,
+    from: (T, V, K, L) -> Return,
+): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
+    override val value: Return
+        get() = from(first.value, second.value, third.value, fourth.value)
+
+    override fun onChange(function: (Return) -> Unit): CSRegistration {
+        val value = CSValueFunction(this, value, function)
+        return CSRegistration(first.onChange {
+            if (parent?.registrations.isActive)
+                value(from(it, second.value, third.value, fourth.value))
+        }, second.onChange {
+            if (parent?.registrations.isActive)
+                value(from(first.value, it, third.value, fourth.value))
+        }, third.onChange {
+            if (parent?.registrations.isActive)
+                value(from(first.value, second.value, it, fourth.value))
+        }, fourth.onChange {
+            if (parent?.registrations.isActive)
+                value(from(first.value, second.value, third.value, it))
+        }).registerTo(parent)
+    }
+}
