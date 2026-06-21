@@ -2,31 +2,31 @@ package renetik.android.event.registration
 
 import renetik.android.core.lang.tuples.CSQuadruple
 
-fun <T, Return> CSHasChangeValue<T>.delegateFrom(
+fun <T, Return> CSHasChangeValue<T>.delegate(
     parent: CSHasRegistrations? = null,
-    from: (T) -> Return,
+    fromValue: (T) -> Return,
 ): CSHasChangeValue<Return> = let { property ->
     object : CSHasChangeValue<Return> {
-        override val value: Return get() = from(property.value)
+        override val value: Return get() = fromValue(property.value)
         override fun onChange(function: (Return) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             return property.onChange {
-                if (parent?.registrations.isActive) value(from(it))
+                if (parent?.registrations.isActive) value(fromValue(it))
             }.registerTo(parent)
         }
     }
 }
 
-fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegateFromList(
+fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
     parent: CSHasRegistrations? = null,
-    from: (List<Argument>) -> Return,
+    fromList: (List<Argument>) -> Return,
 ): CSHasChangeValue<Return> = let { properties ->
     object : CSHasChangeValue<Return> {
-        override val value: Return get() = from(properties.map { it.value })
+        override val value: Return get() = fromList(properties.map { it.value })
         override fun onChange(function: (Return) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             return properties.onChange { list ->
-                if (parent?.registrations.isActive) value(from(list))
+                if (parent?.registrations.isActive) value(fromList(list))
             }.registerTo(parent)
         }
     }
@@ -34,21 +34,21 @@ fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegateFromList(
 
 fun <T, V, Return>
         Pair<CSHasChangeValue<T>,
-                CSHasChangeValue<V>>.delegateFrom(
+                CSHasChangeValue<V>>.delegate(
     parent: CSHasRegistrations? = null,
-    from: (T, V) -> Return,
+    fromValues: (T, V) -> Return,
 ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
-    override val value: Return get() = from(first.value, second.value)
+    override val value: Return get() = fromValues(first.value, second.value)
     override fun onChange(function: (Return) -> Unit): CSRegistration {
         val value = CSValueFunction(this, value, function)
         return CSRegistration(
             first.onChange {
                 if (parent?.registrations.isActive)
-                    value(from(it, second.value))
+                    value(fromValues(it, second.value))
             },
             second.onChange {
                 if (parent?.registrations.isActive)
-                    value(from(first.value, it))
+                    value(fromValues(first.value, it))
             },
         ).registerTo(parent)
     }
@@ -56,47 +56,48 @@ fun <T, V, Return>
 
 fun <T, V, K, Return>
         Triple<CSHasChangeValue<T>, CSHasChangeValue<V>,
-                CSHasChangeValue<K>>.delegateFrom(
+                CSHasChangeValue<K>>.delegate(
     parent: CSHasRegistrations? = null,
-    from: (T, V, K) -> Return,
+    fromValues: (T, V, K) -> Return,
 ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
     override val value: Return
-        get() = from(first.value, second.value, third.value)
+        get() = fromValues(first.value, second.value, third.value)
 
     override fun onChange(function: (Return) -> Unit): CSRegistration {
         val value = CSValueFunction(this, value, function)
         return CSRegistration(first.onChange {
-            if (parent?.registrations.isActive) value(from(it, second.value, third.value))
+            if (parent?.registrations.isActive) value(fromValues(it, second.value, third.value))
         }, second.onChange {
-            if (parent?.registrations.isActive) value(from(first.value, it, third.value))
+            if (parent?.registrations.isActive) value(fromValues(first.value, it, third.value))
         }, third.onChange {
-            if (parent?.registrations.isActive) value(from(first.value, second.value, it))
+            if (parent?.registrations.isActive) value(fromValues(first.value, second.value, it))
         }).registerTo(parent)
     }
 }
 
 fun <T, V, K, L, Return> CSQuadruple<CSHasChangeValue<T>,
-        CSHasChangeValue<V>, CSHasChangeValue<K>, CSHasChangeValue<L>>.delegateFrom(
+        CSHasChangeValue<V>, CSHasChangeValue<K>,
+        CSHasChangeValue<L>>.delegate(
     parent: CSHasRegistrations? = null,
-    from: (T, V, K, L) -> Return,
+    fromValues: (T, V, K, L) -> Return,
 ): CSHasChangeValue<Return> = object : CSHasChangeValue<Return> {
     override val value: Return
-        get() = from(first.value, second.value, third.value, fourth.value)
+        get() = fromValues(first.value, second.value, third.value, fourth.value)
 
     override fun onChange(function: (Return) -> Unit): CSRegistration {
         val value = CSValueFunction(this, value, function)
         return CSRegistration(first.onChange {
             if (parent?.registrations.isActive)
-                value(from(it, second.value, third.value, fourth.value))
+                value(fromValues(it, second.value, third.value, fourth.value))
         }, second.onChange {
             if (parent?.registrations.isActive)
-                value(from(first.value, it, third.value, fourth.value))
+                value(fromValues(first.value, it, third.value, fourth.value))
         }, third.onChange {
             if (parent?.registrations.isActive)
-                value(from(first.value, second.value, it, fourth.value))
+                value(fromValues(first.value, second.value, it, fourth.value))
         }, fourth.onChange {
             if (parent?.registrations.isActive)
-                value(from(first.value, second.value, third.value, it))
+                value(fromValues(first.value, second.value, third.value, it))
         }).registerTo(parent)
     }
 }

@@ -6,20 +6,20 @@ import renetik.android.core.lang.value.ifTrue
 
 @JvmName("BooleanAndCSHasChangeValueBoolean")
 infix fun Boolean.and(other: CSHasChangeValue<Boolean>): CSHasChangeValue<Boolean> =
-    other.delegateFrom(from = { it && this })
+    other.delegate(fromValue = { it && this })
 
 @JvmName("CSHasChangeValueBooleanAndBoolean")
 infix fun CSHasChangeValue<Boolean>.and(other: Boolean): CSHasChangeValue<Boolean> =
-    this.delegateFrom(from = { it && other })
+    this.delegate(fromValue = { it && other })
 
 @JvmName("CSHasChangeValueBooleanAndCSHasChangeValueBoolean")
 infix fun CSHasChangeValue<Boolean>.and(other: CSHasChangeValue<Boolean>) =
-    (this to other).delegateFrom(from = { first, second -> first && second })
+    (this to other).delegate(fromValues = { first, second -> first && second })
 
 
 @JvmName("CSHasChangeValueBooleanAndCSHasChangeValueBooleanNullable")
 infix fun CSHasChangeValue<Boolean>.and(other: CSHasChangeValue<Boolean?>) =
-    (this to other).delegateFrom(from = { first, second -> first && second.isTrue })
+    (this to other).delegate(fromValues = { first, second -> first && second.isTrue })
 
 @JvmName("CSHasChangeAndCSValue")
 infix fun CSHasChange<*>.and(other: CSValue<Boolean>): CSHasChange<Unit> {
@@ -80,7 +80,7 @@ infix fun <T> CSHasChangeValue<T>.ifFalse(
 }
 
 infix fun CSHasChangeValue<Boolean>.or(other: CSHasChangeValue<Boolean>) =
-    (this to other).delegateFrom(from = { first, second -> first || second })
+    (this to other).delegate(fromValues = { first, second -> first || second })
 
 infix fun <T> CSHasChangeValue<T>.or(second: CSHasChange<*>): CSHasChangeValue<T> {
     val first = this
