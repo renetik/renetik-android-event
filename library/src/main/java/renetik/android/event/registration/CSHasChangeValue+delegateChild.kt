@@ -4,37 +4,6 @@ import renetik.android.event.registration.CSHasChange.Companion.action
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 @JvmName("delegateChild")
-fun <ChildValue> CSHasChange<out Any>.delegate(
-    parent: CSHasRegistrations? = null,
-    child: () -> CSHasChangeValue<ChildValue>,
-): CSHasChangeValue<ChildValue> = let { property ->
-    object : CSHasChangeValue<ChildValue> {
-        override val value: ChildValue get() = child().value
-        override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
-            val value = CSValueFunction(this, value, function)
-            var registration: CSRegistration? = null
-            var childRegistration: CSRegistration? = null
-            val parentRegistration = property.action {
-                childRegistration?.cancel()
-                val childItem = child()
-                // TODO: This works because "isActive = this?.isActive != false" but its super weird
-                //  this returns isActive if registration is null basically what is nonsense but fort his case it is what we want...
-                if (parent?.registrations.isActive && registration.isActive) childItem.also {
-                    value(it.value)
-                }
-                childRegistration = childItem.onChange {
-                    if (parent?.registrations.isActive && registration.isActive) value(it)
-                }
-            }
-            return CSRegistration(isActive = true, onCancel = {
-                parentRegistration.cancel()
-                childRegistration?.cancel()
-            }).also { registration = it }.registerTo(parent)
-        }
-    }
-}
-
-@JvmName("delegateChild")
 fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateValue(
     parent: CSHasRegistrations? = null,
     child: (ParentValue) -> CSHasChangeValue<ChildValue>,
@@ -51,34 +20,6 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateValue(
                 if (parent?.registrations.isActive && registration.isActive) childItem.also {
                     value(it.value)
                 }
-                childRegistration = childItem.onChange {
-                    if (parent?.registrations.isActive && registration.isActive) value(it)
-                }
-            }
-            return CSRegistration(isActive = true, onCancel = {
-                parentRegistration.cancel()
-                childRegistration?.cancel()
-            }).also { registration = it }.registerTo(parent)
-        }
-    }
-}
-
-@JvmName("delegateChild")
-fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
-    parent: CSHasRegistrations? = null,
-    child: (List<Argument>) -> CSHasChangeValue<Return>,
-): CSHasChangeValue<Return> = let { properties ->
-    object : CSHasChangeValue<Return> {
-        override val value: Return get() = child(properties.map { it.value }).value
-        override fun onChange(function: (Return) -> Unit): CSRegistration {
-            val value = CSValueFunction(this, value, function)
-            var registration: CSRegistration? = null
-            var childRegistration: CSRegistration? = null
-            val parentRegistration = properties.action { parentValue ->
-                childRegistration?.cancel()
-                val childItem = child(parentValue)
-                if (parent?.registrations.isActive && registration.isActive)
-                    childItem.also { value(it.value) }
                 childRegistration = childItem.onChange {
                     if (parent?.registrations.isActive && registration.isActive) value(it)
                 }

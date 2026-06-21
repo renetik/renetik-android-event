@@ -312,3 +312,34 @@ inline fun <Return> CSHasChange<out Any>.delegate(
     }
 }
 
+@JvmName("delegateChild")
+fun <ChildValue> CSHasChange<out Any>.delegate(
+    parent: CSHasRegistrations? = null,
+    child: () -> CSHasChangeValue<ChildValue>,
+): CSHasChangeValue<ChildValue> = let { property ->
+    object : CSHasChangeValue<ChildValue> {
+        override val value: ChildValue get() = child().value
+        override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
+            val value = CSValueFunction(this, value, function)
+            var registration: CSRegistration? = null
+            var childRegistration: CSRegistration? = null
+            val parentRegistration = property.action {
+                childRegistration?.cancel()
+                val childItem = child()
+                // TODO: This works because "isActive = this?.isActive != false" but its super weird
+                //  this returns isActive if registration is null basically what is nonsense but fort his case it is what we want...
+                if (parent?.registrations.isActive && registration.isActive) childItem.also {
+                    value(it.value)
+                }
+                childRegistration = childItem.onChange {
+                    if (parent?.registrations.isActive && registration.isActive) value(it)
+                }
+            }
+            return CSRegistration(isActive = true, onCancel = {
+                parentRegistration.cancel()
+                childRegistration?.cancel()
+            }).also { registration = it }.registerTo(parent)
+        }
+    }
+}
+

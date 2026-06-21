@@ -4,7 +4,6 @@ import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSixtuple
 
-
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,
         CSHasChangeValue<Argument2>>.onChange(
     onChange: (Argument1, Argument2) -> Unit,
