@@ -25,18 +25,18 @@ fun <Argument, Return> CSHasChangeValue<Argument>.stateDelegate(
 
 fun <Argument, Return> CSHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    fromValueWithPrevious: (Argument, Return?) -> Return,
+    fromValueAndPrevious: (Argument, Return?) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     let { property ->
         object : CSHasChangeValueBase<Return>(parent, onChange) {
             var previous: Return? = null
 
-            override var value: Return = fromValueWithPrevious(property.value, previous)
+            override var value: Return = fromValueAndPrevious(property.value, previous)
 
             init {
                 this + property.onChange {
-                    value(fromValueWithPrevious(it, previous))
+                    value(fromValueAndPrevious(it, previous))
                     previous = value
                 }
             }

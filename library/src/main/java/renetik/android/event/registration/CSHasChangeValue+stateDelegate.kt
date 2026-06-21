@@ -10,11 +10,11 @@ import renetik.android.event.common.destruct
 fun <Argument, Return : CSHasDestruct>
         CSHasChangeValue<Argument>.stateDelegateDestruct(
     parent: CSHasRegistrations? = null,
-    from: (Argument) -> Return,
+    fromValue: (Argument) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> = stateDelegate(
-    parent, fromValueWithPrevious = { type, previous ->
-        previous?.destruct(); from(type)
+    parent, fromValueAndPrevious = { type, previous ->
+        previous?.destruct(); fromValue(type)
     }, onChange)
 
 fun <Argument> CSHasChangeValue<Argument>.stateDelegate(

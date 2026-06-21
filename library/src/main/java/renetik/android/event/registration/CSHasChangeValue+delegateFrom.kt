@@ -19,14 +19,14 @@ fun <T, Return> CSHasChangeValue<T>.delegate(
 
 fun <Argument, Return> List<CSHasChangeValue<Argument>>.delegate(
     parent: CSHasRegistrations? = null,
-    fromList: (List<Argument>) -> Return,
+    fromValueList: (List<Argument>) -> Return,
 ): CSHasChangeValue<Return> = let { properties ->
     object : CSHasChangeValue<Return> {
-        override val value: Return get() = fromList(properties.map { it.value })
+        override val value: Return get() = fromValueList(properties.map { it.value })
         override fun onChange(function: (Return) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             return properties.onChange { list ->
-                if (parent?.registrations.isActive) value(fromList(list))
+                if (parent?.registrations.isActive) value(fromValueList(list))
             }.registerTo(parent)
         }
     }
