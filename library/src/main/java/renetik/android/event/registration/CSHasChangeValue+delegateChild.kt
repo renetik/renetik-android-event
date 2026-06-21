@@ -102,7 +102,7 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChange(
 }
 
 @JvmName("delegateNullable")
-fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateNullable(
+fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegate(
     parent: CSHasRegistrations? = null,
     fromValueNullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
 ): CSHasChangeValue<ChildValue?> = let { property ->
