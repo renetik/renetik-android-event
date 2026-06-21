@@ -7,7 +7,7 @@ import renetik.android.core.lang.notNull
 @JvmName("stateDelegateChild")
 fun <ParentValue, Return> CSHasChangeValue<ParentValue>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    child: (ParentValue) -> CSHasChangeValue<Return>,
+    fromValueChild: (ParentValue) -> CSHasChangeValue<Return>,
     onChange: ((Return) -> Unit)? = null
 ): CSHasChangeValue<Return> = let { property ->
     object : CSHasChangeValueBase<Return>(parent, onChange) {
@@ -16,7 +16,7 @@ fun <ParentValue, Return> CSHasChangeValue<ParentValue>.stateDelegate(
 
         init {
             this + property.action(
-                child = { child(it) }, action = { value(it) })
+                child = { fromValueChild(it) }, action = { value(it) })
         }
 
         @Synchronized
@@ -32,7 +32,7 @@ fun <ParentValue, Return> CSHasChangeValue<ParentValue>.stateDelegate(
 fun <ParentValue, Return>
         CSHasChangeValue<ParentValue>.stateDelegateNullable(
     parent: CSHasRegistrations? = null,
-    child: (ParentValue) -> CSHasChangeValue<Return>?,
+    fromValueChild: (ParentValue) -> CSHasChangeValue<Return>?,
     onChange: ((Return?) -> Unit)? = null
 ): CSHasChangeValue<Return?> =
     let { property ->
@@ -41,7 +41,7 @@ fun <ParentValue, Return>
 
             init {
                 this + property.action(
-                    nullableChild = { child(it) },
+                    nullableChild = { fromValueChild(it) },
                     action = ::value)
             }
         }

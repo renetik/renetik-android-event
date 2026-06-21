@@ -5,17 +5,17 @@ import renetik.android.event.registration.CSRegistration.Companion.CSRegistratio
 @JvmName("delegateChild")
 fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateValue(
     parent: CSHasRegistrations? = null,
-    child: (ParentValue) -> CSHasChangeValue<ChildValue>,
+    fromValueChild: (ParentValue) -> CSHasChangeValue<ChildValue>,
 ): CSHasChangeValue<ChildValue> = let { property ->
     object : CSHasChangeValue<ChildValue> {
-        override val value: ChildValue get() = child(property.value).value
+        override val value: ChildValue get() = fromValueChild(property.value).value
         override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             var registration: CSRegistration? = null
             var childRegistration: CSRegistration? = null
             val parentRegistration = property.action { parentValue ->
                 childRegistration?.cancel()
-                val childItem = child(parentValue)
+                val childItem = fromValueChild(parentValue)
                 if (parent?.registrations.isActive && registration.isActive) childItem.also {
                     value(it.value)
                 }

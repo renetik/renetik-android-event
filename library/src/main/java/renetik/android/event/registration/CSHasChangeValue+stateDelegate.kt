@@ -13,13 +13,13 @@ fun <Argument, Return : CSHasDestruct>
     from: (Argument) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> = stateDelegate(
-    parent, fromWithPrevious = { type, previous ->
+    parent, fromValueWithPrevious = { type, previous ->
         previous?.destruct(); from(type)
     }, onChange)
 
 fun <Argument> CSHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null, onChange: ArgFun<Argument>? = null,
-): CSHasChangeValue<Argument> = stateDelegate(parent, from = { it }, onChange)
+): CSHasChangeValue<Argument> = stateDelegate(parent, fromValue = { it }, onChange)
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
         CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
@@ -28,6 +28,6 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
     parent: CSHasRegistrations? = null,
     onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null
 ): CSHasChangeValue<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>> =
-    stateDelegate(parent, from = { item1, item2, item3, item4, item5, item6 ->
+    stateDelegate(parent, fromValues = { item1, item2, item3, item4, item5, item6 ->
         CSSixtuple(item1, item2, item3, item4, item5, item6)
     }, onChange)

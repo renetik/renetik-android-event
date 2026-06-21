@@ -11,32 +11,32 @@ import kotlin.to
 
 fun <Argument, Return> CSHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument) -> Return,
+    fromValue: (Argument) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> = let { source ->
     object : CSHasChangeValueBase<Return>(parent, onChange) {
-        override var value: Return = from(source.value)
+        override var value: Return = fromValue(source.value)
 
         init {
-            this + source.onChange { value(from(it)) }
+            this + source.onChange { value(fromValue(it)) }
         }
     }
 }
 
 fun <Argument, Return> CSHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    fromWithPrevious: (Argument, Return?) -> Return,
+    fromValueWithPrevious: (Argument, Return?) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     let { property ->
         object : CSHasChangeValueBase<Return>(parent, onChange) {
             var previous: Return? = null
 
-            override var value: Return = fromWithPrevious(property.value, previous)
+            override var value: Return = fromValueWithPrevious(property.value, previous)
 
             init {
                 this + property.onChange {
-                    value(fromWithPrevious(it, previous))
+                    value(fromValueWithPrevious(it, previous))
                     previous = value
                 }
             }
@@ -47,15 +47,15 @@ fun <Argument1, Argument2, Return>
         Pair<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument1, Argument2) -> Return,
+    fromValues: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
-        override var value: Return = from(first.value, second.value)
+        override var value: Return = fromValues(first.value, second.value)
 
         init {
             this + (first to second).onChange { item1, item2 ->
-                value(from(item1, item2))
+                value(fromValues(item1, item2))
             }
         }
     }
@@ -65,15 +65,15 @@ fun <Argument1, Argument2, Argument3, Return>
                 CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument1, Argument2, Argument3) -> Return,
+    fromValues: (Argument1, Argument2, Argument3) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
-        override var value: Return = from(first.value, second.value, third.value)
+        override var value: Return = fromValues(first.value, second.value, third.value)
 
         init {
             this + (first to second to third).onChange { item1, item2, item3 ->
-                value(from(item1, item2, item3))
+                value(fromValues(item1, item2, item3))
             }
         }
     }
@@ -83,15 +83,15 @@ fun <Argument1, Argument2, Return>
                 CSHasChangeValue<Argument2>,
                 CSHasChange<*>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument1, Argument2) -> Return,
+    fromValues: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
-        override var value: Return = from(first.value, second.value)
+        override var value: Return = fromValues(first.value, second.value)
 
         init {
             this + (first to second to third).onChange { item1, item2 ->
-                value(from(item1, item2))
+                value(fromValues(item1, item2))
             }
         }
     }
@@ -102,17 +102,17 @@ fun <Argument1, Argument2, Argument3, Argument4, Return>
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
                 CSHasChangeValue<Argument4>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument1, Argument2, Argument3, Argument4) -> Return,
+    fromValues: (Argument1, Argument2, Argument3, Argument4) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
         override var value: Return =
-            from(first.value, second.value, third.value, fourth.value)
+            fromValues(first.value, second.value, third.value, fourth.value)
 
         init {
             this + (first to second to third to fourth)
                 .onChange { item1, item2, item3, item4 ->
-                    value(from(item1, item2, item3, item4))
+                    value(fromValues(item1, item2, item3, item4))
                 }
         }
     }
@@ -122,17 +122,17 @@ fun <Argument1, Argument2, Argument3, Argument4, Return>
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
                 CSHasChangeValue<Argument4>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (CSQuadruple<Argument1, Argument2, Argument3, Argument4>) -> Return,
+    fromValues: (CSQuadruple<Argument1, Argument2, Argument3, Argument4>) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
         override var value: Return =
-            from(CSQuadruple(first.value, second.value, third.value, fourth.value))
+            fromValues(CSQuadruple(first.value, second.value, third.value, fourth.value))
 
         init {
             this + (first to second to third to fourth)
                 .onChange { item1, item2, item3, item4 ->
-                    value(from(CSQuadruple(item1, item2, item3, item4)))
+                    value(fromValues(CSQuadruple(item1, item2, item3, item4)))
                 }
         }
     }
@@ -142,16 +142,16 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return>
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                 CSHasChangeValue<Argument5>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
+    fromValues: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
         override var value: Return =
-            from(first.value, second.value, third.value, fourth.value, fifth.value)
+            fromValues(first.value, second.value, third.value, fourth.value, fifth.value)
 
         init {
             this + (first to second to third to fourth to fifth).onChange { item1, item2, item3, item4, item5 ->
-                value(from(item1, item2, item3, item4, item5))
+                value(fromValues(item1, item2, item3, item4, item5))
             }
         }
     }
@@ -163,7 +163,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5>
     parent: CSHasRegistrations? = null,
     onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
 ): CSHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>> =
-    stateDelegate(parent, from = { item1, item2, item3, item4, item5 ->
+    stateDelegate(parent, fromValues = { item1, item2, item3, item4, item5 ->
         CSQuintuple(item1, item2, item3, item4, item5)
     }, onChange)
 
@@ -172,17 +172,17 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return>
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                 CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.stateDelegate(
     parent: CSHasRegistrations? = null,
-    from: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
+    fromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSHasChangeValue<Return> =
     object : CSHasChangeValueBase<Return>(parent, onChange) {
-        override var value: Return = from(first.value, second.value,
+        override var value: Return = fromValues(first.value, second.value,
             third.value, fourth.value, fifth.value, sixth.value)
 
         init {
             this + (first to second to third to fourth to fifth to sixth)
                 .onChange { item1, item2, item3, item4, item5, item6 ->
-                    value(from(item1, item2, item3, item4, item5, item6))
+                    value(fromValues(item1, item2, item3, item4, item5, item6))
                 }
         }
     }

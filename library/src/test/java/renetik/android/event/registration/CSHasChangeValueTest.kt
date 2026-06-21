@@ -41,8 +41,8 @@ class CSHasChangeValueTest {
     fun delegate() {
         val property = property(0)
         val isRecorded = property.delegate(fromValue = { it > 1 })
-        val isRecordedUser1 = isRecorded.stateDelegate(from = { "$it" })
-        val isRecordedUser2 = isRecorded.stateDelegate(from = { "$it" })
+        val isRecordedUser1 = isRecorded.stateDelegate(fromValue = { "$it" })
+        val isRecordedUser2 = isRecorded.stateDelegate(fromValue = { "$it" })
         assert(expected = false, actual = isRecorded.value)
         assert(expected = "false", actual = isRecordedUser1.value)
         assert(expected = "false", actual = isRecordedUser2.value)
@@ -150,14 +150,14 @@ class CSHasChangeValueTest {
     @Test
     fun delegateChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
-        val delegateChild = property.delegateValue(child = { it.value })
+        val delegateChild = property.delegateValue(fromValueChild = { it.value })
         testDelegateChildProperty(property, delegateChild)
     }
 
     @Test
     fun stateDelegateChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
-        val delegateChild = property.stateDelegate(child = { it.value })
+        val delegateChild = property.stateDelegate(fromValueChild = { it.value })
         testDelegateChildProperty(property, delegateChild)
     }
 
@@ -258,7 +258,7 @@ class CSHasChangeValueTest {
     @Test
     fun stateDelegateNullableChild() {
         val property = property<CSValue<CSProperty<Int>>?>(null)
-        val delegateChild = property.stateDelegateNullable(child = { it?.value })
+        val delegateChild = property.stateDelegateNullable(fromValueChild = { it?.value })
         testDelegateNullableChildProperty(property, delegateChild)
     }
 
@@ -289,7 +289,7 @@ class CSHasChangeValueTest {
     fun hasChangeValueBooleansAndOthers() {
         val isRecording = property(true)
         val duration: CSProperty<Int> = property(0)
-        val isRecorded = duration.stateDelegate(from = { it >= 500 })
+        val isRecorded = duration.stateDelegate(fromValue = { it >= 500 })
         var isRecordedOnChange = 0
         isRecorded.onChange { isRecordedOnChange += 1 }
         var isNotRecordingAndRecorded = 0
