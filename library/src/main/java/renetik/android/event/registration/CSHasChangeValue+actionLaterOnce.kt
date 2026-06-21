@@ -31,18 +31,18 @@ fun <Argument1, Argument2, Argument3, Argument4>
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
                 CSHasChangeValue<Argument4>>.actionLaterOnce(
     isActionNow: Boolean = false,
-    onChange: (Argument1, Argument2, Argument3, Argument4) -> Unit,
+    onAction: (Argument1, Argument2, Argument3, Argument4) -> Unit,
 ): CSRegistration = listOf(first, second, third, fourth).actionLaterOnce(isActionNow) {
-    onChange(first.value, second.value, third.value, fourth.value)
+    onAction(first.value, second.value, third.value, fourth.value)
 }
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5>
         CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
                 CSHasChangeValue<Argument5>>.actionLaterOnce(
-    onChange: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
+    onAction: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Unit,
 ): CSRegistration = listOf(first, second, third, fourth, fifth).actionLaterOnce {
-    onChange(first.value, second.value, third.value, fourth.value, fifth.value)
+    onAction(first.value, second.value, third.value, fourth.value, fifth.value)
 }
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
@@ -51,7 +51,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
                 CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>
                 >.actionLaterOnce(
     dispatcher: CoroutineDispatcher = Main,
-    onChange: suspend (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
+    onAction: suspend (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Unit
 ): CSRegistration {
     val registrations = CSRegistrationsMap(className)
     var value1: Argument1? = null
@@ -67,7 +67,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
 
     val laterOnceFunction = registrations.debouncer(dispatcher) {
         if (registrations.isActive) {
-            onChange((value1 ?: first.value),
+            onAction((value1 ?: first.value),
                 (value2 ?: second.value),
                 (value3 ?: third.value),
                 (value4 ?: fourth.value),
@@ -77,11 +77,11 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>
         }
     }
     registrations + first.onChange { value1 = it; laterOnceFunction() }
-    registrations + second.onChange { value2 = it; laterOnceFunction.invoke() }
-    registrations + third.onChange { value3 = it; laterOnceFunction.invoke() }
-    registrations + fourth.onChange { value4 = it; laterOnceFunction.invoke() }
-    registrations + fifth.onChange { value5 = it; laterOnceFunction.invoke() }
-    registrations + sixth.onChange { value6 = it; laterOnceFunction.invoke() }
+    registrations + second.onChange { value2 = it; laterOnceFunction() }
+    registrations + third.onChange { value3 = it; laterOnceFunction() }
+    registrations + fourth.onChange { value4 = it; laterOnceFunction() }
+    registrations + fifth.onChange { value5 = it; laterOnceFunction() }
+    registrations + sixth.onChange { value6 = it; laterOnceFunction() }
     laterOnceFunction()
     registrations.onCancel(::clearValues)
     return registrations
