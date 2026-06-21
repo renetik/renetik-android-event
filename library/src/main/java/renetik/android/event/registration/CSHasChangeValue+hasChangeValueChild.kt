@@ -30,7 +30,7 @@ fun <ParentValue, Return> CSHasChangeValue<ParentValue>.stateDelegate(
 }
 
 fun <ParentValue, Return>
-        CSHasChangeValue<ParentValue>.hasChangeValueNullable(
+        CSHasChangeValue<ParentValue>.stateDelegateNullable(
     parent: CSHasRegistrations? = null,
     child: (ParentValue) -> CSHasChangeValue<Return>?,
     onChange: ((Return?) -> Unit)? = null

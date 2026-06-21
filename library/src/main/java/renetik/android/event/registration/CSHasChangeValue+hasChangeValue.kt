@@ -8,7 +8,7 @@ import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
 
 fun <Argument, Return : CSHasDestruct>
-        CSHasChangeValue<Argument>.hasChangeValueDestruct(
+        CSHasChangeValue<Argument>.stateDelegateDestruct(
     parent: CSHasRegistrations? = null,
     from: (Argument) -> Return,
     onChange: ArgFun<Return>? = null

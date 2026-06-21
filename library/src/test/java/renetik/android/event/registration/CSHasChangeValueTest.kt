@@ -155,7 +155,7 @@ class CSHasChangeValueTest {
     }
 
     @Test
-    fun hasChangeValueChild() {
+    fun stateDelegateChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
         val delegateChild = property.stateDelegate(child = { it.value })
         testDelegateChildProperty(property, delegateChild)
@@ -256,14 +256,14 @@ class CSHasChangeValueTest {
     }
 
     @Test
-    fun hasChangeValueNullableChild() {
+    fun stateDelegateNullableChild() {
         val property = property<CSValue<CSProperty<Int>>?>(null)
-        val delegateChild = property.hasChangeValueNullable(child = { it?.value })
+        val delegateChild = property.stateDelegateNullable(child = { it?.value })
         testDelegateNullableChildProperty(property, delegateChild)
     }
 
     @Test
-    fun hasChangeValueBooleansAnd() {
+    fun stateDelegateBooleansAnd() {
         val propertyFirst = property(false)
         val propertySecond = property(false)
         var trueAndTrue = 0
