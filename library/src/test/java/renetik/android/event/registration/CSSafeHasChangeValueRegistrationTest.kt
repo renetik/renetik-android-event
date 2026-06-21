@@ -93,7 +93,7 @@ class CSSafeHasChangeValueRegistrationTest {
         val item4 = property(4)
         val item5 = property(5).safe(parent)
         val combined = (item1 to item2 to item3 to item4 to item5)
-            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth ->
+            .safeStateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth ->
                 first + second + third + fourth + fifth
             })
         var unsafeValue: Int? = null
@@ -121,7 +121,7 @@ class CSSafeHasChangeValueRegistrationTest {
         val item4 = property(4)
         val item5 = property(5).safe(parent)
         val combined = (item1 to item2 to item3 to item4 to item5)
-            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth ->
+            .safeStateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth ->
                 first + second + third + fourth + fifth
             })
         var unsafeValue: Int? = null
@@ -150,7 +150,7 @@ class CSSafeHasChangeValueRegistrationTest {
         val item5 = property(5)
         val item6 = property(6).safe(parent)
         val combined = (item1 to item2 to item3 to item4 to item5 to item6)
-            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
+            .safeStateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
                 first + second + third + fourth + fifth + sixth
             })
         var unsafeValue: Int? = null
@@ -179,10 +179,10 @@ class CSSafeHasChangeValueRegistrationTest {
         val item5 = property(5)
         val item6 = property(6).safe(parent)
 
-        val safeThird = (item1 to item2 to item3).stateDelegate(parent)
-        val safeFourth = (item1 to item2 to item5 to item4).stateDelegate(parent)
+        val safeThird = (item1 to item2 to item3).safeStateDelegate(parent)
+        val safeFourth = (item1 to item2 to item5 to item4).safeStateDelegate(parent)
         val safeSixth = (item1 to item2 to item3 to item4 to item5 to item6)
-            .stateDelegate(parent)
+            .safeStateDelegate(parent)
         var safeThirdUnsafe: Triple<Int, Int, Int>? = null
         var safeFourthUnsafe: CSQuadruple<Int, Int, Int, Int>? = null
         var safeSixthUnsafe: CSSixtuple<Int, Int, Int, Int, Int, Int>? = null
@@ -221,17 +221,17 @@ class CSSafeHasChangeValueRegistrationTest {
         val item5 = property(5)
         val item6 = property(6).safe(parent)
         val safeSecond = (item1 to item3)
-            .stateDelegate(parent, unsafeFrom = { first, second -> first + second })
+            .safeStateDelegate(parent, unsafeFrom = { first, second -> first + second })
         val safeThird = (item1 to item2 to item3)
-            .stateDelegate(parent, unsafeFrom = { first, second, third ->
+            .safeStateDelegate(parent, unsafeFrom = { first, second, third ->
                 first + second + third
             })
         val safeFourth = (item1 to item2 to item5 to item4)
-            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth ->
+            .safeStateDelegate(parent, unsafeFrom = { first, second, third, fourth ->
                 first + second + third + fourth
             })
         val safeSixth = (item1 to item2 to item3 to item4 to item5 to item6)
-            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
+            .safeStateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
                 first + second + third + fourth + fifth + sixth
             })
         var safeSecondUnsafe: Int? = null
