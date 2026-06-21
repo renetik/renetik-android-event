@@ -182,7 +182,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegateNullableChild() {
         val property = property<CSValue<CSProperty<Int>>?>(null)
-        val delegateChild = property.delegateNullable(child = { it?.value })
+        val delegateChild = property.delegateNullable(fromValueNullableChild = { it?.value })
         testDelegateNullableChildProperty(property, delegateChild)
     }
 
@@ -193,7 +193,7 @@ class CSHasChangeValueTest {
     @Test
     fun delegateNullableChild2() {
         val sampleProperty = property<SampleData?>(null)
-        val bpmProperty = sampleProperty.delegateNullable(child = { it?.bpm })
+        val bpmProperty = sampleProperty.delegateNullable(fromValueNullableChild = { it?.bpm })
         var bpmPropertyOnChangeValue: Int? = null
         var onChangeCount = 0
         val onChangeRegistration = bpmProperty.onChange {

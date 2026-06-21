@@ -32,16 +32,16 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegate(
 }
 
 @JvmName("delegateChildren")
-fun <Argument, Return> CSHasChangeValue<Argument>.delegate(
+fun <Argument, Return> CSHasChangeValue<Argument>.delegateChange(
     parent: CSHasRegistrations? = null,
-    children: (Argument) -> List<CSHasChange<out Return>>,
+    fromValueChildList: (Argument) -> List<CSHasChange<out Return>>,
 ): CSHasChange<Return> = let { properties ->
     object : CSHasChange<Return> {
         override fun onChange(function: (Return) -> Unit): CSRegistration {
             var registrations: List<CSRegistration>? = null
             val parentRegistration = properties.action { parentValue ->
                 registrations?.forEach(CSRegistration::cancel)
-                val childList = children(parentValue)
+                val childList = fromValueChildList(parentValue)
                 registrations = childList.map { it.onChange { function(it) } }
             }
             return CSRegistration(isActive = true, onCancel = {
@@ -55,7 +55,7 @@ fun <Argument, Return> CSHasChangeValue<Argument>.delegate(
 @JvmName("delegateChild")
 fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChange(
     parent: CSHasRegistrations? = null,
-    child: (ParentValue) -> CSHasChange<ChildValue>,
+    fromValueChild: (ParentValue) -> CSHasChange<ChildValue>,
 ): CSHasChange<ChildValue> = let { property ->
     object : CSHasChange<ChildValue> {
         override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
@@ -63,7 +63,7 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChange(
             var childRegistration: CSRegistration? = null
             val parentRegistration = property.action { parentValue ->
                 childRegistration?.cancel()
-                val childItem = child(parentValue)
+                val childItem = fromValueChild(parentValue)
                 childRegistration = childItem.onChange {
                     if (parent?.registrations.isActive && registration.isActive) function(
                         it)
@@ -77,9 +77,9 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChange(
     }
 }
 
-fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChangeNullable(
+fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChange(
     parent: CSHasRegistrations? = null,
-    child: (ParentValue) -> CSHasChange<ChildValue>?,
+    fromValueNullableChild: (ParentValue) -> CSHasChange<ChildValue>?,
 ): CSHasChange<ChildValue> = let { property ->
     object : CSHasChange<ChildValue> {
         override fun onChange(function: (ChildValue) -> Unit): CSRegistration {
@@ -87,7 +87,7 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChangeNullab
             var childRegistration: CSRegistration? = null
             val parentRegistration = property.action { parentValue ->
                 childRegistration?.cancel()
-                val childItem = child(parentValue)
+                val childItem = fromValueNullableChild(parentValue)
                 childRegistration = childItem?.onChange {
                     if (parent?.registrations.isActive && registration.isActive) function(
                         it)
@@ -104,17 +104,17 @@ fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateChangeNullab
 @JvmName("delegateNullable")
 fun <ParentValue, ChildValue> CSHasChangeValue<ParentValue>.delegateNullable(
     parent: CSHasRegistrations? = null,
-    child: (ParentValue) -> CSHasChangeValue<ChildValue>?,
+    fromValueNullableChild: (ParentValue) -> CSHasChangeValue<ChildValue>?,
 ): CSHasChangeValue<ChildValue?> = let { property ->
     object : CSHasChangeValue<ChildValue?> {
-        override val value: ChildValue? get() = child(property.value)?.value
+        override val value: ChildValue? get() = fromValueNullableChild(property.value)?.value
         override fun onChange(function: (ChildValue?) -> Unit): CSRegistration {
             val value = CSValueFunction(this, value, function)
             var registration: CSRegistration? = null
             var childRegistration: CSRegistration? = null
             val parentRegistration = property.action { parentValue ->
                 childRegistration?.cancel()
-                val childItem = child(parentValue)
+                val childItem = fromValueNullableChild(parentValue)
                 if (parent?.registrations.isActive && registration.isActive) childItem.also {
                     value(it?.value)
                 }
