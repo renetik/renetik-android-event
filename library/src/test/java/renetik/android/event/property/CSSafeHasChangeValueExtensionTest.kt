@@ -8,7 +8,7 @@ import renetik.android.core.lang.variable.assign
 import renetik.android.event.common.CSModel
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafeProperty.Companion.safe
-import renetik.android.event.registration.hasUnsafeChangeValue
+import renetik.android.event.registration.safeStateDelegate
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)
@@ -18,7 +18,7 @@ class CSSafeHasChangeValueExtensionTest {
     fun hasUnsafeChangeValueKeepsUnsafePropagation() {
         val parent = CSModel()
         val source = property(1).safe(parent)
-        val doubled = source.hasUnsafeChangeValue(parent) { it * 2 }
+        val doubled = source.safeStateDelegate(parent) { it * 2 }
         var unsafeValue: Int? = null
         var safeValue: Int? = null
         doubled.onUnsafeChange { unsafeValue = it }

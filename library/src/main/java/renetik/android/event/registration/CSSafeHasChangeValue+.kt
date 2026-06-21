@@ -99,11 +99,11 @@ inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(
 }
 
 @JvmName("safeHasChangeValueIdentity")
-fun <T> CSSafeHasChangeValue<T>.stateDelegate(
+fun <T> CSSafeHasChangeValue<T>.safeStateDelegate(
     parent: CSHasRegistrations? = null, onChange: ArgFun<T>? = null,
 ): CSSafeHasChangeValue<T> = stateDelegate(parent, unsafeFrom = { it }, onChange)
 
-fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasUnsafeChangeValue(
+fun <Argument, Return> CSSafeHasChangeValue<Argument>.safeStateDelegate(
     parent: CSHasRegistrationsHasDestruct,
     from: (Argument) -> Return
 ): CSSafeHasChangeValue<Return> = let { source ->

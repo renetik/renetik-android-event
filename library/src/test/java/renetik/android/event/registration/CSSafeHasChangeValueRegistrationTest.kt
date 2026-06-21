@@ -47,7 +47,7 @@ class CSSafeHasChangeValueRegistrationTest {
     fun safeIdentityHasChangeValueKeepsUnsafePropagation() {
         val parent = CSModel()
         val source = property(1).safe(parent)
-        val identity = source.stateDelegate(parent)
+        val identity = source.safeStateDelegate(parent)
         var unsafeValue: Int? = null
         var safeValue: Int? = null
         identity.onUnsafeChange { unsafeValue = it }
