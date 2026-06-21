@@ -43,7 +43,7 @@ inline infix fun <T> CSHasChangeValue<T>.isFalse(
 ): CSHasChangeValue<Boolean> = delegate(fromValue = { !condition(it) })
 
 inline fun <T> CSHasChangeValue<T>.isSetTo(parent: CSHasRegistrations, value: T)
-        : CSHasChangeValue<Boolean> = hasChangeValue(parent, from = { it == value })
+        : CSHasChangeValue<Boolean> = stateDelegate(parent, from = { it == value })
 
 inline infix fun <T> CSHasChangeValue<T>.isNotSetTo(value: T): CSHasChangeValue<Boolean> =
     delegate(fromValue = { it != value })

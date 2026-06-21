@@ -2,15 +2,10 @@
 
 package renetik.android.event.registration
 
-import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.notNull
-import renetik.android.core.lang.variable.assign
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.destruct
-import renetik.android.event.property.CSProperty.Companion.lateProperty
 
-@JvmName("hasChangeValueChild")
-fun <ParentValue, Return> CSHasChangeValue<ParentValue>.hasChangeValue(
+@JvmName("stateDelegateChild")
+fun <ParentValue, Return> CSHasChangeValue<ParentValue>.stateDelegate(
     parent: CSHasRegistrations? = null,
     child: (ParentValue) -> CSHasChangeValue<Return>,
     onChange: ((Return) -> Unit)? = null

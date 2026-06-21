@@ -80,7 +80,7 @@ operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> 
 }
 
 @JvmName("safeHasChangeValue")
-fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasChangeValue(
+fun <Argument, Return> CSSafeHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
     unsafeFrom: (Argument) -> Return,
     onChange: ArgFun<Return>? = null
@@ -99,9 +99,9 @@ inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(
 }
 
 @JvmName("safeHasChangeValueIdentity")
-fun <T> CSSafeHasChangeValue<T>.hasChangeValue(
+fun <T> CSSafeHasChangeValue<T>.stateDelegate(
     parent: CSHasRegistrations? = null, onChange: ArgFun<T>? = null,
-): CSSafeHasChangeValue<T> = hasChangeValue(parent, unsafeFrom = { it }, onChange)
+): CSSafeHasChangeValue<T> = stateDelegate(parent, unsafeFrom = { it }, onChange)
 
 fun <Argument, Return> CSSafeHasChangeValue<Argument>.hasUnsafeChangeValue(
     parent: CSHasRegistrationsHasDestruct,

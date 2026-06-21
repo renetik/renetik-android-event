@@ -41,8 +41,8 @@ class CSHasChangeValueTest {
     fun delegate() {
         val property = property(0)
         val isRecorded = property.delegate(fromValue = { it > 1 })
-        val isRecordedUser1 = isRecorded.hasChangeValue(from = { "$it" })
-        val isRecordedUser2 = isRecorded.hasChangeValue(from = { "$it" })
+        val isRecordedUser1 = isRecorded.stateDelegate(from = { "$it" })
+        val isRecordedUser2 = isRecorded.stateDelegate(from = { "$it" })
         assert(expected = false, actual = isRecorded.value)
         assert(expected = "false", actual = isRecordedUser1.value)
         assert(expected = "false", actual = isRecordedUser2.value)
@@ -62,9 +62,9 @@ class CSHasChangeValueTest {
         val durationSource = property(5)
         val duration = durationSource.safe(parent)
         val isRecord = property(false).safe(parent)
-        val tuple = (item1 to item2 to item3 to item4 to duration).hasChangeValue()
+        val tuple = (item1 to item2 to item3 to item4 to duration).stateDelegate()
         val gated = tuple and !isRecord
-        val end = gated.hasChangeValue(parent, unsafeFrom = {
+        val end = gated.stateDelegate(parent, unsafeFrom = {
             it.first + it.second + it.third + it.fourth + it.fifth
         })
 
@@ -157,7 +157,7 @@ class CSHasChangeValueTest {
     @Test
     fun hasChangeValueChild() {
         val property = property<CSValue<CSProperty<Int>>>(value(property(5)))
-        val delegateChild = property.hasChangeValue(child = { it.value })
+        val delegateChild = property.stateDelegate(child = { it.value })
         testDelegateChildProperty(property, delegateChild)
     }
 
@@ -289,7 +289,7 @@ class CSHasChangeValueTest {
     fun hasChangeValueBooleansAndOthers() {
         val isRecording = property(true)
         val duration: CSProperty<Int> = property(0)
-        val isRecorded = duration.hasChangeValue(from = { it >= 500 })
+        val isRecorded = duration.stateDelegate(from = { it >= 500 })
         var isRecordedOnChange = 0
         isRecorded.onChange { isRecordedOnChange += 1 }
         var isNotRecordingAndRecorded = 0

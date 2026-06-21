@@ -47,7 +47,7 @@ class CSSafeHasChangeValueRegistrationTest {
     fun safeIdentityHasChangeValueKeepsUnsafePropagation() {
         val parent = CSModel()
         val source = property(1).safe(parent)
-        val identity = source.hasChangeValue(parent)
+        val identity = source.stateDelegate(parent)
         var unsafeValue: Int? = null
         var safeValue: Int? = null
         identity.onUnsafeChange { unsafeValue = it }
@@ -93,7 +93,7 @@ class CSSafeHasChangeValueRegistrationTest {
         val item4 = property(4)
         val item5 = property(5).safe(parent)
         val combined = (item1 to item2 to item3 to item4 to item5)
-            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth, fifth ->
+            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth ->
                 first + second + third + fourth + fifth
             })
         var unsafeValue: Int? = null
@@ -121,7 +121,7 @@ class CSSafeHasChangeValueRegistrationTest {
         val item4 = property(4)
         val item5 = property(5).safe(parent)
         val combined = (item1 to item2 to item3 to item4 to item5)
-            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth, fifth ->
+            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth ->
                 first + second + third + fourth + fifth
             })
         var unsafeValue: Int? = null
@@ -150,7 +150,7 @@ class CSSafeHasChangeValueRegistrationTest {
         val item5 = property(5)
         val item6 = property(6).safe(parent)
         val combined = (item1 to item2 to item3 to item4 to item5 to item6)
-            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
+            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
                 first + second + third + fourth + fifth + sixth
             })
         var unsafeValue: Int? = null
@@ -179,10 +179,10 @@ class CSSafeHasChangeValueRegistrationTest {
         val item5 = property(5)
         val item6 = property(6).safe(parent)
 
-        val safeThird = (item1 to item2 to item3).hasChangeValue(parent)
-        val safeFourth = (item1 to item2 to item5 to item4).hasChangeValue(parent)
+        val safeThird = (item1 to item2 to item3).stateDelegate(parent)
+        val safeFourth = (item1 to item2 to item5 to item4).stateDelegate(parent)
         val safeSixth = (item1 to item2 to item3 to item4 to item5 to item6)
-            .hasChangeValue(parent)
+            .stateDelegate(parent)
         var safeThirdUnsafe: Triple<Int, Int, Int>? = null
         var safeFourthUnsafe: CSQuadruple<Int, Int, Int, Int>? = null
         var safeSixthUnsafe: CSSixtuple<Int, Int, Int, Int, Int, Int>? = null
@@ -221,17 +221,17 @@ class CSSafeHasChangeValueRegistrationTest {
         val item5 = property(5)
         val item6 = property(6).safe(parent)
         val safeSecond = (item1 to item3)
-            .hasChangeValue(parent, unsafeFrom = { first, second -> first + second })
+            .stateDelegate(parent, unsafeFrom = { first, second -> first + second })
         val safeThird = (item1 to item2 to item3)
-            .hasChangeValue(parent, unsafeFrom = { first, second, third ->
+            .stateDelegate(parent, unsafeFrom = { first, second, third ->
                 first + second + third
             })
         val safeFourth = (item1 to item2 to item5 to item4)
-            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth ->
+            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth ->
                 first + second + third + fourth
             })
         val safeSixth = (item1 to item2 to item3 to item4 to item5 to item6)
-            .hasChangeValue(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
+            .stateDelegate(parent, unsafeFrom = { first, second, third, fourth, fifth, sixth ->
                 first + second + third + fourth + fifth + sixth
             })
         var safeSecondUnsafe: Int? = null

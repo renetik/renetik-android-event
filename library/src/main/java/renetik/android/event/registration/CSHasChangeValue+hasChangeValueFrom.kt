@@ -9,7 +9,7 @@ import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.core.lang.tuples.to
 import kotlin.to
 
-fun <Argument, Return> CSHasChangeValue<Argument>.hasChangeValue(
+fun <Argument, Return> CSHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument) -> Return,
     onChange: ArgFun<Return>? = null
@@ -23,7 +23,7 @@ fun <Argument, Return> CSHasChangeValue<Argument>.hasChangeValue(
     }
 }
 
-fun <Argument, Return> CSHasChangeValue<Argument>.hasChangeValue(
+fun <Argument, Return> CSHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
     fromWithPrevious: (Argument, Return?) -> Return,
     onChange: ArgFun<Return>? = null
@@ -45,7 +45,7 @@ fun <Argument, Return> CSHasChangeValue<Argument>.hasChangeValue(
 
 fun <Argument1, Argument2, Return>
         Pair<CSHasChangeValue<Argument1>,
-                CSHasChangeValue<Argument2>>.hasChangeValue(
+                CSHasChangeValue<Argument2>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
@@ -63,7 +63,7 @@ fun <Argument1, Argument2, Return>
 fun <Argument1, Argument2, Argument3, Return>
         Triple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>,
-                CSHasChangeValue<Argument3>>.hasChangeValue(
+                CSHasChangeValue<Argument3>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument1, Argument2, Argument3) -> Return,
     onChange: ArgFun<Return>? = null
@@ -81,7 +81,7 @@ fun <Argument1, Argument2, Argument3, Return>
 fun <Argument1, Argument2, Return>
         Triple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>,
-                CSHasChange<*>>.hasChangeValue(
+                CSHasChange<*>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
@@ -100,7 +100,7 @@ fun <Argument1, Argument2, Return>
 fun <Argument1, Argument2, Argument3, Argument4, Return>
         CSQuadruple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
-                CSHasChangeValue<Argument4>>.hasChangeValue(
+                CSHasChangeValue<Argument4>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument1, Argument2, Argument3, Argument4) -> Return,
     onChange: ArgFun<Return>? = null
@@ -120,7 +120,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Return>
 fun <Argument1, Argument2, Argument3, Argument4, Return>
         CSQuadruple<CSHasChangeValue<Argument1>,
                 CSHasChangeValue<Argument2>, CSHasChangeValue<Argument3>,
-                CSHasChangeValue<Argument4>>.hasChangeValue(
+                CSHasChangeValue<Argument4>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (CSQuadruple<Argument1, Argument2, Argument3, Argument4>) -> Return,
     onChange: ArgFun<Return>? = null
@@ -140,7 +140,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Return>
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return>
         CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
-                CSHasChangeValue<Argument5>>.hasChangeValue(
+                CSHasChangeValue<Argument5>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
     onChange: ArgFun<Return>? = null
@@ -159,18 +159,18 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return>
 fun <Argument1, Argument2, Argument3, Argument4, Argument5>
         CSQuintuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
-                CSHasChangeValue<Argument5>>.hasChangeValue(
+                CSHasChangeValue<Argument5>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
 ): CSHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>> =
-    hasChangeValue(parent, from = { item1, item2, item3, item4, item5 ->
+    stateDelegate(parent, from = { item1, item2, item3, item4, item5 ->
         CSQuintuple(item1, item2, item3, item4, item5)
     }, onChange)
 
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return>
         CSSixtuple<CSHasChangeValue<Argument1>, CSHasChangeValue<Argument2>,
                 CSHasChangeValue<Argument3>, CSHasChangeValue<Argument4>,
-                CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.hasChangeValue(
+                CSHasChangeValue<Argument5>, CSHasChangeValue<Argument6>>.stateDelegate(
     parent: CSHasRegistrations? = null,
     from: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
     onChange: ArgFun<Return>? = null
