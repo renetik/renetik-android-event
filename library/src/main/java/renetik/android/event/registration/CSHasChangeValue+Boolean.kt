@@ -12,6 +12,7 @@ import renetik.android.core.lang.value.isFalse
 import renetik.android.core.lang.value.isTrue
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 suspend fun CSHasChangeValue<Boolean>.suspendIfTrue() = waitForFalse()
@@ -19,20 +20,30 @@ suspend fun CSHasChangeValue<Boolean>.suspendIfFalse() = waitForTrue()
 suspend fun CSHasChangeValue<Boolean>.waitForTrue() = waitFor(Boolean::isTrue)
 suspend fun CSHasChangeValue<Boolean>.waitForFalse() = waitFor(Boolean::isFalse)
 
-inline fun CSHasChangeValue<Boolean>.onFalse(crossinline function: () -> Unit): CSRegistration =
+inline fun CSHasChangeValue<Boolean>.onFalse(
+    crossinline function: () -> Unit
+): CSRegistration =
     onChange { if (it.isFalse) function() }
 
-inline fun CSHasChangeValue<Boolean>.onTrue(crossinline function: () -> Unit): CSRegistration =
+inline fun CSHasChangeValue<Boolean>.onTrue(
+    crossinline function: () -> Unit
+): CSRegistration =
     onChange { if (it.isTrue) function() }
 
-inline fun CSHasChangeValue<Boolean>.isTrue(parent: CSHasRegistrations? = null) =
+inline fun CSHasChangeValue<Boolean>.isTrue(
+    parent: CSHasRegistrations? = null
+): CSHasChangeValue<Boolean> =
     delegateFrom(parent, from = { it })
 
 @JvmName("CSHasChangeValueOptionalBooleanDelegateIsTrue")
 inline fun CSHasChangeValue<Boolean?>.isTrue(
-    parent: CSHasRegistrations? = null) = delegateFrom(parent, from = { it == true })
+    parent: CSHasRegistrations? = null
+): CSHasChangeValue<Boolean> =
+    delegateFrom(parent, from = { it == true })
 
-inline fun CSHasChangeValue<Boolean>.isFalse(parent: CSHasRegistrations? = null) =
+inline fun CSHasChangeValue<Boolean>.isFalse(
+    parent: CSHasRegistrations? = null
+): CSHasChangeValue<Boolean> =
     delegateFrom(parent, from = { !it })
 
 inline val CSHasChangeValue<Boolean>.eventIsTrue: CSHasChange<Unit>
@@ -58,11 +69,11 @@ inline fun CSHasChangeValue<Boolean>.actionTrue(
 
 inline fun CSHasChangeValue<Boolean>.onTrueOnce(
     crossinline function: () -> Unit
-) = eventIsTrue.onChangeOnce { -> function() }
+): CSRegistration = eventIsTrue.onChangeOnce { -> function() }
 
 inline fun CSHasChangeValue<Boolean>.onFalseOnce(
     crossinline function: () -> Unit
-) = eventIsFalse.onChangeOnce { -> function() }
+): CSRegistration = eventIsFalse.onChangeOnce { -> function() }
 
 /**
  * Register edge handlers for a boolean observable and invoke once for the current state.
@@ -79,7 +90,7 @@ inline fun CSHasChangeValue<Boolean>.action(
     crossinline onTrue: (CSRegistration) -> Unit,
     crossinline onFalse: (CSRegistration) -> Unit
 ): CSRegistration {
-    val last = java.util.concurrent.atomic.AtomicInteger(0)
+    val last = AtomicInteger(0)
     val registration = onChange { reg, value ->
         val newState = if (value) 1 else 2
         val prev = last.getAndSet(newState)
@@ -96,7 +107,8 @@ inline fun CSHasChangeValue<Boolean>.action(
 
 inline fun CSHasChangeValue<Boolean>.actionTrueLaunch(
     dispatcher: CoroutineDispatcher = Main,
-    crossinline function: suspend (CSRegistration) -> Unit): CSRegistration =
+    crossinline function: suspend (CSRegistration) -> Unit
+): CSRegistration =
     CSRegistrationsMap(className).also { registration ->
         registration + actionTrue {
             registration.launch(dispatcher) { function(registration) }
@@ -104,7 +116,8 @@ inline fun CSHasChangeValue<Boolean>.actionTrueLaunch(
     }
 
 inline fun CSHasChangeValue<Boolean>.actionFalse(
-    crossinline function: () -> Unit): CSRegistration {
+    crossinline function: () -> Unit
+): CSRegistration {
     val invoked = AtomicBoolean(false)
     val registration = onChange {
         if (it.isFalse) {
@@ -117,7 +130,8 @@ inline fun CSHasChangeValue<Boolean>.actionFalse(
 
 inline fun CSHasChangeValue<Boolean>.actionFalseLaunch(
     dispatcher: CoroutineDispatcher = Main,
-    crossinline function: suspend () -> Unit): CSRegistration =
+    crossinline function: suspend () -> Unit
+): CSRegistration =
     CSRegistrationsMap(className).also {
         it + actionFalse { it.launch(dispatcher) { function() } }
     }
@@ -125,7 +139,8 @@ inline fun CSHasChangeValue<Boolean>.actionFalseLaunch(
 inline operator fun CSHasChangeValue<Boolean>.not() = delegateFrom(from = { !it })
 
 inline fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
-    crossinline registration: () -> CSRegistration?): CSRegistration {
+    crossinline registration: () -> CSRegistration?
+): CSRegistration {
     var untilFalseRegistration: CSRegistration? = null
     val actionTrueRegistration = actionTrue {
         untilFalseRegistration?.cancel()
@@ -137,9 +152,11 @@ inline fun CSHasChangeValue<Boolean>.onTrueUntilFalse(
     }
 }
 
-inline fun CSHasChangeValue<Boolean>.untilFalse(registration: CSRegistration): CSRegistration =
+inline fun CSHasChangeValue<Boolean>.untilFalse(
+    registration: CSRegistration): CSRegistration =
     onFalse { registration.cancel() }
 
 @JvmName("untilFalseCSRegistrationNullable")
-inline fun CSHasChangeValue<Boolean>.untilFalse(registration: CSRegistration?): CSRegistration? =
+inline fun CSHasChangeValue<Boolean>.untilFalse(
+    registration: CSRegistration?): CSRegistration? =
     registration?.let { untilFalse(it) }
