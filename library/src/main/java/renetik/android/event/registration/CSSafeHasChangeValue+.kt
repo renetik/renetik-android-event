@@ -17,39 +17,6 @@ import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.reflect.KProperty
 
-// TODO?: eventUnsafeChange is never needed here it was added just because
-//  CSSafeHasChangeValue requires it now
-fun <T> CSHasChangeValue<T>.safe(
-    parent: CSHasDestruct? = null,
-    onChange: ArgFun<T>? = null
-): CSSafeHasChangeValue<T> = let { property ->
-    object : CSModel(parent), CSSafeHasChangeValue<T> {
-        private val _value = AtomicReference(property.value)
-        val eventChange = event<T>()
-        val eventUnsafeChange = event<T>()
-
-        override var value: T
-            get() = _value.load()
-            set(value) = _value.store(value)
-
-        override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
-        override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
-        override fun onUnsafeChange(function: (T) -> Unit) = eventUnsafeChange.listen(function)
-
-        init {
-            this + property.onChange { newValue ->
-                if (newValue != _value.exchange(newValue)) {
-                    eventUnsafeChange.fire(newValue)
-                    onMain {
-                        onChange?.invoke(newValue)
-                        eventChange.fire(newValue)
-                    }
-                }
-            }
-        }
-    }
-}
-
 inline fun <T> CSSafeHasChangeValue<T?>.isNull(): CSSafeHasChangeValue<Boolean> = isSetTo(null)
 
 inline fun <T> CSSafeHasChangeValue<T?>.isNotNull(): CSSafeHasChangeValue<Boolean> = !isSetTo(null)
@@ -80,18 +47,7 @@ operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> 
     }
 }
 
-@JvmName("safeStateDelegate")
-fun <Argument, Return> CSSafeHasChangeValue<Argument>.stateDelegate(
-    parent: CSHasRegistrations? = null,
-    unsafeFrom: (Argument) -> Return,
-    onChange: ArgFun<Return>? = null
-): CSSafeHasChangeValue<Return> = let { source ->
-    object : CSSafeHasChangeValueBase<Return>(parent, unsafeFrom(source.value), onChange) {
-        init {
-            this + source.onUnsafeChange { value(unsafeFrom(it)) }
-        }
-    }
-}
+
 
 inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(
     noinline function: (T) -> Unit): CSRegistration {
@@ -99,20 +55,3 @@ inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(
     return onUnsafeChange(function)
 }
 
-@JvmName("safeHasChangeValueIdentity")
-fun <T> CSSafeHasChangeValue<T>.safeStateDelegate(
-    parent: CSHasRegistrations? = null, onChange: ArgFun<T>? = null,
-): CSSafeHasChangeValue<T> = stateDelegate(parent, unsafeFrom = { it }, onChange)
-
-fun <Argument, Return> CSSafeHasChangeValue<Argument>.safeStateDelegate(
-    parent: CSHasRegistrationsHasDestruct,
-    from: (Argument) -> Return
-): CSSafeHasChangeValue<Return> = let { source ->
-    object : CSSafeHasChangeValueBase<Return>(parent, from(source.value)) {
-        init {
-            parent + source.onUnsafeChange {
-                value(from(it))
-            }
-        }
-    }
-}
