@@ -6,23 +6,23 @@ import renetik.android.event.property.CSSafeHasChangeValueBase
 
 @JvmName("BooleanAndCSSafeHasChangeValueBoolean")
 infix fun Boolean.and(other: CSSafeHasChangeValue<Boolean>): CSSafeHasChangeValue<Boolean> =
-    other.delegateValue(from = { this && it })
+    other.delegateValue(fromValue = { this && it })
 
 @JvmName("CSSafeHasChangeValueBooleanAndBoolean")
 infix fun CSSafeHasChangeValue<Boolean>.and(other: Boolean): CSSafeHasChangeValue<Boolean> =
-    delegateValue(from = { it && other })
+    delegateValue(fromValue = { it && other })
 
 @JvmName("CSSafeHasChangeValueBooleanAndCSSafeHasChangeValueBooleanLogical")
 infix fun CSSafeHasChangeValue<Boolean>.and(
     other: CSSafeHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<Boolean> =
-    (this to other).delegate(from = { first, second -> first && second })
+    (this to other).delegate(fromValues = { first, second -> first && second })
 
 @JvmName("CSSafeHasChangeValueBooleanAndCSSafeHasChangeValueBooleanNullable")
 infix fun CSSafeHasChangeValue<Boolean>.and(
     other: CSSafeHasChangeValue<Boolean?>
 ): CSSafeHasChangeValue<Boolean> =
-    (this to other).delegate(from = { first, second -> first && second.isTrue })
+    (this to other).delegate(fromValues = { first, second -> first && second.isTrue })
 
 @JvmName("CSHasChangeValueAndCSSafeHasChangeValueBoolean")
 infix fun <T> CSHasChangeValue<T>.and(
@@ -82,7 +82,7 @@ infix fun <T> CSSafeHasChangeValue<T>.and(
 infix fun <T> CSSafeHasChangeValue<T>.ifTrue(
     other: CSSafeHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<T?> =
-    (this to other).delegate(from = { first, second ->
+    (this to other).delegate(fromValues = { first, second ->
         if (second) first else null
     })
 
@@ -90,7 +90,7 @@ infix fun <T> CSSafeHasChangeValue<T>.ifTrue(
 infix fun <T> CSSafeHasChangeValue<T>.ifFalse(
     other: CSSafeHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<T?> =
-    (this to other).delegate(from = { first, second ->
+    (this to other).delegate(fromValues = { first, second ->
         if (!second) first else null
     })
 
@@ -98,7 +98,7 @@ infix fun <T> CSSafeHasChangeValue<T>.ifFalse(
 infix fun CSSafeHasChangeValue<Boolean>.or(
     other: CSSafeHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<Boolean> =
-    (this to other).delegate(from = { first, second -> first || second })
+    (this to other).delegate(fromValues = { first, second -> first || second })
 
 @JvmName("CSSafeHasChangeValueOrCSHasChange")
 infix fun <T> CSSafeHasChangeValue<T>.or(

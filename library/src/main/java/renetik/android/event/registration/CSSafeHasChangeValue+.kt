@@ -54,7 +54,7 @@ inline fun <T> CSSafeHasChangeValue<T?>.isNull(): CSSafeHasChangeValue<Boolean> 
 inline fun <T> CSSafeHasChangeValue<T?>.isNotNull(): CSSafeHasChangeValue<Boolean> = !isSetTo(null)
 
 inline infix fun <T> CSSafeHasChangeValue<T>.isSetTo(value: T): CSSafeHasChangeValue<Boolean> =
-    delegateValue(from = { it == value })
+    delegateValue(fromValue = { it == value })
 
 suspend fun <T> CSSafeHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     if (!condition(value)) suspendCancellableCoroutine { coroutine ->
