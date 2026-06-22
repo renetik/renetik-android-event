@@ -17,6 +17,8 @@ import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.reflect.KProperty
 
+// TODO?: eventUnsafeChange is never needed here it was added just because
+//  CSSafeHasChangeValue requires it now
 fun <T> CSHasChangeValue<T>.safe(
     parent: CSHasDestruct? = null,
     onChange: ArgFun<T>? = null
@@ -32,8 +34,7 @@ fun <T> CSHasChangeValue<T>.safe(
 
         override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
         override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
-        override fun onUnsafeChange(function: (T) -> Unit) =
-            eventUnsafeChange.listen(function)
+        override fun onUnsafeChange(function: (T) -> Unit) = eventUnsafeChange.listen(function)
 
         init {
             this + property.onChange { newValue ->
@@ -79,7 +80,7 @@ operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> 
     }
 }
 
-@JvmName("safeHasChangeValue")
+@JvmName("safeStateDelegate")
 fun <Argument, Return> CSSafeHasChangeValue<Argument>.stateDelegate(
     parent: CSHasRegistrations? = null,
     unsafeFrom: (Argument) -> Return,
