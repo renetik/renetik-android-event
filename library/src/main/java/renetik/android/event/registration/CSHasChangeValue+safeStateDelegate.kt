@@ -2,31 +2,12 @@
 
 package renetik.android.event.registration
 
-import renetik.android.core.kotlin.className
 import renetik.android.core.lang.ArgFun
-import renetik.android.core.lang.synchronized
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSixtuple
-import renetik.android.core.lang.value.CSSafeValue
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
-import kotlin.reflect.KProperty
-
-fun <Argument, Return> CSHasChangeValue<Argument>.safeStateDelegate(
-    parent: CSHasRegistrations? = null,
-    from: (Argument) -> Return,
-    onChange: ArgFun<Return>? = null
-): CSHasChangeValue<Return> = let { property ->
-    object : CSHasChangeValueBase<Return>(parent, onChange) {
-        @Volatile
-        override var value: Return = from(property.value)
-
-        init {
-            this + property.onChange { value(from(it)) }
-        }
-    }
-}
 
 @JvmName("stateDelegateWithSafeSecond")
 fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
