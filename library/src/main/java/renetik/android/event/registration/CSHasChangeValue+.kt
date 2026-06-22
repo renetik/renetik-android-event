@@ -6,6 +6,7 @@ package renetik.android.event.registration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
+import renetik.android.core.lang.value.CSSafeValue
 import renetik.android.core.lang.value.CSValue
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.destruct
@@ -13,6 +14,21 @@ import renetik.android.event.property.CSLateProperty
 import renetik.android.event.registration.CSHasChangeValue.Companion.emptyNullable
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.reflect.KProperty
+
+fun <T> CSHasChangeValue<T>.safeValue(
+    parent: CSHasRegistrations
+): CSSafeValue<T> = let { property ->
+    object : CSSafeValue<T> {
+        @Volatile
+        override var value: T = property.value
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
+
+        init {
+            parent + property.onChange { value = it }
+        }
+    }
+}
 
 @JvmName("destructPreviousNullable")
 inline fun <T : CSHasDestruct, P : CSHasChangeValue<out T?>> P.destructPrevious() =
