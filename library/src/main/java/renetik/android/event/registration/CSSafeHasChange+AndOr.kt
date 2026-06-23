@@ -1,9 +1,14 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package renetik.android.event.registration
 
+import renetik.android.core.kotlin.primitives.ifTrue
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.ifTrue
 import renetik.android.event.property.CSSafeHasChangeValue
-import renetik.android.event.property.CSSafeHasChangeValueBase
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 @JvmName("BooleanAndCSSafeHasChangeValueBoolean")
 infix fun Boolean.and(other: CSSafeHasChangeValue<Boolean>): CSSafeHasChangeValue<Boolean> =
@@ -25,7 +30,6 @@ infix fun CSSafeHasChangeValue<Boolean>.and(
 ): CSSafeHasChangeValue<Boolean> =
     (this to other).delegate(fromValues = { first, second -> first && second.isTrue })
 
-//TODO: Not safe
 @JvmName("CSHasChangeValueAndCSSafeHasChangeValueBoolean")
 infix fun <T> CSHasChangeValue<T>.and(
     other: CSSafeHasChangeValue<Boolean>
@@ -38,10 +42,16 @@ infix fun <T> CSHasChangeValue<T>.and(
             other.onTrue { function(value) },
         )
 
-        override fun onUnsafeChange(function: (T) -> Unit) = CSRegistration(
-            first.onChange { other.ifTrue { function(it) } },
-            other.onUnsafeTrue { function(value) },
-        )
+        override fun onUnsafeChange(function: (T) -> Unit): CSRegistration {
+            val safeFirst = AtomicReference(first.value)
+            return CSRegistration(
+                first.onChange {
+                    other.ifTrue { function(it) }
+                    safeFirst.store(it)
+                },
+                other.onUnsafeTrue { function(safeFirst.load()) },
+            )
+        }
     }
 }
 
@@ -64,7 +74,6 @@ infix fun <T> CSSafeHasChangeValue<T>.and(
     }
 }
 
-//TODO: Not safe
 @JvmName("CSSafeHasChangeValueAndCSHasChangeValueBoolean")
 infix fun <T> CSSafeHasChangeValue<T>.and(
     other: CSHasChangeValue<Boolean>
@@ -77,10 +86,16 @@ infix fun <T> CSSafeHasChangeValue<T>.and(
             other.onTrue { function(value) },
         )
 
-        override fun onUnsafeChange(function: (T) -> Unit) = CSRegistration(
-            first.onUnsafeChange { other.ifTrue { function(it) } },
-            other.onTrue { function(value) },
-        )
+        override fun onUnsafeChange(function: (T) -> Unit): CSRegistration {
+            val safeOther = AtomicBoolean(other.value)
+            return CSRegistration(
+                first.onUnsafeChange { if (safeOther.load()) function(it) },
+                other.onChange {
+                    if (it) function(value)
+                    safeOther.store(it)
+                },
+            )
+        }
     }
 }
 
