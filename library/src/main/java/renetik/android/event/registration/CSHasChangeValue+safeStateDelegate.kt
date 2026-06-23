@@ -7,7 +7,6 @@ import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSixtuple
-import renetik.android.event.CSEvent
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
@@ -21,7 +20,7 @@ import kotlin.reflect.KProperty
 // TODO?: eventUnsafeChange is never needed here it was added just because
 //  CSSafeHasChangeValue requires it now
 fun <T> CSHasChangeValue<T>.safe(
-    parent: CSHasDestruct? = null,
+    parent: CSHasDestruct,
     onChange: ArgFun<T>? = null
 ): CSSafeHasChangeValue<T> = let { property ->
     object : CSModel(parent), CSSafeHasChangeValue<T> {
