@@ -6,11 +6,11 @@ import renetik.android.event.property.CSSafeHasChangeValueBase
 
 @JvmName("BooleanAndCSSafeHasChangeValueBoolean")
 infix fun Boolean.and(other: CSSafeHasChangeValue<Boolean>): CSSafeHasChangeValue<Boolean> =
-    other.delegateValue(fromValue = { this && it })
+    other.delegate(fromValue = { this && it })
 
 @JvmName("CSSafeHasChangeValueBooleanAndBoolean")
 infix fun CSSafeHasChangeValue<Boolean>.and(other: Boolean): CSSafeHasChangeValue<Boolean> =
-    delegateValue(fromValue = { it && other })
+    delegate(fromValue = { it && other })
 
 @JvmName("CSSafeHasChangeValueBooleanAndCSSafeHasChangeValueBooleanLogical")
 infix fun CSSafeHasChangeValue<Boolean>.and(

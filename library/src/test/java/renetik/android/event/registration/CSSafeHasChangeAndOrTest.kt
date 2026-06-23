@@ -66,7 +66,7 @@ class CSSafeHasChangeAndOrTest {
     fun safeDelegateAndOrEventPreserveSafeChangeChannel() {
         val parent = CSModel()
         val source = property(2).safe(parent)
-        val delegated = source.delegateValue(fromValue = { it * 2 })
+        val delegated = source.delegate(fromValue = { it * 2 })
         val trigger = event()
         val sourceOrTrigger = source or trigger
         var delegatedUnsafe: Int? = null
@@ -86,7 +86,7 @@ class CSSafeHasChangeAndOrTest {
     fun safePairDelegateRegistersOnlyWhileObserved() {
         val first = TrackingSafeValue(1)
         val second = TrackingSafeValue(2)
-        val unary = first.delegateValue(fromValue = { it * 2 })
+        val unary = first.delegate(fromValue = { it * 2 })
         val delegated = (first to second).delegate(fromValues = Int::plus)
 
         assert(expected = 2, actual = unary.value)

@@ -4,9 +4,9 @@ import renetik.android.event.property.CSSafeHasChangeValue
 
 fun <T> CSSafeHasChangeValue<T>.delegate(
     parent: CSHasRegistrations? = null,
-): CSSafeHasChangeValue<T> = delegateValue(parent, fromValue = { it })
+): CSSafeHasChangeValue<T> = delegate(parent, fromValue = { it })
 
-fun <T, Return> CSSafeHasChangeValue<T>.delegateValue(
+fun <T, Return> CSSafeHasChangeValue<T>.delegate(
     parent: CSHasRegistrations? = null,
     fromValue: (T) -> Return,
 ): CSSafeHasChangeValue<Return> = let { source ->

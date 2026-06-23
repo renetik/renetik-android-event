@@ -4,25 +4,18 @@
 package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
-import renetik.android.core.lang.ArgFun
-import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.CSHasRegistrationsHasDestruct
-import renetik.android.event.common.CSModel
-import renetik.android.event.common.onMain
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.reflect.KProperty
 
 inline fun <T> CSSafeHasChangeValue<T?>.isNull(): CSSafeHasChangeValue<Boolean> = isSetTo(null)
 
 inline fun <T> CSSafeHasChangeValue<T?>.isNotNull(): CSSafeHasChangeValue<Boolean> = !isSetTo(null)
 
 inline infix fun <T> CSSafeHasChangeValue<T>.isSetTo(value: T): CSSafeHasChangeValue<Boolean> =
-    delegateValue(fromValue = { it == value })
+    delegate(fromValue = { it == value })
 
 suspend fun <T> CSSafeHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
     if (!condition(value)) suspendCancellableCoroutine { coroutine ->
