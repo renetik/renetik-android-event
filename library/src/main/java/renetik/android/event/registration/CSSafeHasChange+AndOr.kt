@@ -1,6 +1,7 @@
 package renetik.android.event.registration
 
 import renetik.android.core.kotlin.primitives.isTrue
+import renetik.android.core.lang.value.ifTrue
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
 
@@ -101,14 +102,18 @@ infix fun CSSafeHasChangeValue<Boolean>.or(
     (this to other).delegate(fromValues = { first, second -> first || second })
 
 @JvmName("CSSafeHasChangeValueOrCSHasChange")
-infix fun <T> CSSafeHasChangeValue<T>.or(
-    second: CSHasChange<*>
-): CSSafeHasChangeValue<T> {
+infix fun <T> CSSafeHasChangeValue<T>.or(second: CSHasChange<*>): CSSafeHasChangeValue<T> {
     val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange { value(it) }
-            this + second.onChange { value(value, force = true) }
-        }
+    return object : CSSafeHasChangeValue<T> {
+        override val value: T get() = first.value
+        override fun onChange(function: (T) -> Unit) = CSRegistration(
+            first.onChange { function(it) },
+            second.onChange { function(value) },
+        )
+
+        override fun onUnsafeChange(function: (T) -> Unit) = CSRegistration(
+            first.onUnsafeChange { function(it) },
+            second.onChange { function(value) },
+        )
     }
 }
