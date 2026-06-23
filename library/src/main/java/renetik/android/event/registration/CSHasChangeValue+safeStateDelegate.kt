@@ -30,22 +30,22 @@ fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
 ): CSSafeHasChangeValue<Pair<Argument1, Argument2>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
-    safeStateDelegate(parent, unsafeFrom = { item1, item2 -> item1 to item2 }, onChange)
+    safeStateDelegate(parent, unsafeFromValues = { item1, item2 -> item1 to item2 }, onChange)
 
 @JvmName("stateDelegateFromWithSafeBoth")
 fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2) -> Return,
+    unsafeFromValues: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSSafeHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value), onChange
+        parent, unsafeFromValues(first.value, second.value), onChange
     ) {
         init {
             this + onUnsafeChange { item1, item2 ->
-                value(unsafeFrom(item1, item2))
+                value(unsafeFromValues(item1, item2))
             }
         }
     }
@@ -53,17 +53,17 @@ fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDel
 @JvmName("stateDelegateFromWithSafeSecond")
 fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2) -> Return,
+    unsafeFromValues: (Argument1, Argument2) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value), onChange
+        parent, unsafeFromValues(first.value, second.value), onChange
     ) {
         init {
             this + onUnsafeChange { item1, item2 ->
-                value(unsafeFrom(item1, item2))
+                value(unsafeFromValues(item1, item2))
             }
         }
     }
@@ -77,24 +77,24 @@ fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3> =
-    safeStateDelegate(parent, unsafeFrom = ::Triple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange)
 
 @JvmName("stateDelegateFromWithSafeThird")
 fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value), onChange
+        parent, unsafeFromValues(first.value, second.value, third.value), onChange
     ) {
         init {
             this + onUnsafeChange { item1, item2, item3 ->
-                value(unsafeFrom(item1, item2, item3))
+                value(unsafeFromValues(item1, item2, item3))
             }
         }
     }
@@ -110,14 +110,14 @@ fun <Argument1, Argument2, Argument3, Argument4,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4> =
-    safeStateDelegate(parent, unsafeFrom = ::CSQuadruple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange)
 
 @JvmName("stateDelegateFromWithSafeFourth")
 fun <Argument1, Argument2, Argument3, Argument4, Return,
         Item1, Item2, Item3, Item4>
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3, Argument4) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3, Argument4) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
@@ -125,11 +125,11 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
               Item3 : CSHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value, fourth.value), onChange
+        parent, unsafeFromValues(first.value, second.value, third.value, fourth.value), onChange
     ) {
         init {
             this + onUnsafeChange { item1, item2, item3, item4 ->
-                value(unsafeFrom(item1, item2, item3, item4))
+                value(unsafeFromValues(item1, item2, item3, item4))
             }
         }
     }
@@ -146,7 +146,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
               Item3 : CSHasChangeValue<Argument3>,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
-    safeStateDelegate(parent, unsafeFrom = ::CSQuintuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange)
 
 @JvmName("stateDelegateWithSafeThirdAndFifth")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5,
@@ -160,14 +160,14 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
               Item3 : CSSafeHasChangeValue<Argument3>,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
-    safeStateDelegate(parent, unsafeFrom = ::CSQuintuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange)
 
 @JvmName("stateDelegateFromWithSafeFifth")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         Item1, Item2, Item3, Item4, Item5>
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
@@ -176,12 +176,12 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value, fourth.value, fifth.value),
+        parent, unsafeFromValues(first.value, second.value, third.value, fourth.value, fifth.value),
         onChange
     ) {
         init {
             this + onUnsafeChange { item1, item2, item3, item4, item5 ->
-                value(unsafeFrom(item1, item2, item3, item4, item5))
+                value(unsafeFromValues(item1, item2, item3, item4, item5))
             }
         }
     }
@@ -191,7 +191,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         Item1, Item2, Item3, Item4, Item5>
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
@@ -200,12 +200,12 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value, fourth.value, fifth.value),
+        parent, unsafeFromValues(first.value, second.value, third.value, fourth.value, fifth.value),
         onChange
     ) {
         init {
             this + onUnsafeChange { item1, item2, item3, item4, item5 ->
-                value(unsafeFrom(item1, item2, item3, item4, item5))
+                value(unsafeFromValues(item1, item2, item3, item4, item5))
             }
         }
     }
@@ -223,7 +223,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
-    safeStateDelegate(parent, unsafeFrom = { item1, item2, item3, item4, item5, item6 ->
+    safeStateDelegate(parent, unsafeFromValues = { item1, item2, item3, item4, item5, item6 ->
         CSSixtuple(item1, item2, item3, item4, item5, item6)
     }, onChange)
 
@@ -240,7 +240,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
               Item4 : CSSafeHasChangeValue<Argument4>,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
-    safeStateDelegate(parent, unsafeFrom = ::CSSixtuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange)
 
 @JvmName("stateDelegateWithSafeThirdFourthAndSixth")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
@@ -255,7 +255,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
               Item4 : CSSafeHasChangeValue<Argument4>,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
-    safeStateDelegate(parent, unsafeFrom = { item1, item2, item3, item4, item5, item6 ->
+    safeStateDelegate(parent, unsafeFromValues = { item1, item2, item3, item4, item5, item6 ->
         CSSixtuple(item1, item2, item3, item4, item5, item6)
     }, onChange)
 
@@ -264,7 +264,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         Item1, Item2, Item3, Item4, Item5, Item6>
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
@@ -274,11 +274,11 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value,
+        parent, unsafeFromValues(first.value, second.value, third.value,
             fourth.value, fifth.value, sixth.value), onChange) {
         init {
             this + onUnsafeChange { item1, item2, item3, item4, item5, item6 ->
-                value(unsafeFrom(item1, item2, item3, item4, item5, item6))
+                value(unsafeFromValues(item1, item2, item3, item4, item5, item6))
             }
         }
     }
@@ -288,7 +288,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         Item1, Item2, Item3, Item4, Item5, Item6>
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
@@ -298,11 +298,11 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value,
+        parent, unsafeFromValues(first.value, second.value, third.value,
             fourth.value, fifth.value, sixth.value), onChange) {
         init {
             this + onUnsafeChange { item1, item2, item3, item4, item5, item6 ->
-                value(unsafeFrom(item1, item2, item3, item4, item5, item6))
+                value(unsafeFromValues(item1, item2, item3, item4, item5, item6))
             }
         }
     }
@@ -312,7 +312,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         Item1, Item2, Item3, Item4, Item5, Item6>
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
-    unsafeFrom: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
+    unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
     onChange: ArgFun<Return>? = null
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
@@ -322,11 +322,11 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
     object : CSSafeHasChangeValueBase<Return>(
-        parent, unsafeFrom(first.value, second.value, third.value,
+        parent, unsafeFromValues(first.value, second.value, third.value,
             fourth.value, fifth.value, sixth.value), onChange) {
         init {
             this + onUnsafeChange { item1, item2, item3, item4, item5, item6 ->
-                value(unsafeFrom(item1, item2, item3, item4, item5, item6))
+                value(unsafeFromValues(item1, item2, item3, item4, item5, item6))
             }
         }
     }
