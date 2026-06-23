@@ -4,6 +4,7 @@
 package renetik.android.event.registration
 
 import kotlinx.coroutines.suspendCancellableCoroutine
+import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
 import kotlin.Result.Companion.success
@@ -40,7 +41,10 @@ operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> 
     }
 }
 
-
+inline fun CSSafeHasChangeValue<Boolean>.onUnsafeTrue(
+    crossinline function: () -> Unit
+): CSRegistration =
+    onUnsafeChange { if (it.isTrue) function() }
 
 inline fun <T> CSSafeHasChangeValue<T>.unsafeAction(
     noinline function: (T) -> Unit): CSRegistration {

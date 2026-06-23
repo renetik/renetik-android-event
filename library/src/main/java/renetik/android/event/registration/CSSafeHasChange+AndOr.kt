@@ -25,21 +25,23 @@ infix fun CSSafeHasChangeValue<Boolean>.and(
 ): CSSafeHasChangeValue<Boolean> =
     (this to other).delegate(fromValues = { first, second -> first && second.isTrue })
 
+//TODO: Not safe
 @JvmName("CSHasChangeValueAndCSSafeHasChangeValueBoolean")
 infix fun <T> CSHasChangeValue<T>.and(
     other: CSSafeHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<T> {
     val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onUnsafeChange {
-                if (it) value(value, force = true)
-            }
-        }
+    return object : CSSafeHasChangeValue<T> {
+        override val value: T get() = first.value
+        override fun onChange(function: (T) -> Unit) = CSRegistration(
+            first.onChange { other.ifTrue { function(it) } },
+            other.onTrue { function(value) },
+        )
+
+        override fun onUnsafeChange(function: (T) -> Unit) = CSRegistration(
+            first.onChange { other.ifTrue { function(it) } },
+            other.onUnsafeTrue { function(value) },
+        )
     }
 }
 
@@ -48,34 +50,37 @@ infix fun <T> CSSafeHasChangeValue<T>.and(
     other: CSSafeHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<T> {
     val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onUnsafeChange {
-                if (it) value(value, force = true)
-            }
-        }
+    return object : CSSafeHasChangeValue<T> {
+        override val value: T get() = first.value
+        override fun onChange(function: (T) -> Unit) = CSRegistration(
+            first.onChange { other.ifTrue { function(it) } },
+            other.onTrue { function(value) },
+        )
+
+        override fun onUnsafeChange(function: (T) -> Unit) = CSRegistration(
+            first.onUnsafeChange { other.ifTrue { function(it) } },
+            other.onUnsafeTrue { function(value) },
+        )
     }
 }
 
+//TODO: Not safe
 @JvmName("CSSafeHasChangeValueAndCSHasChangeValueBoolean")
 infix fun <T> CSSafeHasChangeValue<T>.and(
     other: CSHasChangeValue<Boolean>
 ): CSSafeHasChangeValue<T> {
     val first = this
-    return object : CSSafeHasChangeValueBase<T>(initialValue = first.value) {
-        init {
-            this + first.onUnsafeChange {
-                if (other.value) value(it)
-                else setValueSilently(it)
-            }
-            this + other.onChange {
-                if (it) value(value, force = true)
-            }
-        }
+    return object : CSSafeHasChangeValue<T> {
+        override val value: T get() = first.value
+        override fun onChange(function: (T) -> Unit) = CSRegistration(
+            first.onChange { other.ifTrue { function(it) } },
+            other.onTrue { function(value) },
+        )
+
+        override fun onUnsafeChange(function: (T) -> Unit) = CSRegistration(
+            first.onUnsafeChange { other.ifTrue { function(it) } },
+            other.onTrue { function(value) },
+        )
     }
 }
 
