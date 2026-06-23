@@ -4,6 +4,7 @@ package renetik.android.event.property
 
 import renetik.android.core.lang.ArgFun
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.onMain
 import renetik.android.event.registration.CSHasRegistrations
@@ -11,10 +12,10 @@ import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 internal open class CSSafeHasChangeValueBase<T>(
-    parent: CSHasRegistrations? = null,
+    parent: CSHasDestruct,
     initialValue: T,
     private val onChange: ArgFun<T>? = null
-) : CSModel(parent?.registrations), CSSafeHasChangeValue<T> {
+) : CSModel(parent), CSSafeHasChangeValue<T> {
     private val _value = AtomicReference(initialValue)
     private val eventUnsafeChange = event<T>()
     private val eventChange by lazy { event<T>() }
