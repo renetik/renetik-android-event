@@ -6,7 +6,6 @@ package renetik.android.event.registration
 import kotlinx.coroutines.suspendCancellableCoroutine
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.event.property.CSSafeHasChangeValue
-import renetik.android.event.property.CSSafeHasChangeValueBase
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -32,14 +31,8 @@ suspend fun <T> CSSafeHasChangeValue<T>.waitFor(condition: (T) -> Boolean) {
 }
 
 @JvmName("CSSafeHasChangeValueBooleanNot")
-operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> {
-    val source = this
-    return object : CSSafeHasChangeValueBase<Boolean>(initialValue = !source.value) {
-        init {
-            this + source.onUnsafeChange { value(!it) }
-        }
-    }
-}
+operator fun CSSafeHasChangeValue<Boolean>.not(): CSSafeHasChangeValue<Boolean> =
+    delegate(fromValue = { !it })
 
 inline fun CSSafeHasChangeValue<Boolean>.onUnsafeTrue(
     crossinline function: () -> Unit

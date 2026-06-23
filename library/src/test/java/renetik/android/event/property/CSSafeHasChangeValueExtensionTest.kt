@@ -18,7 +18,7 @@ class CSSafeHasChangeValueExtensionTest {
     fun hasUnsafeChangeValueKeepsUnsafePropagation() {
         val parent = CSModel()
         val source = property(1).safe(parent)
-        val doubled = source.safeStateDelegate(parent, from = { it * 2 })
+        val doubled = source.safeStateDelegate(parent, unsafeFromValue = { it * 2 })
         var unsafeValue: Int? = null
         var safeValue: Int? = null
         doubled.onUnsafeChange { unsafeValue = it }
