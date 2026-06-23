@@ -7,48 +7,21 @@ import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSixtuple
-import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.CSModel
-import renetik.android.event.common.onMain
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
-import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.reflect.KProperty
 
-// TODO?: eventUnsafeChange is never needed here it was added just because
-//  CSSafeHasChangeValue requires it now
+// TODO?: eventUnsafeChange is never needed here but CSSafeHasChangeValue requires it
 fun <T> CSHasChangeValue<T>.safe(
     parent: CSHasDestruct,
     onChange: ArgFun<T>? = null
-): CSSafeHasChangeValue<T> = let { property ->
-    object : CSModel(parent), CSSafeHasChangeValue<T> {
-        private val _value = AtomicReference(property.value)
-        val eventChange = event<T>()
-        val eventUnsafeChange = event<T>()
-
-        override var value: T
-            get() = _value.load()
-            set(value) = _value.store(value)
-
-        override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
-        override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
-        override fun onUnsafeChange(function: (T) -> Unit) = eventUnsafeChange.listen(function)
-
+): CSSafeHasChangeValue<T> =
+    object : CSSafeHasChangeValueBase<T>(parent, value, onChange) {
         init {
-            this + property.onChange { newValue ->
-                if (newValue != _value.exchange(newValue)) {
-                    eventUnsafeChange.fire(newValue)
-                    onMain {
-                        onChange?.invoke(newValue)
-                        eventChange.fire(newValue)
-                    }
-                }
-            }
+            this + this@safe.onChange { newValue -> value(newValue) }
         }
     }
-}
 
 @JvmName("stateDelegateWithSafeSecond")
 fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(

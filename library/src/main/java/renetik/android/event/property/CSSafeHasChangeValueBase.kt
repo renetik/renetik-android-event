@@ -7,7 +7,6 @@ import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.common.CSHasDestruct
 import renetik.android.event.common.CSModel
 import renetik.android.event.common.onMain
-import renetik.android.event.registration.CSHasRegistrations
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
@@ -18,40 +17,23 @@ internal open class CSSafeHasChangeValueBase<T>(
 ) : CSModel(parent), CSSafeHasChangeValue<T> {
     private val _value = AtomicReference(initialValue)
     private val eventUnsafeChange = event<T>()
-    private val eventChange by lazy { event<T>() }
+    private val eventChange = event<T>()
 
     override var value: T
         get() = _value.load()
         set(value) = _value.store(value)
 
-    override fun onChange(function: (T) -> Unit) =
-        eventChange.listen(function)
-
-    override fun onUnsafeChange(function: (T) -> Unit) =
-        eventUnsafeChange.listen(function)
+    override fun onChange(function: (T) -> Unit) = eventChange.listen(function)
+    override fun onUnsafeChange(function: (T) -> Unit) = eventUnsafeChange.listen(function)
 
     fun value(newValue: T, force: Boolean = false) {
-        if (setValue(newValue) || force) onValueChanged(newValue)
-    }
-
-    @Synchronized
-    protected fun setValueSilently(newValue: T) {
-        value = newValue
-    }
-
-    @Synchronized
-    private fun setValue(newValue: T): Boolean {
-        if (value == newValue) return false
-        value = newValue
-        return true
-    }
-
-    protected open fun onValueChanged(newValue: T) {
-        eventUnsafeChange.fire(newValue)
-        onMain {
-            if (registrations.isActive) {
-                onChange?.invoke(newValue)
-                eventChange.fire(newValue)
+        if (newValue != _value.exchange(newValue) || force) {
+            eventUnsafeChange.fire(newValue)
+            onMain {
+                if (registrations.isActive) {
+                    onChange?.invoke(newValue)
+                    eventChange.fire(newValue)
+                }
             }
         }
     }
