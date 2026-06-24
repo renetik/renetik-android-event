@@ -13,13 +13,13 @@ import renetik.android.event.property.CSSafeHasChangeValueBase
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 // TODO?: eventUnsafeChange is never needed here but CSSafeHasChangeValue requires it
-fun <T> CSHasChangeValue<T>.safe(
+fun <T> CSHasChangeValue<T>.safeStateDelegate(
     parent: CSHasDestruct,
     onChange: ArgFun<T>? = null
 ): CSSafeHasChangeValue<T> =
     object : CSSafeHasChangeValueBase<T>(parent, value, onChange) {
         init {
-            this + this@safe.onChange { newValue -> value(newValue) }
+            this + this.onChange { newValue -> value(newValue) }
         }
     }
 
