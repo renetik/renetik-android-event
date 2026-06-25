@@ -62,7 +62,7 @@ class CSHasChangeValueTest {
         val durationSource = property(5)
         val duration = durationSource.safe(parent)
         val isRecord = property(false).safe(parent)
-        val tuple = (item1 to item2 to item3 to item4 to duration).safeStateDelegate()
+        val tuple = (item1 to item2 to item3 to item4 to duration).safeStateDelegate(parent)
         val gated = tuple and !isRecord
         val end = gated.stateDelegate(parent, unsafeFromValue = {
             it.first + it.second + it.third + it.fourth + it.fifth

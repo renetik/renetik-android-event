@@ -113,16 +113,16 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
-    fun safeThirdAndFifthTupleHasChangeValueFromKeepsUnsafePropagation() {
+    fun safeLastTwoQuintupleHasChangeValueFromKeepsUnsafePropagation() {
         val parent = CSModel()
         val item1 = property(1)
         val item2 = property(2)
         val item3 = property(3).safe(parent)
         val item4 = property(4)
         val item5 = property(5).safe(parent)
-        val combined = (item1 to item2 to item3 to item4 to item5)
-            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth ->
-                first + second + third + fourth + fifth
+        val combined = (item1 to item2 to item4 to item3 to item5)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, fourth, third, fifth ->
+                first + second + fourth + third + fifth
             })
         var unsafeValue: Int? = null
         var safeValue: Int? = null
@@ -141,7 +141,7 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
-    fun safeFourthAndSixthTupleHasChangeValueFromKeepsUnsafePropagation() {
+    fun safeLastTwoSixtupleHasChangeValueFromKeepsUnsafePropagation() {
         val parent = CSModel()
         val item1 = property(1)
         val item2 = property(2)
@@ -149,9 +149,9 @@ class CSSafeHasChangeValueRegistrationTest {
         val item4 = property(4).safe(parent)
         val item5 = property(5)
         val item6 = property(6).safe(parent)
-        val combined = (item1 to item2 to item3 to item4 to item5 to item6)
-            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth, sixth ->
-                first + second + third + fourth + fifth + sixth
+        val combined = (item1 to item2 to item3 to item5 to item4 to item6)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fifth, fourth, sixth ->
+                first + second + third + fifth + fourth + sixth
             })
         var unsafeValue: Int? = null
         var safeValue: Int? = null
@@ -170,7 +170,7 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
-    fun safeLastTupleHasChangeValueIdentityKeepsUnsafePropagation() {
+    fun safeTrailingTupleHasChangeValueIdentityKeepsUnsafePropagation() {
         val parent = CSModel()
         val item1 = property(1)
         val item2 = property(2)
@@ -181,7 +181,7 @@ class CSSafeHasChangeValueRegistrationTest {
 
         val safeThird = (item1 to item2 to item3).safeStateDelegate(parent)
         val safeFourth = (item1 to item2 to item5 to item4).safeStateDelegate(parent)
-        val safeSixth = (item1 to item2 to item3 to item4 to item5 to item6)
+        val safeSixth = (item1 to item2 to item5 to item3 to item4 to item6)
             .safeStateDelegate(parent)
         var safeThirdUnsafe: Triple<Int, Int, Int>? = null
         var safeFourthUnsafe: CSQuadruple<Int, Int, Int, Int>? = null
@@ -200,10 +200,10 @@ class CSSafeHasChangeValueRegistrationTest {
         assert(expected = 4, actual = safeThirdUnsafe?.third)
         assert(expected = 5, actual = safeFourth.value.fourth)
         assert(expected = 5, actual = safeFourthUnsafe?.fourth)
-        assert(expected = 4, actual = safeSixth.value.third)
-        assert(expected = 4, actual = safeSixthUnsafe?.third)
-        assert(expected = 5, actual = safeSixth.value.fourth)
-        assert(expected = 5, actual = safeSixthUnsafe?.fourth)
+        assert(expected = 4, actual = safeSixth.value.fourth)
+        assert(expected = 4, actual = safeSixthUnsafe?.fourth)
+        assert(expected = 5, actual = safeSixth.value.fifth)
+        assert(expected = 5, actual = safeSixthUnsafe?.fifth)
         assert(expected = 7, actual = safeSixth.value.sixth)
         assert(expected = 7, actual = safeSixthUnsafe?.sixth)
         assert(expected = null, actual = safeSixthSafe)
@@ -212,7 +212,7 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
-    fun safeLastTupleHasChangeValueFromKeepsUnsafePropagation() {
+    fun safeTrailingTupleHasChangeValueFromKeepsUnsafePropagation() {
         val parent = CSModel()
         val item1 = property(1)
         val item2 = property(2)
@@ -230,7 +230,7 @@ class CSSafeHasChangeValueRegistrationTest {
             .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth ->
                 first + second + third + fourth
             })
-        val safeSixth = (item1 to item2 to item3 to item4 to item5 to item6)
+        val safeSixth = (item1 to item2 to item5 to item3 to item4 to item6)
             .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth, sixth ->
                 first + second + third + fourth + fifth + sixth
             })
@@ -258,5 +258,92 @@ class CSSafeHasChangeValueRegistrationTest {
         runUiThreadTasksIncludingDelayedTasks()
         assert(expected = 24, actual = safeSixth.value)
         assert(expected = 24, actual = safeSixthUnsafe)
+    }
+
+    @Test
+    fun safeStateDelegateSupportsTrailingSafeMatrix() {
+        val parent = CSModel()
+        val item1 = property(1)
+        val item2 = property(2)
+        val item3 = property(3)
+        val item4 = property(4)
+        val safe1 = property(5).safe(parent)
+        val safe2 = property(6).safe(parent)
+        val safe3 = property(7).safe(parent)
+
+        val with2Safe2 = (safe1 to safe2)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second -> first + second })
+        val with3Safe2 = (item1 to safe1 to safe2)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third ->
+                first + second + third
+            })
+        val with4Safe2 = (item1 to item2 to safe1 to safe2)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth ->
+                first + second + third + fourth
+            })
+        val with5Safe2 = (item1 to item2 to item3 to safe1 to safe2)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth ->
+                first + second + third + fourth + fifth
+            })
+        val with6Safe2 = (item1 to item2 to item3 to item4 to safe1 to safe2)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth, sixth ->
+                first + second + third + fourth + fifth + sixth
+            })
+
+        val with3Safe3 = (safe1 to safe2 to safe3)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third ->
+                first + second + third
+            })
+        val with4Safe3 = (item1 to safe1 to safe2 to safe3)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth ->
+                first + second + third + fourth
+            })
+        val with5Safe3 = (item1 to item2 to safe1 to safe2 to safe3)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth ->
+                first + second + third + fourth + fifth
+            })
+        val with6Safe3 = (item1 to item2 to item3 to safe1 to safe2 to safe3)
+            .safeStateDelegate(parent, unsafeFromValues = { first, second, third, fourth, fifth, sixth ->
+                first + second + third + fourth + fifth + sixth
+            })
+
+        val identity2Safe2 = (safe1 to safe2).safeStateDelegate(parent)
+        val identity3Safe2 = (item1 to safe1 to safe2).safeStateDelegate(parent)
+        val identity4Safe2 = (item1 to item2 to safe1 to safe2).safeStateDelegate(parent)
+        val identity5Safe2 = (item1 to item2 to item3 to safe1 to safe2).safeStateDelegate(parent)
+        val identity6Safe2 = (item1 to item2 to item3 to item4 to safe1 to safe2)
+            .safeStateDelegate(parent)
+        val identity3Safe3 = (safe1 to safe2 to safe3).safeStateDelegate(parent)
+        val identity4Safe3 = (item1 to safe1 to safe2 to safe3).safeStateDelegate(parent)
+        val identity5Safe3 = (item1 to item2 to safe1 to safe2 to safe3).safeStateDelegate(parent)
+        val identity6Safe3 = (item1 to item2 to item3 to safe1 to safe2 to safe3)
+            .safeStateDelegate(parent)
+
+        assert(expected = 11, actual = with2Safe2.value)
+        assert(expected = 12, actual = with3Safe2.value)
+        assert(expected = 14, actual = with4Safe2.value)
+        assert(expected = 17, actual = with5Safe2.value)
+        assert(expected = 21, actual = with6Safe2.value)
+        assert(expected = 18, actual = with3Safe3.value)
+        assert(expected = 19, actual = with4Safe3.value)
+        assert(expected = 21, actual = with5Safe3.value)
+        assert(expected = 24, actual = with6Safe3.value)
+        assert(expected = 11, actual = identity2Safe2.value.first + identity2Safe2.value.second)
+        assert(expected = 12, actual = identity3Safe2.value.toList().sum())
+        assert(expected = 14, actual = identity4Safe2.value.first + identity4Safe2.value.second +
+                identity4Safe2.value.third + identity4Safe2.value.fourth)
+        assert(expected = 17, actual = identity5Safe2.value.first + identity5Safe2.value.second +
+                identity5Safe2.value.third + identity5Safe2.value.fourth + identity5Safe2.value.fifth)
+        assert(expected = 21, actual = identity6Safe2.value.first + identity6Safe2.value.second +
+                identity6Safe2.value.third + identity6Safe2.value.fourth + identity6Safe2.value.fifth +
+                identity6Safe2.value.sixth)
+        assert(expected = 18, actual = identity3Safe3.value.toList().sum())
+        assert(expected = 19, actual = identity4Safe3.value.first + identity4Safe3.value.second +
+                identity4Safe3.value.third + identity4Safe3.value.fourth)
+        assert(expected = 21, actual = identity5Safe3.value.first + identity5Safe3.value.second +
+                identity5Safe3.value.third + identity5Safe3.value.fourth + identity5Safe3.value.fifth)
+        assert(expected = 24, actual = identity6Safe3.value.first + identity6Safe3.value.second +
+                identity6Safe3.value.third + identity6Safe3.value.fourth + identity6Safe3.value.fifth +
+                identity6Safe3.value.sixth)
     }
 }
