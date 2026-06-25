@@ -36,6 +36,10 @@ fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.onUnsafeChange(
         }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+    }
     return registrations
 }
 
@@ -76,6 +80,11 @@ fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+    }
     return registrations
 }
 
@@ -131,6 +140,12 @@ fun <Argument1, Argument2, Argument3, Argument4,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+    }
     return registrations
 }
 
@@ -201,6 +216,13 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+        value5 = fifth.value
+    }
     return registrations
 }
 
@@ -281,6 +303,14 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
         }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+        value5 = fifth.value
+        value6 = sixth.value
+    }
     return registrations
 }
 
@@ -311,6 +341,10 @@ fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.onUnsafeChange(
         }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+    }
     return registrations
 }
 
@@ -351,6 +385,11 @@ fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+    }
     return registrations
 }
 
@@ -406,6 +445,12 @@ fun <Argument1, Argument2, Argument3, Argument4,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+    }
     return registrations
 }
 
@@ -476,6 +521,13 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+        value5 = fifth.value
+    }
     return registrations
 }
 
@@ -563,6 +615,14 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+        value5 = fifth.value
+        value6 = sixth.value
+    }
     return registrations
 }
 
@@ -603,6 +663,11 @@ fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+    }
     return registrations
 }
 
@@ -658,6 +723,12 @@ fun <Argument1, Argument2, Argument3, Argument4,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+    }
     return registrations
 }
 
@@ -728,6 +799,13 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+        value5 = fifth.value
+    }
     return registrations
 }
 
@@ -815,5 +893,13 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
             }
         fireChange(values)
     })
+    synchronized<Any, Unit>(lock) {
+        value1 = first.value
+        value2 = second.value
+        value3 = third.value
+        value4 = fourth.value
+        value5 = fifth.value
+        value6 = sixth.value
+    }
     return registrations
 }

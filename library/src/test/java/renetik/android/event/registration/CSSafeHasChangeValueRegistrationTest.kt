@@ -85,6 +85,21 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
+    fun tupleOnUnsafeChangeRefreshesValuesChangedWhileRegistering() {
+        val parent = CSModel()
+        val item1 = MutatesOnRegisterValue(initialValue = 1, valueAfterRegister = 2)
+        val item2 = property(2).safe(parent)
+        var value: Int? = null
+
+        (item1 to item2).onUnsafeChange { first, second ->
+            value = first + second
+        }
+        item2 assign 3
+
+        assert(expected = 5, actual = value)
+    }
+
+    @Test
     fun safeFifthTupleHasChangeValueFromKeepsUnsafePropagation() {
         val parent = CSModel()
         val item1 = property(1)
@@ -345,5 +360,17 @@ class CSSafeHasChangeValueRegistrationTest {
         assert(expected = 24, actual = identity6Safe3.value.first + identity6Safe3.value.second +
                 identity6Safe3.value.third + identity6Safe3.value.fourth + identity6Safe3.value.fifth +
                 identity6Safe3.value.sixth)
+    }
+
+    private class MutatesOnRegisterValue<T>(
+        initialValue: T,
+        private val valueAfterRegister: T,
+    ) : CSHasChangeValue<T> {
+        override var value: T = initialValue
+
+        override fun onChange(function: (T) -> Unit): CSRegistration {
+            value = valueAfterRegister
+            return CSRegistration.Empty
+        }
     }
 }
