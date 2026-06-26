@@ -2,21 +2,26 @@ package renetik.android.event.registration
 
 import renetik.android.core.lang.synchronized
 
-internal class CSSerializedChangeEmitter<Change>(
+/**
+ * Lossless FIFO emitter ([CSSafeChangeDelivery.Buffered]). Every snapshot is delivered, in
+ * enqueue order, exactly once. A single drainer thread runs callbacks outside the lock while
+ * other producers append and return. Queue is unbounded.
+ */
+internal class CSBufferedSafeChangeEmitter<Change>(
     private val registration: CSRegistration,
     private val onChange: (Change) -> Unit,
-) {
+) : CSSafeChangeEmitter<Change> {
     private class Emission<Change>(val value: Change)
 
     private val lock = Any()
     private val changes = ArrayDeque<Change>()
     private var isDraining = false
 
-    fun update(function: () -> Unit) = synchronized<Any, Unit>(lock) {
+    override fun update(function: () -> Unit) = synchronized<Any, Unit>(lock) {
         function()
     }
 
-    fun enqueue(produce: () -> Change) {
+    override fun enqueue(produce: () -> Change) {
         var shouldDrain = false
         synchronized<Any, Unit>(lock) {
             changes.addLast(produce())

@@ -106,14 +106,30 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
-    fun tupleOnUnsafeChangeSerializesConcurrentCallbacksWithoutDropping() {
+    fun tupleOnUnsafeChangeBufferedDeliversEveryConcurrentChange() {
+        val values = onUnsafeChangeConcurrentChanges(CSSafeChangeDelivery.Buffered)
+        assert(expected = listOf(1 to 0, 1 to 1, 2 to 1), actual = values)
+    }
+
+    @Test
+    fun tupleOnUnsafeChangeConflatedDropsIntermediateConcurrentChange() {
+        val values = onUnsafeChangeConcurrentChanges(CSSafeChangeDelivery.Conflated)
+        assert(expected = listOf(1 to 0, 2 to 1), actual = values)
+    }
+
+    // Drives three changes where the first callback blocks while owning the drainer, so the
+    // remaining two are enqueued concurrently. Buffered keeps both; Conflated coalesces them
+    // into the latest, dropping the (1, 1) intermediate.
+    private fun onUnsafeChangeConcurrentChanges(
+        delivery: CSSafeChangeDelivery,
+    ): List<Pair<Int, Int>> {
         val item1 = ManualSafeValue(0)
         val item2 = ManualSafeValue(0)
         val firstCallbackStarted = CountDownLatch(1)
         val releaseFirstCallback = CountDownLatch(1)
         val values = Collections.synchronizedList(mutableListOf<Pair<Int, Int>>())
 
-        (item1 to item2).onUnsafeChange { first, second ->
+        (item1 to item2).onUnsafeChange(delivery) { first, second ->
             if (first == 1 && second == 0) {
                 firstCallbackStarted.countDown()
                 releaseFirstCallback.await(1, SECONDS)
@@ -125,16 +141,14 @@ class CSSafeHasChangeValueRegistrationTest {
         firstThread.start()
         assert(expected = true, actual = firstCallbackStarted.await(1, SECONDS))
 
-        val secondThread = Thread { item2.unsafeValue(1) }
-        secondThread.start()
-        secondThread.join(1000)
+        // First callback is parked holding the drainer; these enqueue without draining.
+        item2.unsafeValue(1)
+        item1.unsafeValue(2)
         releaseFirstCallback.countDown()
         firstThread.join(1000)
-        secondThread.join(1000)
 
         assert(expected = false, actual = firstThread.isAlive)
-        assert(expected = false, actual = secondThread.isAlive)
-        assert(expected = listOf(1 to 0, 1 to 1), actual = values.toList())
+        return values.toList()
     }
 
     @Test

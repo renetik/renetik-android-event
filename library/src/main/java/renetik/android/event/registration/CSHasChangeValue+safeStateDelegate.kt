@@ -26,17 +26,19 @@ fun <T> CSHasChangeValue<T>.safeStateDelegate(
 @JvmName("safeStateDelegateWith2Safe1")
 fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<Pair<Argument1, Argument2>>? = null
+    onChange: ArgFun<Pair<Argument1, Argument2>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Pair<Argument1, Argument2>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
-    safeStateDelegate(parent, unsafeFromValues = { item1, item2 -> item1 to item2 }, onChange)
+    safeStateDelegate(parent, unsafeFromValues = { item1, item2 -> item1 to item2 }, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith2Safe1")
 fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
@@ -44,7 +46,7 @@ fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDel
         parent, unsafeFromValues(first.value, second.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2 ->
+            this + onUnsafeChange(delivery) { item1, item2 ->
                 value(unsafeFromValues(item1, item2))
             }
         }
@@ -54,19 +56,21 @@ fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDel
 fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<Triple<Argument1, Argument2, Argument3>>? = null
+    onChange: ArgFun<Triple<Argument1, Argument2, Argument3>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Triple<Argument1, Argument2, Argument3>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3> =
-    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith3Safe1")
 fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -75,7 +79,7 @@ fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         parent, unsafeFromValues(first.value, second.value, third.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3 ->
                 value(unsafeFromValues(item1, item2, item3))
             }
         }
@@ -86,13 +90,14 @@ fun <Argument1, Argument2, Argument3, Argument4,
         Item1, Item2, Item3, Item4>
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null
+    onChange: ArgFun<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith4Safe1")
 fun <Argument1, Argument2, Argument3, Argument4, Return,
@@ -100,7 +105,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -110,7 +116,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
         parent, unsafeFromValues(first.value, second.value, third.value, fourth.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4 ->
                 value(unsafeFromValues(item1, item2, item3, item4))
             }
         }
@@ -121,14 +127,15 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
         Item1, Item2, Item3, Item4, Item5>
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
+    onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSHasChangeValue<Argument3>,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith5Safe1")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
@@ -136,7 +143,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -148,7 +156,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4, item5 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4, item5 ->
                 value(unsafeFromValues(item1, item2, item3, item4, item5))
             }
         }
@@ -159,7 +167,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
         Item1, Item2, Item3, Item4, Item5, Item6>
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null
+    onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -167,7 +176,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith6Safe1")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
@@ -175,7 +184,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -187,7 +197,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         parent, unsafeFromValues(first.value, second.value, third.value,
             fourth.value, fifth.value, sixth.value), onChange) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4, item5, item6 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4, item5, item6 ->
                 value(unsafeFromValues(item1, item2, item3, item4, item5, item6))
             }
         }
@@ -196,17 +206,19 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
 @JvmName("safeStateDelegateWith2Safe2")
 fun <Argument1, Argument2, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<Pair<Argument1, Argument2>>? = null
+    onChange: ArgFun<Pair<Argument1, Argument2>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Pair<Argument1, Argument2>>
         where Item1 : CSSafeHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
-    safeStateDelegate(parent, unsafeFromValues = { item1, item2 -> item1 to item2 }, onChange)
+    safeStateDelegate(parent, unsafeFromValues = { item1, item2 -> item1 to item2 }, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith2Safe2")
 fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSSafeHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2> =
@@ -214,7 +226,7 @@ fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDel
         parent, unsafeFromValues(first.value, second.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2 ->
+            this + onUnsafeChange(delivery) { item1, item2 ->
                 value(unsafeFromValues(item1, item2))
             }
         }
@@ -224,19 +236,21 @@ fun <Argument1, Argument2, Return, Item1, Item2> Pair<Item1, Item2>.safeStateDel
 fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<Triple<Argument1, Argument2, Argument3>>? = null
+    onChange: ArgFun<Triple<Argument1, Argument2, Argument3>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Triple<Argument1, Argument2, Argument3>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3> =
-    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith3Safe2")
 fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2>,
@@ -245,7 +259,7 @@ fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         parent, unsafeFromValues(first.value, second.value, third.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3 ->
                 value(unsafeFromValues(item1, item2, item3))
             }
         }
@@ -256,13 +270,14 @@ fun <Argument1, Argument2, Argument3, Argument4,
         Item1, Item2, Item3, Item4>
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null
+    onChange: ArgFun<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith4Safe2")
 fun <Argument1, Argument2, Argument3, Argument4, Return,
@@ -270,7 +285,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -280,7 +296,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
         parent, unsafeFromValues(first.value, second.value, third.value, fourth.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4 ->
                 value(unsafeFromValues(item1, item2, item3, item4))
             }
         }
@@ -291,14 +307,15 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
         Item1, Item2, Item3, Item4, Item5>
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
+    onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith5Safe2")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
@@ -306,7 +323,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -318,7 +336,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4, item5 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4, item5 ->
                 value(unsafeFromValues(item1, item2, item3, item4, item5))
             }
         }
@@ -329,7 +347,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
         Item1, Item2, Item3, Item4, Item5, Item6>
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null
+    onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -337,7 +356,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
               Item4 : CSHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith6Safe2")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
@@ -345,7 +364,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -357,7 +377,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         parent, unsafeFromValues(first.value, second.value, third.value,
             fourth.value, fifth.value, sixth.value), onChange) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4, item5, item6 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4, item5, item6 ->
                 value(unsafeFromValues(item1, item2, item3, item4, item5, item6))
             }
         }
@@ -367,19 +387,21 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
 fun <Argument1, Argument2, Argument3, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<Triple<Argument1, Argument2, Argument3>>? = null
+    onChange: ArgFun<Triple<Argument1, Argument2, Argument3>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Triple<Argument1, Argument2, Argument3>>
         where Item1 : CSSafeHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3> =
-    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::Triple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith3Safe3")
 fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         Triple<Item1, Item2, Item3>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSSafeHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2>,
@@ -388,7 +410,7 @@ fun <Argument1, Argument2, Argument3, Return, Item1, Item2, Item3>
         parent, unsafeFromValues(first.value, second.value, third.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3 ->
                 value(unsafeFromValues(item1, item2, item3))
             }
         }
@@ -399,13 +421,14 @@ fun <Argument1, Argument2, Argument3, Argument4,
         Item1, Item2, Item3, Item4>
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null
+    onChange: ArgFun<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSQuadruple<Argument1, Argument2, Argument3, Argument4>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuadruple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith4Safe3")
 fun <Argument1, Argument2, Argument3, Argument4, Return,
@@ -413,7 +436,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
         CSQuadruple<Item1, Item2, Item3, Item4>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSSafeHasChangeValue<Argument2>,
@@ -423,7 +447,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Return,
         parent, unsafeFromValues(first.value, second.value, third.value, fourth.value), onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4 ->
                 value(unsafeFromValues(item1, item2, item3, item4))
             }
         }
@@ -434,14 +458,15 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5,
         Item1, Item2, Item3, Item4, Item5>
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null
+    onChange: ArgFun<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSQuintuple<Argument1, Argument2, Argument3, Argument4, Argument5>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
               Item3 : CSSafeHasChangeValue<Argument3>,
               Item4 : CSSafeHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSQuintuple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith5Safe3")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
@@ -449,7 +474,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         CSQuintuple<Item1, Item2, Item3, Item4, Item5>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -461,7 +487,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Return,
         onChange
     ) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4, item5 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4, item5 ->
                 value(unsafeFromValues(item1, item2, item3, item4, item5))
             }
         }
@@ -472,7 +498,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
         Item1, Item2, Item3, Item4, Item5, Item6>
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
-    onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null
+    onChange: ArgFun<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<CSSixtuple<Argument1, Argument2, Argument3, Argument4, Argument5, Argument6>>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -480,7 +507,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6,
               Item4 : CSSafeHasChangeValue<Argument4>,
               Item5 : CSSafeHasChangeValue<Argument5>,
               Item6 : CSSafeHasChangeValue<Argument6> =
-    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange)
+    safeStateDelegate(parent, unsafeFromValues = ::CSSixtuple, onChange, delivery)
 
 @JvmName("safeStateDelegateFromWith6Safe3")
 fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
@@ -488,7 +515,8 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         CSSixtuple<Item1, Item2, Item3, Item4, Item5, Item6>.safeStateDelegate(
     parent: CSHasDestruct,
     unsafeFromValues: (Argument1, Argument2, Argument3, Argument4, Argument5, Argument6) -> Return,
-    onChange: ArgFun<Return>? = null
+    onChange: ArgFun<Return>? = null,
+    delivery: CSSafeChangeDelivery = CSSafeChangeDelivery.Conflated,
 ): CSSafeHasChangeValue<Return>
         where Item1 : CSHasChangeValue<Argument1>,
               Item2 : CSHasChangeValue<Argument2>,
@@ -500,7 +528,7 @@ fun <Argument1, Argument2, Argument3, Argument4, Argument5, Argument6, Return,
         parent, unsafeFromValues(first.value, second.value, third.value,
             fourth.value, fifth.value, sixth.value), onChange) {
         init {
-            this + onUnsafeChange { item1, item2, item3, item4, item5, item6 ->
+            this + onUnsafeChange(delivery) { item1, item2, item3, item4, item5, item6 ->
                 value(unsafeFromValues(item1, item2, item3, item4, item5, item6))
             }
         }
