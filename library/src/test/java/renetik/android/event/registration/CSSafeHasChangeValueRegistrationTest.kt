@@ -10,8 +10,14 @@ import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.common.CSModel
 import renetik.android.event.property.CSProperty.Companion.property
+import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeProperty.Companion.safe
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import renetik.android.testing.CSAssert.assert
+import java.util.Collections
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit.SECONDS
 
 @RunWith(RobolectricTestRunner::class)
 class CSSafeHasChangeValueRegistrationTest {
@@ -97,6 +103,38 @@ class CSSafeHasChangeValueRegistrationTest {
         item2 assign 3
 
         assert(expected = 5, actual = value)
+    }
+
+    @Test
+    fun tupleOnUnsafeChangeSerializesConcurrentCallbacksWithoutDropping() {
+        val item1 = ManualSafeValue(0)
+        val item2 = ManualSafeValue(0)
+        val firstCallbackStarted = CountDownLatch(1)
+        val releaseFirstCallback = CountDownLatch(1)
+        val values = Collections.synchronizedList(mutableListOf<Pair<Int, Int>>())
+
+        (item1 to item2).onUnsafeChange { first, second ->
+            if (first == 1 && second == 0) {
+                firstCallbackStarted.countDown()
+                releaseFirstCallback.await(1, SECONDS)
+            }
+            values.add(first to second)
+        }
+
+        val firstThread = Thread { item1.unsafeValue(1) }
+        firstThread.start()
+        assert(expected = true, actual = firstCallbackStarted.await(1, SECONDS))
+
+        val secondThread = Thread { item2.unsafeValue(1) }
+        secondThread.start()
+        secondThread.join(1000)
+        releaseFirstCallback.countDown()
+        firstThread.join(1000)
+        secondThread.join(1000)
+
+        assert(expected = false, actual = firstThread.isAlive)
+        assert(expected = false, actual = secondThread.isAlive)
+        assert(expected = listOf(1 to 0, 1 to 1), actual = values.toList())
     }
 
     @Test
@@ -371,6 +409,34 @@ class CSSafeHasChangeValueRegistrationTest {
         override fun onChange(function: (T) -> Unit): CSRegistration {
             value = valueAfterRegister
             return CSRegistration.Empty
+        }
+    }
+
+    private class ManualSafeValue<T>(
+        initialValue: T,
+    ) : CSSafeHasChangeValue<T> {
+        @Volatile
+        override var value: T = initialValue
+        private val changeListeners = CopyOnWriteArrayList<(T) -> Unit>()
+        private val unsafeChangeListeners = CopyOnWriteArrayList<(T) -> Unit>()
+
+        override fun onChange(function: (T) -> Unit): CSRegistration =
+            register(changeListeners, function)
+
+        override fun onUnsafeChange(function: (T) -> Unit): CSRegistration =
+            register(unsafeChangeListeners, function)
+
+        fun unsafeValue(newValue: T) {
+            value = newValue
+            unsafeChangeListeners.forEach { it(newValue) }
+        }
+
+        private fun register(
+            listeners: CopyOnWriteArrayList<(T) -> Unit>,
+            function: (T) -> Unit,
+        ): CSRegistration {
+            listeners.add(function)
+            return CSRegistration(isActive = true, onCancel = { listeners.remove(function) })
         }
     }
 }
