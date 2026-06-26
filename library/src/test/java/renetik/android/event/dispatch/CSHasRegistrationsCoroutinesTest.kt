@@ -1,8 +1,5 @@
-package renetik.android.event.registration
+package renetik.android.event.dispatch
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
@@ -24,10 +21,13 @@ import renetik.android.core.base.TestCSApplication
 import renetik.android.core.lang.result.invoke
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
+import renetik.android.event.change.onChangeLaunch
+import renetik.android.event.change.waitForFalse
 import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.lifecycle.destruct
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
+import renetik.android.event.registration.plus
 import renetik.android.testing.CSAssert.assert
 import kotlin.time.Duration.Companion.milliseconds
 

@@ -1,8 +1,5 @@
-package renetik.android.common
+package renetik.android.event.lifecycle
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

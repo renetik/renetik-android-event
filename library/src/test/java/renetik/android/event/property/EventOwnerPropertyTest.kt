@@ -1,39 +1,38 @@
 package renetik.android.event.property
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import renetik.android.core.lang.variable.assign
 import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.lifecycle.destruct
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.property.CSSafeProperty.Companion.safe
-import renetik.android.testing.CSAssert.assert
+import renetik.android.event.registration.plus
 
+/**
+ * Event property unregister after owner nulled
+ */
 @RunWith(RobolectricTestRunner::class)
-class CSSafePropertyTest {
+class EventOwnerPropertyTest {
+    class SomeClass(parent: SomeClass? = null) : CSModel(parent) {
+        val string = property("initial value")
+
+        init {
+            this + parent?.string?.onChange { string.value = it }
+        }
+    }
 
     @Test
-    fun simpleTest() {
-        val parent = CSModel()
-        val property = property<Boolean>()
-        val safeProperty: CSSafeProperty<Boolean?> = property.safe(parent)
-        assert(expected = null, property.value)
-        assert(expected = null, safeProperty.value)
-        property assign true
-        assert(expected = true, property.value)
-        assert(expected = true, safeProperty.value)
-        safeProperty assign false
-        assert(expected = false, property.value)
-        assert(expected = false, safeProperty.value)
-
-        parent.destruct()
-        property assign true
-        assert(expected = true, property.value)
-        assert(expected = false, safeProperty.value)
+    fun testUnregisteredAfterNilled() {
+        val instance1 = SomeClass()
+        val instance2 = SomeClass(instance1)
+        val instance3 = SomeClass(instance2)
+        assertEquals("initial value", instance3.string.value)
+        instance1.string.value = "first value"
+        assertEquals("first value", instance3.string.value)
+        instance2.destruct()
+        instance1.string.value = "second value"
+        assertEquals("first value", instance3.string.value)
     }
 }

@@ -1,8 +1,5 @@
-package renetik.android.event
+package renetik.android.event.dispatch
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

@@ -1,10 +1,7 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package renetik.android.event
+package renetik.android.event.dispatch
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
