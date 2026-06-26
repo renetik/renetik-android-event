@@ -106,6 +106,27 @@ class CSSafeHasChangeValueRegistrationTest {
     }
 
     @Test
+    fun tupleOnUnsafeChangeUsesDeclaredSourceChannel() {
+        val runtimeSafeItem = ManualSafeValue(1)
+        val item1: CSHasChangeValue<Int> = runtimeSafeItem
+        val item2 = ManualSafeValue(2)
+        var value: Pair<Int, Int>? = null
+
+        (item1 to item2).onUnsafeChange { first, second ->
+            value = first to second
+        }
+
+        runtimeSafeItem.unsafeValue(3)
+        assert(expected = null, actual = value)
+
+        runtimeSafeItem.changeValue(4)
+        assert(expected = 4 to 2, actual = value)
+
+        item2.unsafeValue(5)
+        assert(expected = 4 to 5, actual = value)
+    }
+
+    @Test
     fun tupleOnUnsafeChangeBufferedDeliversEveryConcurrentChange() {
         val values = onUnsafeChangeConcurrentChanges(CSSafeChangeDelivery.Buffered)
         assert(expected = listOf(1 to 0, 1 to 1, 2 to 1), actual = values)
@@ -443,6 +464,11 @@ class CSSafeHasChangeValueRegistrationTest {
         fun unsafeValue(newValue: T) {
             value = newValue
             unsafeChangeListeners.forEach { it(newValue) }
+        }
+
+        fun changeValue(newValue: T) {
+            value = newValue
+            changeListeners.forEach { it(newValue) }
         }
 
         private fun register(
