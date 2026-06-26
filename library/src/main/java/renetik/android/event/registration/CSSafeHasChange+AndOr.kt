@@ -45,8 +45,8 @@ infix fun <T> CSHasChangeValue<T>.and(
             val safeFirst = AtomicReference(first.value)
             return CSRegistration(
                 first.onChange {
-                    other.ifTrue { function(it) }
                     safeFirst.store(it)
+                    other.ifTrue { function(it) }
                 },
                 other.onUnsafeTrue { function(safeFirst.load()) },
             )
@@ -90,8 +90,8 @@ infix fun <T> CSSafeHasChangeValue<T>.and(
             return CSRegistration(
                 first.onUnsafeChange { if (safeOther.load()) function(it) },
                 other.onChange {
-                    if (it) function(value)
                     safeOther.store(it)
+                    if (it) function(value)
                 },
             )
         }
