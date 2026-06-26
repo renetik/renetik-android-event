@@ -9,8 +9,8 @@ import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.CSEnvironment.isDebug
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.onMain
+import renetik.android.event.lifecycle.CSHasDestruct
+import renetik.android.event.dispatch.onMain
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
 import java.util.concurrent.CopyOnWriteArrayList

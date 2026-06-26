@@ -3,8 +3,8 @@
 package renetik.android.event
 
 import androidx.annotation.AnyThread
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.registration.CSHasChange
+import renetik.android.event.lifecycle.CSHasDestruct
+import renetik.android.event.change.CSHasChange
 import renetik.android.event.registration.CSRegistration
 
 interface CSEvent<T> : CSHasChange<T> {

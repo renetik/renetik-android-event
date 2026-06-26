@@ -1,13 +1,19 @@
 package renetik.android.event.property
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+import renetik.android.event.registration.*
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+
 import renetik.android.core.kotlin.notImplemented
 import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.variable.CSVariable
-import renetik.android.event.registration.CSHasChange
-import renetik.android.event.registration.CSHasChangeValue
+import renetik.android.event.change.CSHasChange
+import renetik.android.event.change.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
-import renetik.android.event.registration.onChange
+import renetik.android.event.change.onChange
 import renetik.android.event.registration.plus
 import renetik.android.event.registration.register
 

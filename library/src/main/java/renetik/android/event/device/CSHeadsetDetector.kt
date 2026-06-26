@@ -1,5 +1,7 @@
 package renetik.android.event.device
 
+import renetik.android.event.lifecycle.*
+
 import android.Manifest.permission.BLUETOOTH_ADVERTISE
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.bluetooth.BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED
@@ -32,10 +34,10 @@ import renetik.android.core.extensions.content.unregister
 import renetik.android.core.lang.CSHandler.threadHandler
 import renetik.android.core.lang.variable.assign
 import renetik.android.core.logging.CSLog.logDebug
-import renetik.android.event.common.CSModel
+import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.property.CSSafePropertyImpl.Companion.safeProperty
-import renetik.android.event.registration.CSHasChangeValue
-import renetik.android.event.registration.or
+import renetik.android.event.change.CSHasChangeValue
+import renetik.android.event.change.or
 
 class CSHeadsetDetector(parent: CSModel) : CSModel(parent),
     CSHasChangeValue<Boolean> {

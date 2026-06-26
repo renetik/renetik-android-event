@@ -1,5 +1,9 @@
 package renetik.android.event.registration
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -8,7 +12,7 @@ import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.core.lang.tuples.to
 import renetik.android.core.lang.variable.assign
-import renetik.android.event.common.CSModel
+import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeProperty.Companion.safe

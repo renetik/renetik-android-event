@@ -5,7 +5,7 @@ import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.CSHasCancel
 import renetik.android.core.lang.Fun
 import renetik.android.event.CSEvent
-import renetik.android.event.common.CSHasDestruct
+import renetik.android.event.lifecycle.CSHasDestruct
 import java.io.Closeable
 
 interface CSRegistration : CSHasCancel, Closeable, CSHasDestruct {

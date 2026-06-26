@@ -3,7 +3,7 @@ package renetik.android.event
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.logging.CSLog.logError
 import renetik.android.core.logging.CSLog.logErrorTrace
-import renetik.android.event.registration.CSHasChange
+import renetik.android.event.change.CSHasChange
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistrationImpl
 import java.util.concurrent.CopyOnWriteArrayList

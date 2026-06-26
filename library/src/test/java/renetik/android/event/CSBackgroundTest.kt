@@ -1,5 +1,9 @@
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -8,7 +12,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import renetik.android.core.base.TestCSApplication
 import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
-import renetik.android.event.CSBackground.background
+import renetik.android.event.dispatch.CSBackground.background
 import renetik.android.testing.CSAssert.assert
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds

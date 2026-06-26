@@ -2,6 +2,10 @@
 
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -16,9 +20,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import renetik.android.core.base.TestCSApplication
-import renetik.android.event.common.CSDebouncer.Companion.debouncer
-import renetik.android.event.common.CSModel
-import renetik.android.event.common.destruct
+import renetik.android.event.dispatch.CSDebouncer.Companion.debouncer
+import renetik.android.event.lifecycle.CSModel
+import renetik.android.event.lifecycle.destruct
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)

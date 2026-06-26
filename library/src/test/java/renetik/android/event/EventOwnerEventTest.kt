@@ -1,5 +1,9 @@
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -8,8 +12,8 @@ import org.robolectric.RobolectricTestRunner
 import renetik.android.core.logging.CSDummyLogger
 import renetik.android.core.logging.CSLog.init
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSModel
-import renetik.android.event.common.destruct
+import renetik.android.event.lifecycle.CSModel
+import renetik.android.event.lifecycle.destruct
 import renetik.android.event.registration.plus
 import renetik.android.testing.CSAssert.assert
 

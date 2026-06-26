@@ -1,14 +1,18 @@
 package renetik.android.event.property
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 import renetik.android.core.lang.variable.assign
-import renetik.android.event.common.CSModel
+import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafeProperty.Companion.safe
-import renetik.android.event.registration.safeStateDelegate
+import renetik.android.event.change.safeStateDelegate
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)

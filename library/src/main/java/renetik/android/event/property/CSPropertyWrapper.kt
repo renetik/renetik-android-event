@@ -1,7 +1,13 @@
 package renetik.android.event.property
 
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.CSModel
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+import renetik.android.event.registration.*
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+
+import renetik.android.event.lifecycle.CSHasDestruct
+import renetik.android.event.lifecycle.CSModel
 
 abstract class CSPropertyWrapper<T>(
     parent: CSHasDestruct? = null) : CSModel(parent), CSProperty<T> {

@@ -1,5 +1,9 @@
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

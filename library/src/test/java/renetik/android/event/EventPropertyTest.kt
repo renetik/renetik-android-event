@@ -1,5 +1,9 @@
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -8,7 +12,7 @@ import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.fire
 import renetik.android.event.property.paused
-import renetik.android.event.registration.onChange
+import renetik.android.event.change.onChange
 import renetik.android.event.registration.paused
 
 /**

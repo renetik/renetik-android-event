@@ -2,7 +2,7 @@ package renetik.android.event
 
 import renetik.android.core.lang.Fun
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.registration.CSHasChangeValue
+import renetik.android.event.change.CSHasChangeValue
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.register

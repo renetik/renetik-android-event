@@ -1,5 +1,9 @@
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -7,8 +11,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSModel
-import renetik.android.event.common.destruct
+import renetik.android.event.lifecycle.CSModel
+import renetik.android.event.lifecycle.destruct
 import renetik.android.event.registration.paused
 import renetik.android.event.registration.plus
 

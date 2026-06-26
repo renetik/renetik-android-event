@@ -1,8 +1,14 @@
 package renetik.android.event.property
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+import renetik.android.event.registration.*
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.onMain
+import renetik.android.event.lifecycle.CSHasDestruct
+import renetik.android.event.dispatch.onMain
 import renetik.android.event.registration.CSRegistration
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference

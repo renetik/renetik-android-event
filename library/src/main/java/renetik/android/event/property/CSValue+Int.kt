@@ -1,10 +1,16 @@
 package renetik.android.event.property
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+import renetik.android.event.registration.*
+import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+
 import renetik.android.core.kotlin.primitives.update
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.value.CSValue
-import renetik.android.event.common.CSHasDestruct
-import renetik.android.event.common.destruct
+import renetik.android.event.lifecycle.CSHasDestruct
+import renetik.android.event.lifecycle.destruct
 
 fun CSValue<Int>.update(
     newCount: Int, onAdd: ArgFun<Int>? = null, onRemove: ArgFun<Int>? = null

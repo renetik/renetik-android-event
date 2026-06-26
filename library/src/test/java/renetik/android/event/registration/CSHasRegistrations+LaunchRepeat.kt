@@ -1,5 +1,9 @@
 package renetik.android.event.registration
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,9 +18,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import renetik.android.core.base.TestCSApplication
+import renetik.android.core.lang.result.createMainScope
 import renetik.android.core.lang.result.mainScope
-import renetik.android.event.common.CSModel
-import renetik.android.event.common.destruct
+import renetik.android.event.lifecycle.CSModel
+import renetik.android.event.lifecycle.destruct
 import renetik.android.testing.CSAssert.assert
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -29,7 +34,10 @@ class CSHasRegistrationsLaunchRepeatTest {
     fun setUp() = Dispatchers.setMain(StandardTestDispatcher())
 
     @After
-    fun tearDown() = Dispatchers.resetMain()
+    fun tearDown() {
+        mainScope = createMainScope()
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun launchRepeatStopped() = runTest {

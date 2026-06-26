@@ -1,5 +1,9 @@
 package renetik.android.event
 
+import renetik.android.event.change.*
+import renetik.android.event.dispatch.*
+import renetik.android.event.lifecycle.*
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -7,7 +11,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 import renetik.android.core.lang.CSHandler.mainHandler
 import renetik.android.core.lang.send
-import renetik.android.event.registration.later
+import renetik.android.event.dispatch.later
 
 @RunWith(RobolectricTestRunner::class)
 class CSLaterTest {
