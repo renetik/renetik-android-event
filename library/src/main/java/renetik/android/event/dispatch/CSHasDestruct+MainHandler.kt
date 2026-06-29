@@ -6,9 +6,9 @@ import renetik.android.event.registration.*
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 import androidx.annotation.MainThread
-import renetik.android.core.java.lang.isThreadMain
-import renetik.android.core.lang.CSHandler.mainHandler
-import renetik.android.core.lang.send
+import renetik.android.core.android.os.isThreadMain
+import renetik.android.core.android.os.CSHandler.mainHandler
+import renetik.android.core.android.os.send
 
 inline fun CSHasDestruct.later(@MainThread crossinline function: () -> Unit) =
     mainHandler.send { if (!isDestructed) function() }

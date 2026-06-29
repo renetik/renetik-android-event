@@ -6,7 +6,7 @@ import renetik.android.event.registration.*
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 import renetik.android.core.kotlin.primitives.min
-import renetik.android.core.lang.CSHandler.mainHandler
+import renetik.android.core.android.os.CSHandler.mainHandler
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.dispatch.later

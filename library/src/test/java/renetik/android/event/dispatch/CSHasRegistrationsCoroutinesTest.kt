@@ -17,7 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import renetik.android.core.base.TestCSApplication
+import renetik.android.core.base.CSTestApplication
 import renetik.android.core.lang.result.invoke
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
@@ -33,7 +33,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-@Config(application = TestCSApplication::class)
+@Config(application = CSTestApplication::class)
 class CSHasRegistrationsCoroutinesTest {
 
     @Before

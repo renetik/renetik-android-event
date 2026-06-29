@@ -16,14 +16,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import renetik.android.core.base.TestCSApplication
+import renetik.android.core.base.CSTestApplication
 import renetik.android.event.dispatch.CSDebouncer.Companion.debouncer
 import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.lifecycle.destruct
 import renetik.android.testing.CSAssert.assert
 
 @RunWith(RobolectricTestRunner::class)
-@Config(application = TestCSApplication::class)
+@Config(application = CSTestApplication::class)
 class CSLaterOnceTest {
 
     @Before

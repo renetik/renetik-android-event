@@ -5,8 +5,8 @@ import renetik.android.event.lifecycle.*
 import android.content.BroadcastReceiver
 import android.content.Intent.ACTION_HEADSET_PLUG
 import renetik.android.core.base.CSApplication.Companion.app
-import renetik.android.core.extensions.content.register
-import renetik.android.core.extensions.content.unregister
+import renetik.android.core.android.content.register
+import renetik.android.core.android.content.unregister
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.core.logging.CSLog.logWarn
 

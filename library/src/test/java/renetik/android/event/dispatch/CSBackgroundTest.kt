@@ -7,7 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import renetik.android.core.base.TestCSApplication
+import renetik.android.core.base.CSTestApplication
 import renetik.android.core.lang.atomic.CSAtomic.Companion.atomic
 import renetik.android.event.dispatch.CSBackground.background
 import renetik.android.testing.CSAssert.assert
@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(RobolectricTestRunner::class)
-@Config(application = TestCSApplication::class)
+@Config(application = CSTestApplication::class)
 class CSBackgroundTest {
 
     @Test

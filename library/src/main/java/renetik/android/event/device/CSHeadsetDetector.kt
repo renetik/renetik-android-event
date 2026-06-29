@@ -28,10 +28,10 @@ import android.media.AudioManager.GET_DEVICES_OUTPUTS
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.S
 import renetik.android.core.base.CSApplication.Companion.app
-import renetik.android.core.extensions.content.audioManager
-import renetik.android.core.extensions.content.isPermissionsGranted
-import renetik.android.core.extensions.content.unregister
-import renetik.android.core.lang.CSHandler.threadHandler
+import renetik.android.core.android.content.audioManager
+import renetik.android.core.android.content.isPermissionsGranted
+import renetik.android.core.android.content.unregister
+import renetik.android.core.android.os.CSHandler.threadHandler
 import renetik.android.core.lang.variable.assign
 import renetik.android.core.logging.CSLog.logDebug
 import renetik.android.event.lifecycle.CSModel

@@ -6,8 +6,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
-import renetik.android.core.lang.CSHandler.mainHandler
-import renetik.android.core.lang.send
+import renetik.android.core.android.os.CSHandler.mainHandler
+import renetik.android.core.android.os.send
 import renetik.android.event.dispatch.later
 
 @RunWith(RobolectricTestRunner::class)
