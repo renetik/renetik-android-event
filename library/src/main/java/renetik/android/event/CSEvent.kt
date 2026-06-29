@@ -3,7 +3,6 @@
 package renetik.android.event
 
 import androidx.annotation.AnyThread
-import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.change.CSHasChange
 import renetik.android.event.registration.CSRegistration
 
@@ -13,11 +12,6 @@ interface CSEvent<T> : CSHasChange<T> {
         @JvmName("eventWithArgument") inline fun <T> event() = CSEventImpl<T>()
 
         inline fun event() = CSEventImpl<Unit>()
-
-        @JvmName("eventWithArgument")
-        inline fun <T> CSHasDestruct.safeEvent() = CSEventImpl<T>().onMain(this)
-
-        inline fun CSHasDestruct.safeEvent() = CSEventImpl<Unit>().onMain(this)
 
         val Empty: CSEvent<Unit> = empty()
         inline fun <T> empty(): CSEvent<T> = object : CSEvent<T> {
