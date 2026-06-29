@@ -1,10 +1,7 @@
 @file:OptIn(ExperimentalAtomicApi::class)
+@file:Suppress("NOTHING_TO_INLINE")
 
 package renetik.android.event.change
-
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -13,9 +10,13 @@ import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.Fun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.event.CSEvent
-import renetik.android.event.dispatch.CSDebouncer.Companion.debouncer
-import renetik.android.event.fire
 import renetik.android.event.change.CSHasChange.Companion.action
+import renetik.android.event.dispatch.CSDebouncer.Companion.debouncer
+import renetik.android.event.dispatch.JobRegistration
+import renetik.android.event.dispatch.launch
+import renetik.android.event.fire
+import renetik.android.event.invoke
+import renetik.android.event.registration.*
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicReference
@@ -267,6 +268,14 @@ inline fun <Argument> CSHasChange<Argument>.onChangeLaterOnce(
     crossinline function: Fun,
 ) = onChangeLaterOnce(ZERO, function)
 
+inline fun CSHasChange<*>.eventLaterOnce(): CSEvent<*> = CSEvent.event().also {
+    onChangeLaterOnce { it() }
+}
+
+inline fun CSHasChange<*>.event(): CSEvent<*> = CSEvent.event().also {
+    onChange { it() }
+}
+
 fun Pair<CSHasChange<*>, CSHasChange<*>>.onChange(
     onChange: () -> Unit
 ): CSRegistration = CSRegistration(
@@ -275,7 +284,7 @@ fun Pair<CSHasChange<*>, CSHasChange<*>>.onChange(
 
 fun Pair<CSHasChange<*>, CSHasChange<*>>.event(
     parent: CSHasRegistrations? = null
-): CSEvent<Unit> = CSEvent.event().also { event ->
+): CSEvent<Unit> = event().also { event ->
     first.onChange(event::fire).also { parent?.register(it) }
     second.onChange(event::fire).also { parent?.register(it) }
 }
