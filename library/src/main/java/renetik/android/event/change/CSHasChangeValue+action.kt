@@ -1,13 +1,10 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
 import renetik.android.core.lang.tuples.CSSeventuple
 import renetik.android.core.lang.tuples.CSSixtuple
+import renetik.android.event.registration.CSRegistration
 
 inline fun <Argument1, Argument2> Pair<CSHasChangeValue<out Argument1>,
         CSHasChangeValue<out Argument2>>.action(

@@ -2,11 +2,8 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import kotlinx.coroutines.suspendCancellableCoroutine
+import renetik.android.event.registration.CSRegistration
 import kotlin.Result.Companion.success
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi

@@ -1,10 +1,7 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.synchronized
+import renetik.android.event.registration.CSRegistration
 
 /**
  * Lossless FIFO emitter ([CSSafeChangeDelivery.Buffered]). Every snapshot is delivered, in

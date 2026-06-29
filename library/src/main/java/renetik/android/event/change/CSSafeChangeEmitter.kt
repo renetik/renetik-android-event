@@ -1,8 +1,6 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.CSRegistration
 
 /**
  * Serializes combined-change snapshots produced under a shared lock and dispatches them to

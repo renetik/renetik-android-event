@@ -2,11 +2,6 @@
 
 package renetik.android.event.dispatch
 
-import renetik.android.event.lifecycle.*
-
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineName
@@ -21,6 +16,7 @@ import renetik.android.core.kotlin.className
 import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 import renetik.android.core.logging.CSLog.logError
+import renetik.android.event.registration.CSRegistrationImpl
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 

@@ -1,14 +1,14 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.Fun
 import renetik.android.core.lang.SusFun
 import renetik.android.event.dispatch.CSDebouncer.Companion.debouncer
+import renetik.android.event.registration.CSRegistration
+import renetik.android.event.registration.CSRegistrations
+import renetik.android.event.registration.CSRegistrationsMap
+import renetik.android.event.registration.plus
 import kotlin.coroutines.CoroutineContext
 
 inline fun <T : CSHasChange<*>> List<T>.onChange(

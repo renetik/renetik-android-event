@@ -1,8 +1,9 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.CSRegistration
+import renetik.android.event.registration.isActive
+import renetik.android.event.registration.registerTo
 
 fun <T> CSHasChangeValue<T>.delegate(
     parent: CSHasRegistrations? = null,

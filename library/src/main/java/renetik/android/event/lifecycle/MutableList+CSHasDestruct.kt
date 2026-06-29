@@ -2,10 +2,10 @@ package renetik.android.event.lifecycle
 
 import renetik.android.core.kotlin.primitives.update
 import renetik.android.event.CSEvent
-import renetik.android.event.invoke
 import renetik.android.event.change.CSHasChangeValue
-import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.change.action
+import renetik.android.event.invoke
+import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.plus
 
 fun <T : CSHasDestruct> MutableList<T>.update(

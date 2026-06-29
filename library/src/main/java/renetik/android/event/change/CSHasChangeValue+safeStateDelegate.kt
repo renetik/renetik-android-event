@@ -3,10 +3,6 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
@@ -14,6 +10,7 @@ import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
+import renetik.android.event.registration.plus
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 // TODO?: eventUnsafeChange is never needed here but CSSafeHasChangeValue requires it

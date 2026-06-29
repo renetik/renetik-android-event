@@ -2,13 +2,15 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.ArgFun
+import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.CSRegistrationsMap
+import renetik.android.event.registration.isActive
+import renetik.android.event.registration.plus
+import renetik.android.event.registration.registerTo
 
 inline fun <T : CSHasChangeValue<Value>, Value> List<T>.onChange(
     crossinline function: ArgFun<List<Value>>

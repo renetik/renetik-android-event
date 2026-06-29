@@ -7,8 +7,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import renetik.android.core.base.CSTestApplication
-import renetik.android.event.registration.CSFunctionRegistration
-import renetik.android.event.registration.paused
 
 @RunWith(RobolectricTestRunner::class)
 @Config(application = CSTestApplication::class)

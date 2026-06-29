@@ -3,20 +3,22 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.value.CSSafeValue
 import renetik.android.core.lang.value.CSValue
+import renetik.android.event.change.CSHasChangeValue.Companion.emptyNullable
+import renetik.android.event.dispatch.launch
 import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.lifecycle.destruct
 import renetik.android.event.property.CSLateProperty
-import renetik.android.event.change.CSHasChangeValue.Companion.emptyNullable
+import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.CSRegistrationsMap
+import renetik.android.event.registration.plus
+import renetik.android.event.registration.register
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.reflect.KProperty
 

@@ -1,7 +1,5 @@
 package renetik.android.event.android
 
-import renetik.android.event.lifecycle.*
-
 import android.app.Service
 import android.content.ComponentName
 import android.content.Intent
@@ -14,6 +12,8 @@ import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
 import renetik.android.core.logging.CSLog.logWarnTrace
 import renetik.android.event.CSEvent.Companion.event
 import renetik.android.event.fire
+import renetik.android.event.lifecycle.CSHasRegistrationsHasDestruct
+import renetik.android.event.lifecycle.destruct
 import renetik.android.event.registration.CSRegistrationsMap
 
 open class CSServiceConnection<Service : CSService> : ServiceConnection {

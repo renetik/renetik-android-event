@@ -2,11 +2,10 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.registration.*
-
 import renetik.android.core.kotlin.primitives.isTrue
 import renetik.android.core.lang.value.ifTrue
 import renetik.android.event.property.CSSafeHasChangeValue
+import renetik.android.event.registration.CSRegistration
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi

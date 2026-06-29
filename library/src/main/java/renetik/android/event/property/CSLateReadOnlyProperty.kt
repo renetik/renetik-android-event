@@ -1,14 +1,8 @@
 package renetik.android.event.property
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.value.CSValue
-import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.dispatch.later
+import renetik.android.event.lifecycle.CSHasDestruct
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 

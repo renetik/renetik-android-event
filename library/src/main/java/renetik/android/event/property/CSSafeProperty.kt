@@ -1,11 +1,5 @@
 package renetik.android.event.property
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import androidx.annotation.AnyThread
 import renetik.android.core.lang.variable.CSSafeVariable
 import renetik.android.event.lifecycle.CSHasDestruct

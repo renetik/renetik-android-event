@@ -1,17 +1,10 @@
 package renetik.android.event.property
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
-import renetik.android.event.property.CSProperty
+import renetik.android.event.change.action
+import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.property.CSProperty.Companion.property
-import renetik.android.event.property.CSPropertyWrapper
 import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-import renetik.android.event.change.action
 import renetik.android.event.registration.plus
 
 class CSActionIsRunning(

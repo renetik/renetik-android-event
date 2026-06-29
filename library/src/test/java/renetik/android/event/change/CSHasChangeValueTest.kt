@@ -13,8 +13,8 @@ import renetik.android.core.lang.variable.plusAssign
 import renetik.android.core.lang.variable.setFalse
 import renetik.android.core.lang.variable.setTrue
 import renetik.android.event.CSEvent.Companion.event
-import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.fire
+import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.property.CSProperty
 import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.property.CSSafeProperty.Companion.safe

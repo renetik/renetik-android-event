@@ -5,7 +5,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import renetik.android.event.property.CSProperty.Companion.lateProperty
-import renetik.android.event.property.fire
 
 /**
  * Simple event property use cases

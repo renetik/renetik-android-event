@@ -2,14 +2,11 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.tuples.CSSixtuple
 import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.lifecycle.destruct
+import renetik.android.event.registration.CSHasRegistrations
 
 fun <Argument, Return : CSHasDestruct>
         CSHasChangeValue<Argument>.stateDelegateDestruct(

@@ -2,21 +2,15 @@
 
 package renetik.android.event.property
 
-import renetik.android.event.change.*
-import renetik.android.event.dispatch.*
-import renetik.android.event.lifecycle.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.kotlin.primitives.percentOf
 import renetik.android.core.kotlin.primitives.toPercentOf
 import renetik.android.core.lang.ArgFun
 import renetik.android.core.lang.variable.assign
-import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.change.CSHasChangeValue
+import renetik.android.event.change.action
+import renetik.android.event.property.CSProperty.Companion.property
 import renetik.android.event.registration.CSHasRegistrations
 import renetik.android.event.registration.CSRegistration
-import renetik.android.event.change.action
 import renetik.android.event.registration.paused
 import renetik.android.event.registration.register
 import kotlin.math.roundToInt

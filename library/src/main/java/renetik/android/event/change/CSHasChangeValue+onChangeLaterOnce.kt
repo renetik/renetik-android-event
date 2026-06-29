@@ -1,13 +1,10 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import kotlinx.coroutines.Dispatchers.Main
 import renetik.android.core.lang.SusFun
 import renetik.android.core.lang.tuples.CSQuadruple
 import renetik.android.core.lang.tuples.CSQuintuple
+import renetik.android.event.registration.CSRegistration
 import kotlin.coroutines.CoroutineContext
 
 fun <Argument1, Argument2> Pair<CSHasChangeValue<Argument1>,

@@ -1,14 +1,11 @@
 package renetik.android.event.dispatch
 
-import renetik.android.event.lifecycle.*
-
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import android.os.Handler
 import android.os.SystemClock.uptimeMillis
 import renetik.android.core.lang.Fun
+import renetik.android.event.registration.CSRegistration
 import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
+import renetik.android.event.registration.start
 import kotlin.time.Duration
 
 /**

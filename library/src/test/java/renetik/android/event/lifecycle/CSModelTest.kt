@@ -5,8 +5,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import renetik.android.event.lifecycle.CSModel
-import renetik.android.event.lifecycle.destruct
 import renetik.android.event.change.invoke
 
 @RunWith(RobolectricTestRunner::class)

@@ -1,10 +1,5 @@
 package renetik.android.event.dispatch
 
-import renetik.android.event.lifecycle.*
-
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -13,6 +8,9 @@ import kotlinx.coroutines.Job
 import renetik.android.core.kotlin.className
 import renetik.android.core.lang.result.mainScope
 import renetik.android.core.lang.variable.CSWeakVariable.Companion.weak
+import renetik.android.event.registration.CSHasRegistrations
+import renetik.android.event.registration.CSRegistration
+import renetik.android.event.registration.plus
 import kotlin.coroutines.CoroutineContext
 
 private class JobRegistrationWrapper(

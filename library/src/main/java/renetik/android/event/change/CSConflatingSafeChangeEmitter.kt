@@ -1,10 +1,7 @@
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.synchronized
+import renetik.android.event.registration.CSRegistration
 
 /**
  * Latest-wins emitter ([CSSafeChangeDelivery.Conflated]). Callbacks are serialized through a

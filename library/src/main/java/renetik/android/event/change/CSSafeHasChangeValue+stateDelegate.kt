@@ -2,14 +2,11 @@
 
 package renetik.android.event.change
 
-import renetik.android.event.dispatch.*
-import renetik.android.event.registration.*
-import renetik.android.event.registration.CSRegistration.Companion.CSRegistration
-
 import renetik.android.core.lang.ArgFun
 import renetik.android.event.lifecycle.CSHasDestruct
 import renetik.android.event.property.CSSafeHasChangeValue
 import renetik.android.event.property.CSSafeHasChangeValueBase
+import renetik.android.event.registration.plus
 
 @JvmName("safeStateDelegate")
 fun <Argument, Return> CSSafeHasChangeValue<Argument>.stateDelegate(

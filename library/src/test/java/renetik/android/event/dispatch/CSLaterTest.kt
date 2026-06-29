@@ -8,7 +8,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 import renetik.android.core.android.os.CSHandler.mainHandler
 import renetik.android.core.android.os.send
-import renetik.android.event.dispatch.later
 
 @RunWith(RobolectricTestRunner::class)
 class CSLaterTest {
