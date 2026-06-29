@@ -7,6 +7,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 import renetik.android.core.lang.variable.assign
 import renetik.android.event.CSEvent.Companion.event
+import renetik.android.event.CSSafeEvent.Companion.safeEvent
 import renetik.android.event.lifecycle.CSModel
 import renetik.android.event.fire
 import renetik.android.event.property.CSProperty.Companion.property
@@ -18,7 +19,7 @@ import renetik.android.testing.CSAssert.assert
 import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(RobolectricTestRunner::class)
-class CSSafeHasChangeAndOrTest {
+class CSSafeHasChangeValueAndOrTest {
 
     @Test
     fun safeBooleanCombinationsHaveLogicalValues() {
