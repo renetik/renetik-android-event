@@ -2,15 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    namespace rootProject.ext.namespace
+    namespace = rootProject.ext.namespace
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
     }
     compileSdk = project.properties.sdk_version
     defaultConfig {
-        minSdkVersion project.properties.min_sdk_version
-        targetSdkVersion project.properties.sdk_version
+        minSdk = project.properties.min_sdk_version
     }
     testOptions {
         unitTests {
