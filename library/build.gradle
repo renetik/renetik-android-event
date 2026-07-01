@@ -4,5 +4,5 @@ else apply from: '../library.gradle'
 dependencies {
     if (rootProject.ext.is_renetik_development) {
         implementation project(':renetik-android-core')
-    } else implementation "com.github.renetik:renetik-android-core:1.0.1"
+    } else implementation "com.github.renetik:renetik-android-core:master-SNAPSHOT"
 }
