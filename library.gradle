@@ -1,7 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
-group = providers.gradleProperty('group').getOrElse('com.github.renetik.renetik-android-event')
+group = providers.gradleProperty('group')
+        .getOrElse('com.github.renetik.renetik-android-event')
 version = providers.gradleProperty('version').getOrElse('LOCAL')
 
 android {
