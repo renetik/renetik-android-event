@@ -143,7 +143,6 @@ Suspend-friendly primitives and helpers:
   - Boolean: `onTrueLaunch {}`, `onFalseLaunch {}`
   - From `CSHasRegistrations`: `launch { job -> }`, `launchWhileActive {}`, `launch(key) {}`
 
-Examples:
 ```kotlin
 // Wait for a property to reach a state
 val isReady = property(false)
