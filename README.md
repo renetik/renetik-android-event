@@ -17,24 +17,6 @@ Used across Renetik projects to keep app logic clear and decoupled.
 ### Installation
 Add the Renetik GitHub Maven repositories and the dependency:
 
-```gradle
-allprojects {
-    repositories {
-        // SNAPSHOTs
-        maven { url 'https://github.com/renetik/maven-snapshot/raw/master/repository' }
-        // Releases
-        maven { url 'https://github.com/renetik/maven/raw/master/repository' }
-        // Or mavenLocal() if you publish locally
-    }
-}
-```
-
-```gradle
-dependencies {
-    implementation 'com.renetik.library:renetik-android-event:$renetik-android-version'
-}
-```
-
 ### Compatibility
 - **minSdk**: 26
 - **target/compileSdk**: 35
